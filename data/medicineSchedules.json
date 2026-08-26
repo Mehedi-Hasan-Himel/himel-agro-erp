@@ -1,0 +1,54 @@
+[
+  {
+    "id": "sched_001",
+    "medicineName": "Electromin + Vital Electrolytes",
+    "targetType": "FLOCK",
+    "pigeonId": null,
+    "startDate": "2026-08-25",
+    "endDate": "2026-08-27",
+    "dose": "2g / Litre drinking water",
+    "purpose": "Summer heatwave stress prevention and hydration recovery",
+    "status": "IN_PROGRESS",
+    "notes": "Ensure fresh water containers are cleaned before administration each morning.",
+    "createdAt": "2026-08-24T18:00:00Z"
+  },
+  {
+    "id": "sched_002",
+    "medicineName": "Calci-D3 Plus Liquid",
+    "targetType": "FLOCK",
+    "pigeonId": null,
+    "startDate": "2026-08-28",
+    "endDate": "2026-08-31",
+    "dose": "5ml / Litre water",
+    "purpose": "Egg shell quality and bone development for young squabs",
+    "status": "UPCOMING",
+    "notes": "Give for 3 consecutive days for all breeding cages.",
+    "createdAt": "2026-08-24T18:00:00Z"
+  },
+  {
+    "id": "sched_003",
+    "medicineName": "Hepaprotect Liver Tonic",
+    "targetType": "FLOCK",
+    "pigeonId": null,
+    "startDate": "2026-09-05",
+    "endDate": "2026-09-08",
+    "dose": "3ml / Litre water",
+    "purpose": "Monthly liver rejuvenation and digestive tract optimization",
+    "status": "UPCOMING",
+    "notes": "Routine first week of month protocol.",
+    "createdAt": "2026-08-20T10:00:00Z"
+  },
+  {
+    "id": "sched_004",
+    "medicineName": "Wormnil (Levamisole)",
+    "targetType": "FLOCK",
+    "pigeonId": null,
+    "startDate": "2026-07-01",
+    "endDate": "2026-07-02",
+    "dose": "1g / Litre drinking water",
+    "purpose": "Quarterly flock deworming course",
+    "status": "COMPLETED",
+    "notes": "Completed successfully in July.",
+    "createdAt": "2026-06-28T09:00:00Z"
+  }
+]

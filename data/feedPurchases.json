@@ -1,0 +1,74 @@
+[
+  {
+    "id": "feed_p_001",
+    "feedType": "Corn / Maize",
+    "date": "2026-07-05",
+    "quantityKg": 50,
+    "totalCost": 2250,
+    "supplier": "Krishi Bitan Wholesale, Tongi",
+    "notes": "Grade A yellow cracked maize"
+  },
+  {
+    "id": "feed_p_002",
+    "feedType": "Wheat",
+    "date": "2026-07-05",
+    "quantityKg": 60,
+    "totalCost": 2520,
+    "supplier": "Krishi Bitan Wholesale, Tongi",
+    "notes": "Clean dry feed wheat"
+  },
+  {
+    "id": "feed_p_003",
+    "feedType": "Millet (Bajra)",
+    "date": "2026-07-10",
+    "quantityKg": 40,
+    "totalCost": 2400,
+    "supplier": "Bogra Feed Depot",
+    "notes": "Small grain pearl millet for squabs"
+  },
+  {
+    "id": "feed_p_004",
+    "feedType": "Mustard Seed",
+    "date": "2026-07-15",
+    "quantityKg": 20,
+    "totalCost": 1800,
+    "supplier": "Kawran Bazar Wholesale",
+    "notes": "Oily seed supplement for feather lustre"
+  },
+  {
+    "id": "feed_p_005",
+    "feedType": "Mineral Grit & Red Stone",
+    "date": "2026-07-20",
+    "quantityKg": 25,
+    "totalCost": 1250,
+    "supplier": "Pigeon Care BD",
+    "notes": "Enriched with crushed oyster shells and charcoal"
+  },
+  {
+    "id": "feed_p_006",
+    "feedType": "Corn / Maize",
+    "date": "2026-08-05",
+    "quantityKg": 50,
+    "totalCost": 2300,
+    "supplier": "Krishi Bitan Wholesale, Tongi",
+    "notes": "Second monthly batch of maize"
+  },
+  {
+    "id": "feed_p_007",
+    "feedType": "Wheat",
+    "date": "2026-08-05",
+    "quantityKg": 50,
+    "totalCost": 2150,
+    "supplier": "Krishi Bitan Wholesale, Tongi",
+    "notes": "Second monthly wheat bag"
+  },
+  {
+    "id": "feed_p_008",
+    "feedType": "Green Peas (Dabli)",
+    "date": "2026-08-10",
+    "quantityKg": 30,
+    "totalCost": 2100,
+    "supplier": "Kawran Bazar Wholesale",
+    "notes": "High protein pulse for breeding season"
+  }
+]

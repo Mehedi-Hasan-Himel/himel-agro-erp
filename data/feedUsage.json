@@ -1,0 +1,65 @@
+[
+  {
+    "id": "feed_u_001",
+    "feedType": "Corn / Maize",
+    "date": "2026-07-31",
+    "quantityKg": 32,
+    "notes": "July main feed mix portion"
+  },
+  {
+    "id": "feed_u_002",
+    "feedType": "Wheat",
+    "date": "2026-07-31",
+    "quantityKg": 40,
+    "notes": "July flock consumption"
+  },
+  {
+    "id": "feed_u_003",
+    "feedType": "Millet (Bajra)",
+    "date": "2026-07-31",
+    "quantityKg": 25,
+    "notes": "Fed to nursery cages and squabs"
+  },
+  {
+    "id": "feed_u_004",
+    "feedType": "Mustard Seed",
+    "date": "2026-07-31",
+    "quantityKg": 10,
+    "notes": "July dietary fat supplement"
+  },
+  {
+    "id": "feed_u_005",
+    "feedType": "Mineral Grit & Red Stone",
+    "date": "2026-07-31",
+    "quantityKg": 12,
+    "notes": "Free access grit cups replenished"
+  },
+  {
+    "id": "feed_u_006",
+    "feedType": "Corn / Maize",
+    "date": "2026-08-20",
+    "quantityKg": 30,
+    "notes": "August 1-20 loft feed usage"
+  },
+  {
+    "id": "feed_u_007",
+    "feedType": "Wheat",
+    "date": "2026-08-20",
+    "quantityKg": 35,
+    "notes": "August 1-20 flock consumption"
+  },
+  {
+    "id": "feed_u_008",
+    "feedType": "Millet (Bajra)",
+    "date": "2026-08-20",
+    "quantityKg": 12,
+    "notes": "August nursery feeding (Stock now low at 3kg remaining!)"
+  },
+  {
+    "id": "feed_u_009",
+    "feedType": "Green Peas (Dabli)",
+    "date": "2026-08-20",
+    "quantityKg": 15,
+    "notes": "High protein pulse mix"
+  }
+]

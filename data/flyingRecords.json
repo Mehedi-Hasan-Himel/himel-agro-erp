@@ -1,0 +1,68 @@
+[
+  {
+    "id": "fly_001",
+    "pigeonId": "pigeon_2025_001",
+    "date": "2025-05-15",
+    "eventName": "Summer Endurance Loft Flight",
+    "flightDurationMinutes": 320,
+    "result": "5h 20m continuous high-altitude flight",
+    "weather": "Clear, mild southerly breeze",
+    "notes": "Landed smoothly at dusk with excellent wing condition.",
+    "createdAt": "2025-05-15T18:00:00Z"
+  },
+  {
+    "id": "fly_002",
+    "pigeonId": "pigeon_2025_005",
+    "date": "2025-08-20",
+    "eventName": "150km Club Velocity Trial",
+    "flightDurationMinutes": 118,
+    "result": "Velocity: 1,271 m/min (Rank 3/42)",
+    "weather": "Sunny, 31°C",
+    "notes": "First drop of Himel Agro flock.",
+    "createdAt": "2025-08-20T16:00:00Z"
+  },
+  {
+    "id": "fly_003",
+    "pigeonId": "pigeon_2026_001",
+    "date": "2026-04-10",
+    "eventName": "Spring High-Flying Competition Trial",
+    "flightDurationMinutes": 285,
+    "result": "4h 45m steady sky play and tumble",
+    "weather": "Partly cloudy",
+    "notes": "Maintained tight circle over loft.",
+    "createdAt": "2026-04-10T17:00:00Z"
+  },
+  {
+    "id": "fly_004",
+    "pigeonId": "pigeon_2026_003",
+    "date": "2026-05-02",
+    "eventName": "80km Straight Toss Training",
+    "flightDurationMinutes": 62,
+    "result": "Returned 1st in flock, velocity 1,290 m/min",
+    "weather": "Clear morning",
+    "notes": "High homing determination.",
+    "createdAt": "2026-05-02T12:00:00Z"
+  },
+  {
+    "id": "fly_005",
+    "pigeonId": "pigeon_2026_009",
+    "date": "2026-06-15",
+    "eventName": "Young Bird Sky Test",
+    "flightDurationMinutes": 210,
+    "result": "3h 30m high flight with flawless landing",
+    "weather": "Pleasant breeze",
+    "notes": "Exceeded age expectations.",
+    "createdAt": "2026-06-15T16:00:00Z"
+  },
+  {
+    "id": "fly_006",
+    "pigeonId": "pigeon_2026_011",
+    "date": "2026-07-04",
+    "eventName": "50km Young Racer Training Toss",
+    "flightDurationMinutes": 41,
+    "result": "Top squab return time",
+    "weather": "Humid, sunny",
+    "notes": "Direct straight-line flight back to Himel Agro trap.",
+    "createdAt": "2026-07-04T11:00:00Z"
+  }
+]

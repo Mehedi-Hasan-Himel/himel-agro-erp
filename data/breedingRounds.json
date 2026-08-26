@@ -1,0 +1,225 @@
+[
+  {
+    "id": "round_2025_01_01",
+    "pairId": "pair_2025_01",
+    "roundNumber": 1,
+    "date": "2025-12-18",
+    "hatchDate": "2026-01-10",
+    "eggsLaid": 2,
+    "babiesHatched": 1,
+    "babyPigeonIds": [
+      "pigeon_2026_001"
+    ],
+    "notes": "First clutch of 2026 season. Produced flagship cock 2026-001.",
+    "createdAt": "2025-12-18T10:00:00Z"
+  },
+  {
+    "id": "round_2025_02_01",
+    "pairId": "pair_2025_02",
+    "roundNumber": 1,
+    "date": "2025-12-22",
+    "hatchDate": "2026-01-15",
+    "eggsLaid": 2,
+    "babiesHatched": 1,
+    "babyPigeonIds": [
+      "pigeon_2026_002"
+    ],
+    "notes": "Produced prime hen 2026-002.",
+    "createdAt": "2025-12-22T10:00:00Z"
+  },
+  {
+    "id": "round_2025_03_01",
+    "pairId": "pair_2025_03",
+    "roundNumber": 1,
+    "date": "2025-12-28",
+    "hatchDate": "2026-01-20",
+    "eggsLaid": 2,
+    "babiesHatched": 2,
+    "babyPigeonIds": [
+      "pigeon_2026_003",
+      "pigeon_2026_004"
+    ],
+    "notes": "100% hatch rate. Produced top racing pair siblings 2026-003 and 2026-004.",
+    "createdAt": "2025-12-28T10:00:00Z"
+  },
+  {
+    "id": "round_2026_01_01",
+    "pairId": "pair_2026_01",
+    "roundNumber": 1,
+    "date": "2026-02-08",
+    "hatchDate": "2026-03-01",
+    "eggsLaid": 2,
+    "babiesHatched": 2,
+    "babyPigeonIds": [
+      "pigeon_2026_009",
+      "pigeon_2026_010"
+    ],
+    "notes": "Outstanding hatch, 2 fertile eggs. Produced 2026-009 & 2026-010.",
+    "createdAt": "2026-02-08T08:00:00Z"
+  },
+  {
+    "id": "round_2026_01_02",
+    "pairId": "pair_2026_01",
+    "roundNumber": 2,
+    "date": "2026-04-20",
+    "hatchDate": "2026-05-15",
+    "eggsLaid": 2,
+    "babiesHatched": 2,
+    "babyPigeonIds": [
+      "pigeon_2026_023",
+      "pigeon_2026_024"
+    ],
+    "notes": "Both eggs hatched vigorously.",
+    "createdAt": "2026-04-20T08:00:00Z"
+  },
+  {
+    "id": "round_2026_01_03",
+    "pairId": "pair_2026_01",
+    "roundNumber": 3,
+    "date": "2026-06-20",
+    "hatchDate": "2026-07-15",
+    "eggsLaid": 2,
+    "babiesHatched": 2,
+    "babyPigeonIds": [
+      "pigeon_2026_033",
+      "pigeon_2026_034"
+    ],
+    "notes": "Third round for pair 2026-01. Hatching rate 100% (6/6 eggs).",
+    "createdAt": "2026-06-20T08:00:00Z"
+  },
+  {
+    "id": "round_2026_02_01",
+    "pairId": "pair_2026_02",
+    "roundNumber": 1,
+    "date": "2026-02-22",
+    "hatchDate": "2026-03-12",
+    "eggsLaid": 2,
+    "babiesHatched": 2,
+    "babyPigeonIds": [
+      "pigeon_2026_011",
+      "pigeon_2026_012"
+    ],
+    "notes": "Produced star racers 2026-011 and 2026-012.",
+    "createdAt": "2026-02-22T08:00:00Z"
+  },
+  {
+    "id": "round_2026_02_02",
+    "pairId": "pair_2026_02",
+    "roundNumber": 2,
+    "date": "2026-05-01",
+    "hatchDate": "2026-05-25",
+    "eggsLaid": 2,
+    "babiesHatched": 2,
+    "babyPigeonIds": [
+      "pigeon_2026_025",
+      "pigeon_2026_026"
+    ],
+    "notes": "Round 2 for racer pair.",
+    "createdAt": "2026-05-01T08:00:00Z"
+  },
+  {
+    "id": "round_2026_03_01",
+    "pairId": "pair_2026_03",
+    "roundNumber": 1,
+    "date": "2026-03-05",
+    "hatchDate": "2026-03-25",
+    "eggsLaid": 2,
+    "babiesHatched": 2,
+    "babyPigeonIds": [
+      "pigeon_2026_013",
+      "pigeon_2026_014"
+    ],
+    "notes": "Produced 2026-013 & 2026-014.",
+    "createdAt": "2026-03-05T08:00:00Z"
+  },
+  {
+    "id": "round_2026_03_02",
+    "pairId": "pair_2026_03",
+    "roundNumber": 2,
+    "date": "2026-05-12",
+    "hatchDate": "2026-06-05",
+    "eggsLaid": 2,
+    "babiesHatched": 2,
+    "babyPigeonIds": [
+      "pigeon_2026_027",
+      "pigeon_2026_028"
+    ],
+    "notes": "Produced 2026-027 & 2026-028.",
+    "createdAt": "2026-05-12T08:00:00Z"
+  },
+  {
+    "id": "round_2026_03_03",
+    "pairId": "pair_2026_03",
+    "roundNumber": 3,
+    "date": "2026-07-12",
+    "hatchDate": "2026-08-05",
+    "eggsLaid": 2,
+    "babiesHatched": 2,
+    "babyPigeonIds": [
+      "pigeon_2026_037",
+      "pigeon_2026_038"
+    ],
+    "notes": "Round 3 for pair 2026-03.",
+    "createdAt": "2026-07-12T08:00:00Z"
+  },
+  {
+    "id": "round_2026_04_01",
+    "pairId": "pair_2026_04",
+    "roundNumber": 1,
+    "date": "2026-05-25",
+    "hatchDate": "2026-06-18",
+    "eggsLaid": 2,
+    "babiesHatched": 2,
+    "babyPigeonIds": [
+      "pigeon_2026_029",
+      "pigeon_2026_030"
+    ],
+    "notes": "Produced speed cross squabs 2026-029 & 2026-030.",
+    "createdAt": "2026-05-25T08:00:00Z"
+  },
+  {
+    "id": "round_2026_05_01",
+    "pairId": "pair_2026_05",
+    "roundNumber": 1,
+    "date": "2026-06-08",
+    "hatchDate": "2026-07-02",
+    "eggsLaid": 2,
+    "babiesHatched": 2,
+    "babyPigeonIds": [
+      "pigeon_2026_031",
+      "pigeon_2026_032"
+    ],
+    "notes": "Heritage cross 4th generation squabs.",
+    "createdAt": "2026-06-08T08:00:00Z"
+  },
+  {
+    "id": "round_2026_06_01",
+    "pairId": "pair_2026_06",
+    "roundNumber": 1,
+    "date": "2026-07-01",
+    "hatchDate": "2026-07-25",
+    "eggsLaid": 2,
+    "babiesHatched": 2,
+    "babyPigeonIds": [
+      "pigeon_2026_035",
+      "pigeon_2026_036"
+    ],
+    "notes": "Young racer pair 1st round.",
+    "createdAt": "2026-07-01T08:00:00Z"
+  },
+  {
+    "id": "round_2026_07_01",
+    "pairId": "pair_2026_07",
+    "roundNumber": 1,
+    "date": "2026-07-18",
+    "hatchDate": "2026-08-12",
+    "eggsLaid": 2,
+    "babiesHatched": 2,
+    "babyPigeonIds": [
+      "pigeon_2026_039",
+      "pigeon_2026_040"
+    ],
+    "notes": "Pure white x red bar pair 1st round.",
+    "createdAt": "2026-07-18T08:00:00Z"
+  }
+]

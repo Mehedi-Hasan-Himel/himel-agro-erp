@@ -1,0 +1,40 @@
+{
+  "categories": [
+    {
+      "name": "Giribaz / Local",
+      "subtypes": [
+        "Standard Giribaz",
+        "Khaki",
+        "Mosaldom",
+        "Lal Chila",
+        "Kalo Chila",
+        "Pankhi",
+        "Chuina",
+        "Khoyragola",
+        "Chila",
+        "Deshi"
+      ]
+    },
+    {
+      "name": "Racer",
+      "subtypes": [
+        "Blue Bar Racer",
+        "Maxi Racer",
+        "Mili Racer",
+        "Chequer Racer",
+        "White Racer",
+        "Red Bar Racer"
+      ]
+    },
+    {
+      "name": "Fancy / Other",
+      "subtypes": [
+        "Lotan",
+        "Siraji",
+        "Fantail",
+        "Jacobin",
+        "Lahore"
+      ]
+    }
+  ]
+}

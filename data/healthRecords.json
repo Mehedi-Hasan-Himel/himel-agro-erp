@@ -1,0 +1,62 @@
+[
+  {
+    "id": "health_001",
+    "targetType": "FLOCK",
+    "pigeonId": null,
+    "medicineName": "Electromin + Dextrose",
+    "startDate": "2026-08-24",
+    "endDate": "2026-08-26",
+    "dose": "2g / Litre drinking water",
+    "purpose": "Post-flight heat exhaustion recovery and hydration boost",
+    "notes": "Administered to all active lofts during the August humidity spike.",
+    "createdAt": "2026-08-24T09:00:00Z"
+  },
+  {
+    "id": "health_002",
+    "targetType": "FLOCK",
+    "pigeonId": null,
+    "medicineName": "Wormnil (Levamisole)",
+    "startDate": "2026-07-01",
+    "endDate": "2026-07-02",
+    "dose": "1g / Litre drinking water for 24 hours",
+    "purpose": "Quarterly flock deworming course",
+    "notes": "Repeated with liver tonic for next 3 days.",
+    "createdAt": "2026-07-01T08:00:00Z"
+  },
+  {
+    "id": "health_003",
+    "targetType": "INDIVIDUAL",
+    "pigeonId": "pigeon_2026_001",
+    "medicineName": "Tylosin Tartrate 20%",
+    "startDate": "2026-06-10",
+    "endDate": "2026-06-15",
+    "dose": "0.5ml oral syringe daily",
+    "purpose": "Mild upper respiratory rattling sound",
+    "notes": "Fully recovered within 5 days, breathing cleared completely.",
+    "createdAt": "2026-06-10T10:00:00Z"
+  },
+  {
+    "id": "health_004",
+    "targetType": "INDIVIDUAL",
+    "pigeonId": "pigeon_2026_003",
+    "medicineName": "Vitamin E + Selenium (Sel-E)",
+    "startDate": "2026-05-10",
+    "endDate": "2026-05-17",
+    "dose": "1 drop oral capsule daily",
+    "purpose": "Breeding muscle conditioning and fertility enhancement",
+    "notes": "High vigour exhibited during mating cycle.",
+    "createdAt": "2026-05-10T09:00:00Z"
+  },
+  {
+    "id": "health_005",
+    "targetType": "FLOCK",
+    "pigeonId": null,
+    "medicineName": "Coxi-Plus (Sulfadimethoxine)",
+    "startDate": "2026-06-25",
+    "endDate": "2026-06-29",
+    "dose": "1 sachet per 2 Litres water",
+    "purpose": "Monsoon coccidiosis preventative treatment for young squabs",
+    "notes": "No droopiness observed across the flock.",
+    "createdAt": "2026-06-25T08:00:00Z"
+  }
+]

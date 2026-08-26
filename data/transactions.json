@@ -1,0 +1,131 @@
+[
+  {
+    "id": "txn_001",
+    "type": "EXPENSE",
+    "date": "2026-07-05",
+    "category": "Feed",
+    "amount": 4770,
+    "description": "Purchased 50kg Corn + 60kg Wheat from Krishi Bitan",
+    "feedPurchaseId": "feed_p_001",
+    "notes": "Bulk discount applied."
+  },
+  {
+    "id": "txn_002",
+    "type": "EXPENSE",
+    "date": "2026-07-08",
+    "category": "Medicine",
+    "amount": 1450,
+    "description": "Wormnil + Liver Tonic Bottles + Multivitamins",
+    "notes": "Purchased from Veterinary Pharmacy, Gazipur"
+  },
+  {
+    "id": "txn_003",
+    "type": "EXPENSE",
+    "date": "2026-07-10",
+    "category": "Feed",
+    "amount": 2400,
+    "description": "Purchased 40kg Pearl Millet for squabs",
+    "feedPurchaseId": "feed_p_003"
+  },
+  {
+    "id": "txn_004",
+    "type": "EXPENSE",
+    "date": "2026-07-15",
+    "category": "Feed",
+    "amount": 1800,
+    "description": "Purchased 20kg Mustard Seed",
+    "feedPurchaseId": "feed_p_004"
+  },
+  {
+    "id": "txn_005",
+    "type": "EXPENSE",
+    "date": "2026-07-18",
+    "category": "Cage/Loft Equipment",
+    "amount": 3500,
+    "description": "10x Ceramic Nesting Bowls + 4x Automatic Water Drinkers",
+    "notes": "Installed in Loft B breeding units"
+  },
+  {
+    "id": "txn_006",
+    "type": "EXPENSE",
+    "date": "2026-07-20",
+    "category": "Feed",
+    "amount": 1250,
+    "description": "Purchased 25kg Mineral Grit & Red Stone",
+    "feedPurchaseId": "feed_p_005"
+  },
+  {
+    "id": "txn_007",
+    "type": "INCOME",
+    "date": "2026-07-25",
+    "category": "Pigeon Sale",
+    "amount": 12000,
+    "description": "Sold Pair of Yearling Giribaz Tumblers to Sylhet Loft",
+    "notes": "Full payment received via bKash"
+  },
+  {
+    "id": "txn_008",
+    "type": "EXPENSE",
+    "date": "2026-08-01",
+    "category": "Ring Tag Purchase",
+    "amount": 1600,
+    "description": "Custom 2026 Himel Agro Aluminum Identity Rings (100 pcs)",
+    "notes": "Serial 01 to 100 engraved"
+  },
+  {
+    "id": "txn_009",
+    "type": "INCOME",
+    "date": "2026-08-01",
+    "category": "Pigeon Sale",
+    "amount": 5500,
+    "description": "Sold 2026-HAG-19 (Lal Chila Male) to Tanvir Ahmed",
+    "pigeonId": "pigeon_2026_019",
+    "notes": "Uttara delivery completed"
+  },
+  {
+    "id": "txn_010",
+    "type": "EXPENSE",
+    "date": "2026-08-05",
+    "category": "Feed",
+    "amount": 4450,
+    "description": "Purchased 50kg Corn (৳2300) + 50kg Wheat (৳2150)",
+    "feedPurchaseId": "feed_p_006"
+  },
+  {
+    "id": "txn_011",
+    "type": "EXPENSE",
+    "date": "2026-08-10",
+    "category": "Feed",
+    "amount": 2100,
+    "description": "Purchased 30kg Green Peas (Dabli)",
+    "feedPurchaseId": "feed_p_008"
+  },
+  {
+    "id": "txn_012",
+    "type": "INCOME",
+    "date": "2026-08-15",
+    "category": "Pigeon Sale",
+    "amount": 9000,
+    "description": "Sold 2026-HAG-20 (Blue Bar Racer Hen) to Kazi Firoz",
+    "pigeonId": "pigeon_2026_020",
+    "notes": "Dhanmondi Loft pickup"
+  },
+  {
+    "id": "txn_013",
+    "type": "EXPENSE",
+    "date": "2026-08-18",
+    "category": "Medicine",
+    "amount": 950,
+    "description": "Electromin 500g + Calci-D3 Plus syrup",
+    "notes": "August replenishment"
+  },
+  {
+    "id": "txn_014",
+    "type": "INCOME",
+    "date": "2026-08-22",
+    "category": "Pigeon Sale",
+    "amount": 8000,
+    "description": "Sold Pair of Racing Squabs (Advance Booking)",
+    "notes": "Cash payment upon loft visit"
+  }
+]

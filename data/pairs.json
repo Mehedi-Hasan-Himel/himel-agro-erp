@@ -1,0 +1,122 @@
+[
+  {
+    "id": "pair_2025_01",
+    "maleId": "pigeon_2025_001",
+    "femaleId": "pigeon_2025_002",
+    "startDate": "2025-06-01",
+    "endDate": "2026-01-30",
+    "status": "ENDED",
+    "cageNumber": "Loft A - Cage 01",
+    "notes": "Foundational Khaki x Pankhi breeding pair (produced 2026_001, 2026_021, 2026_022).",
+    "createdAt": "2025-06-01T10:00:00Z",
+    "updatedAt": "2026-01-30T10:00:00Z"
+  },
+  {
+    "id": "pair_2025_02",
+    "maleId": "pigeon_2025_003",
+    "femaleId": "pigeon_2025_004",
+    "startDate": "2025-06-15",
+    "endDate": "2026-02-01",
+    "status": "ENDED",
+    "cageNumber": "Loft A - Cage 02",
+    "notes": "Lal Chila x Chuina pair (produced 2026_002).",
+    "createdAt": "2025-06-15T10:00:00Z",
+    "updatedAt": "2026-02-01T10:00:00Z"
+  },
+  {
+    "id": "pair_2025_03",
+    "maleId": "pigeon_2025_005",
+    "femaleId": "pigeon_2025_006",
+    "startDate": "2025-07-01",
+    "endDate": null,
+    "status": "ACTIVE",
+    "cageNumber": "Loft B - Racer Cage 01",
+    "notes": "Master Racing Pair (produced 2026_003 Blue Bar Cock & 2026_004 Maxi Hen).",
+    "createdAt": "2025-07-01T10:00:00Z",
+    "updatedAt": "2026-08-25T12:00:00Z"
+  },
+  {
+    "id": "pair_2026_01",
+    "maleId": "pigeon_2026_001",
+    "femaleId": "pigeon_2026_002",
+    "startDate": "2026-02-15",
+    "endDate": null,
+    "status": "ACTIVE",
+    "cageNumber": "Loft A - Cage 04",
+    "notes": "Primary 2nd Gen Giribaz Pair (produced 2026_009, 2026_010, 2026_023, 2026_024, 2026_033, 2026_034).",
+    "createdAt": "2026-02-15T08:00:00Z",
+    "updatedAt": "2026-08-25T12:00:00Z"
+  },
+  {
+    "id": "pair_2026_02",
+    "maleId": "pigeon_2026_003",
+    "femaleId": "pigeon_2026_008",
+    "startDate": "2026-02-20",
+    "endDate": null,
+    "status": "ACTIVE",
+    "cageNumber": "Loft B - Racer Cage 02",
+    "notes": "Premier Racer Pair (produced 2026_011 Blue Bar, 2026_012 Maxi, 2026_025, 2026_026).",
+    "createdAt": "2026-02-20T08:00:00Z",
+    "updatedAt": "2026-08-25T12:00:00Z"
+  },
+  {
+    "id": "pair_2026_03",
+    "maleId": "pigeon_2026_005",
+    "femaleId": "pigeon_2026_006",
+    "startDate": "2026-03-01",
+    "endDate": null,
+    "status": "ACTIVE",
+    "cageNumber": "Loft A - Cage 05",
+    "notes": "Mosaldom x Kalo Chila pair (produced 2026_013, 2026_014, 2026_027, 2026_028, 2026_037, 2026_038).",
+    "createdAt": "2026-03-01T08:00:00Z",
+    "updatedAt": "2026-08-25T12:00:00Z"
+  },
+  {
+    "id": "pair_2026_04",
+    "maleId": "pigeon_2026_007",
+    "femaleId": "pigeon_2026_004",
+    "startDate": "2026-04-10",
+    "endDate": null,
+    "status": "ACTIVE",
+    "cageNumber": "Loft B - Racer Cage 03",
+    "notes": "Speed cross pair (produced 2026_029, 2026_030).",
+    "createdAt": "2026-04-10T08:00:00Z",
+    "updatedAt": "2026-08-25T12:00:00Z"
+  },
+  {
+    "id": "pair_2026_05",
+    "maleId": "pigeon_2026_009",
+    "femaleId": "pigeon_2026_016",
+    "startDate": "2026-05-10",
+    "endDate": null,
+    "status": "ACTIVE",
+    "cageNumber": "Loft A - Cage 06",
+    "notes": "Heritage cross pair (produced 2026_031, 2026_032).",
+    "createdAt": "2026-05-10T08:00:00Z",
+    "updatedAt": "2026-08-25T12:00:00Z"
+  },
+  {
+    "id": "pair_2026_06",
+    "maleId": "pigeon_2026_011",
+    "femaleId": "pigeon_2026_012",
+    "startDate": "2026-06-01",
+    "endDate": null,
+    "status": "ACTIVE",
+    "cageNumber": "Loft B - Racer Cage 04",
+    "notes": "Young 3rd gen racer pair (produced 2026_035, 2026_036).",
+    "createdAt": "2026-06-01T08:00:00Z",
+    "updatedAt": "2026-08-25T12:00:00Z"
+  },
+  {
+    "id": "pair_2026_07",
+    "maleId": "pigeon_2026_017",
+    "femaleId": "pigeon_2026_018",
+    "startDate": "2026-07-01",
+    "endDate": null,
+    "status": "ACTIVE",
+    "cageNumber": "Loft B - Racer Cage 05",
+    "notes": "White x Red Bar Racer pair (produced 2026_039, 2026_040).",
+    "createdAt": "2026-07-01T08:00:00Z",
+    "updatedAt": "2026-08-25T12:00:00Z"
+  }
+]
