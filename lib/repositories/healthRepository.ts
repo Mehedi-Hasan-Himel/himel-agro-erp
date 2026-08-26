@@ -1,18 +1,18 @@
 import { HealthRecord, MedicineSchedule } from "@/types/health";
-import { getItem, setItem } from "./storageAdapter";
+import { notifyDataChanged } from "./storageAdapter";
 
 export async function getHealthRecords(pigeonId?: string): Promise<HealthRecord[]> {
-  const records = getItem<HealthRecord[]>("HEALTH_RECORDS");
-  if (pigeonId) {
-    return records.filter((r) => r.pigeonId === pigeonId || r.targetType === "FLOCK");
-  }
-  return [...records];
+  const url = pigeonId
+    ? `/api/health-records?pigeonId=${encodeURIComponent(pigeonId)}`
+    : "/api/health-records";
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("Failed to fetch health records");
+  return res.json();
 }
 
 export async function createHealthRecord(
   data: Omit<HealthRecord, "id" | "createdAt">
 ): Promise<HealthRecord> {
-  const records = await getHealthRecords();
   const id = `health_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
   const now = new Date().toISOString();
 
@@ -22,20 +22,31 @@ export async function createHealthRecord(
     createdAt: now,
   };
 
-  const updated = [newRecord, ...records];
-  setItem("HEALTH_RECORDS", updated);
-  return newRecord;
+  const res = await fetch("/api/health-records", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ...newRecord, _id: id }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || "Failed to create health record");
+  }
+
+  const created: HealthRecord = await res.json();
+  notifyDataChanged();
+  return created;
 }
 
 export async function getMedicineSchedules(): Promise<MedicineSchedule[]> {
-  const schedules = getItem<MedicineSchedule[]>("MEDICINE_SCHEDULES");
-  return [...schedules];
+  const res = await fetch("/api/medicine-schedules");
+  if (!res.ok) throw new Error("Failed to fetch medicine schedules");
+  return res.json();
 }
 
 export async function createMedicineSchedule(
   data: Omit<MedicineSchedule, "id" | "createdAt">
 ): Promise<MedicineSchedule> {
-  const schedules = await getMedicineSchedules();
   const id = `sched_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
   const now = new Date().toISOString();
 
@@ -45,28 +56,42 @@ export async function createMedicineSchedule(
     createdAt: now,
   };
 
-  const updated = [newSchedule, ...schedules];
-  setItem("MEDICINE_SCHEDULES", updated);
-  return newSchedule;
+  const res = await fetch("/api/medicine-schedules", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ...newSchedule, _id: id }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || "Failed to create medicine schedule");
+  }
+
+  const created: MedicineSchedule = await res.json();
+  notifyDataChanged();
+  return created;
 }
 
 export async function updateMedicineSchedule(
   id: string,
   data: Partial<MedicineSchedule>
 ): Promise<MedicineSchedule> {
-  const schedules = await getMedicineSchedules();
-  const index = schedules.findIndex((s) => s.id === id);
-  if (index === -1) {
-    throw new Error(`Medicine schedule "${id}" not found.`);
+  const updatePayload = { ...data };
+  delete (updatePayload as Partial<MedicineSchedule> & { id?: string }).id;
+
+  const res = await fetch(`/api/medicine-schedules/${encodeURIComponent(id)}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(updatePayload),
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || "Failed to update medicine schedule");
   }
 
-  const updated: MedicineSchedule = {
-    ...schedules[index],
-    ...data,
-  };
-
-  schedules[index] = updated;
-  setItem("MEDICINE_SCHEDULES", schedules);
+  const updated: MedicineSchedule = await res.json();
+  notifyDataChanged();
   return updated;
 }
 

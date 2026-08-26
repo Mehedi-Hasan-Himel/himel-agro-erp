@@ -1,30 +1,54 @@
 import { FarmSettings } from "@/types/settings";
 import { BreedConfig } from "@/types/breed";
-import { getItem, setItem } from "./storageAdapter";
+import { notifyDataChanged } from "./storageAdapter";
 
 export async function getSettings(): Promise<FarmSettings> {
-  const settings = getItem<FarmSettings>("SETTINGS");
-  return { ...settings };
+  const res = await fetch("/api/settings");
+  if (!res.ok) throw new Error("Failed to fetch settings");
+  return res.json();
 }
 
 export async function updateSettings(data: Partial<FarmSettings>): Promise<FarmSettings> {
-  const settings = await getSettings();
-  const updated: FarmSettings = {
-    ...settings,
-    ...data,
-  };
-  setItem("SETTINGS", updated);
-  return updated;
+  const current = await getSettings();
+  const updated: FarmSettings = { ...current, ...data };
+
+  const res = await fetch("/api/settings", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(updated),
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || "Failed to update settings");
+  }
+
+  const saved: FarmSettings = await res.json();
+  notifyDataChanged();
+  return saved;
 }
 
 export async function getBreeds(): Promise<BreedConfig> {
-  const breeds = getItem<BreedConfig>("BREEDS");
-  return { ...breeds };
+  const res = await fetch("/api/breeds");
+  if (!res.ok) throw new Error("Failed to fetch breeds");
+  return res.json();
 }
 
 export async function updateBreeds(config: BreedConfig): Promise<BreedConfig> {
-  setItem("BREEDS", config);
-  return config;
+  const res = await fetch("/api/breeds", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(config),
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || "Failed to update breeds");
+  }
+
+  const saved: BreedConfig = await res.json();
+  notifyDataChanged();
+  return saved;
 }
 
 export async function addBreedSubtype(
@@ -46,7 +70,7 @@ export async function addBreedSubtype(
 
   if (!cat.subtypes.includes(trimmed)) {
     cat.subtypes.push(trimmed);
-    setItem("BREEDS", config);
+    return updateBreeds(config);
   }
 
   return config;

@@ -1,10 +1,10 @@
 import { FeedPurchase, FeedUsage, FeedStockSummary } from "@/types/feed";
-import { getItem, setItem } from "./storageAdapter";
-import { createTransaction } from "./financeRepository";
+import { notifyDataChanged } from "./storageAdapter";
 
 export async function getFeedPurchases(): Promise<FeedPurchase[]> {
-  const purchases = getItem<FeedPurchase[]>("FEED_PURCHASES");
-  return [...purchases];
+  const res = await fetch("/api/feed-purchases");
+  if (!res.ok) throw new Error("Failed to fetch feed purchases");
+  return res.json();
 }
 
 export async function createFeedPurchase(
@@ -17,7 +17,6 @@ export async function createFeedPurchase(
     throw new Error("Total cost must be greater than 0 BDT.");
   }
 
-  const purchases = await getFeedPurchases();
   const id = `feed_p_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
 
   const newPurchase: FeedPurchase = {
@@ -25,11 +24,22 @@ export async function createFeedPurchase(
     ...data,
   };
 
-  const updated = [newPurchase, ...purchases];
-  setItem("FEED_PURCHASES", updated);
+  const res = await fetch("/api/feed-purchases", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ...newPurchase, _id: id }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || "Failed to create feed purchase");
+  }
+
+  const created: FeedPurchase = await res.json();
 
   // Automatically record finance expense transaction
   try {
+    const { createTransaction } = await import("./financeRepository");
     await createTransaction({
       type: "EXPENSE",
       date: data.date,
@@ -43,12 +53,14 @@ export async function createFeedPurchase(
     console.warn("Failed to create finance transaction for feed purchase:", err);
   }
 
-  return newPurchase;
+  notifyDataChanged();
+  return created;
 }
 
 export async function getFeedUsages(): Promise<FeedUsage[]> {
-  const usages = getItem<FeedUsage[]>("FEED_USAGE");
-  return [...usages];
+  const res = await fetch("/api/feed-usage");
+  if (!res.ok) throw new Error("Failed to fetch feed usage");
+  return res.json();
 }
 
 export async function createFeedUsage(
@@ -71,7 +83,6 @@ export async function createFeedUsage(
     );
   }
 
-  const usages = await getFeedUsages();
   const id = `feed_u_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
 
   const newUsage: FeedUsage = {
@@ -79,14 +90,27 @@ export async function createFeedUsage(
     ...data,
   };
 
-  const updated = [newUsage, ...usages];
-  setItem("FEED_USAGE", updated);
-  return newUsage;
+  const res = await fetch("/api/feed-usage", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ...newUsage, _id: id }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || "Failed to create feed usage");
+  }
+
+  const created: FeedUsage = await res.json();
+  notifyDataChanged();
+  return created;
 }
 
 export async function getFeedStockSummaries(): Promise<FeedStockSummary[]> {
-  const purchases = await getFeedPurchases();
-  const usages = await getFeedUsages();
+  const [purchases, usages] = await Promise.all([
+    getFeedPurchases(),
+    getFeedUsages(),
+  ]);
 
   const typeMap = new Map<
     string,

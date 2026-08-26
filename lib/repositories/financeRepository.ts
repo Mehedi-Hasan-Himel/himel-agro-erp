@@ -3,30 +3,23 @@ import {
   TransactionType,
   MonthlyFinancialSummary,
 } from "@/types/finance";
-import { getItem, setItem } from "./storageAdapter";
+import { notifyDataChanged } from "./storageAdapter";
 
 export async function getTransactions(filter?: {
   type?: TransactionType | "ALL";
   month?: string; // YYYY-MM
   category?: string;
 }): Promise<Transaction[]> {
-  const transactions = getItem<Transaction[]>("TRANSACTIONS");
-  let list = [...transactions];
+  const params = new URLSearchParams();
+  if (filter?.type && filter.type !== "ALL") params.set("type", filter.type);
+  if (filter?.month) params.set("month", filter.month);
+  if (filter?.category && filter.category !== "ALL")
+    params.set("category", filter.category);
 
-  if (filter?.type && filter.type !== "ALL") {
-    list = list.filter((t) => t.type === filter.type);
-  }
-
-  if (filter?.month) {
-    list = list.filter((t) => t.date.startsWith(filter.month!));
-  }
-
-  if (filter?.category && filter.category !== "ALL") {
-    list = list.filter((t) => t.category === filter.category);
-  }
-
-  // Sort by date descending
-  return list.sort((a, b) => b.date.localeCompare(a.date));
+  const url = `/api/transactions${params.toString() ? `?${params.toString()}` : ""}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("Failed to fetch transactions");
+  return res.json();
 }
 
 export async function createTransaction(
@@ -36,7 +29,6 @@ export async function createTransaction(
     throw new Error("Transaction amount must be greater than 0.");
   }
 
-  const transactions = getItem<Transaction[]>("TRANSACTIONS");
   const id = `txn_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
   const now = new Date().toISOString();
 
@@ -46,15 +38,28 @@ export async function createTransaction(
     createdAt: now,
   };
 
-  const updated = [newTxn, ...transactions];
-  setItem("TRANSACTIONS", updated);
-  return newTxn;
+  const res = await fetch("/api/transactions", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ...newTxn, _id: id }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || "Failed to create transaction");
+  }
+
+  const created: Transaction = await res.json();
+  notifyDataChanged();
+  return created;
 }
 
 export async function deleteTransaction(id: string): Promise<void> {
-  const transactions = getItem<Transaction[]>("TRANSACTIONS");
-  const filtered = transactions.filter((t) => t.id !== id);
-  setItem("TRANSACTIONS", filtered);
+  const res = await fetch(`/api/transactions/${encodeURIComponent(id)}`, {
+    method: "DELETE",
+  });
+  if (!res.ok) throw new Error("Failed to delete transaction");
+  notifyDataChanged();
 }
 
 const MONTH_NAMES = [

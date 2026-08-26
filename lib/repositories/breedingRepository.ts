@@ -1,10 +1,10 @@
 import { Pair, BreedingRound, HatchingStats } from "@/types/breeding";
-import { getItem, setItem } from "./storageAdapter";
-import { getPigeonById, getPigeons } from "./pigeonRepository";
+import { notifyDataChanged } from "./storageAdapter";
 
 export async function getPairs(): Promise<Pair[]> {
-  const pairs = getItem<Pair[]>("PAIRS");
-  return [...pairs];
+  const res = await fetch("/api/pairs");
+  if (!res.ok) throw new Error("Failed to fetch pairs");
+  return res.json();
 }
 
 export async function getPairById(id: string): Promise<Pair | null> {
@@ -42,23 +42,15 @@ export async function createPair(input: CreatePairInput): Promise<Pair> {
     throw new Error("A pigeon cannot be paired with itself.");
   }
 
+  const { getPigeons } = await import("./pigeonRepository");
   const pigeons = await getPigeons();
   const male = pigeons.find((p) => p.id === input.maleId);
   const female = pigeons.find((p) => p.id === input.femaleId);
 
-  if (!male) {
-    throw new Error(`Male pigeon with ID "${input.maleId}" not found.`);
-  }
-  if (!female) {
-    throw new Error(`Female pigeon with ID "${input.femaleId}" not found.`);
-  }
-
-  if (male.sex !== "MALE") {
-    throw new Error(`Pigeon ${male.id} is not MALE.`);
-  }
-  if (female.sex !== "FEMALE") {
-    throw new Error(`Pigeon ${female.id} is not FEMALE.`);
-  }
+  if (!male) throw new Error(`Male pigeon with ID "${input.maleId}" not found.`);
+  if (!female) throw new Error(`Female pigeon with ID "${input.femaleId}" not found.`);
+  if (male.sex !== "MALE") throw new Error(`Pigeon ${male.id} is not MALE.`);
+  if (female.sex !== "FEMALE") throw new Error(`Pigeon ${female.id} is not FEMALE.`);
 
   const pairs = await getPairs();
   const id = `pair_${new Date().getFullYear()}_${String(pairs.length + 1).padStart(2, "0")}`;
@@ -77,29 +69,42 @@ export async function createPair(input: CreatePairInput): Promise<Pair> {
     updatedAt: now,
   };
 
-  const updatedPairs = [newPair, ...pairs];
-  setItem("PAIRS", updatedPairs);
-  return newPair;
+  const res = await fetch("/api/pairs", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ...newPair, _id: id }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || "Failed to create pair");
+  }
+
+  const created: Pair = await res.json();
+  notifyDataChanged();
+  return created;
 }
 
 export async function updatePair(
   id: string,
   data: Partial<Pair>
 ): Promise<Pair> {
-  const pairs = await getPairs();
-  const index = pairs.findIndex((p) => p.id === id);
-  if (index === -1) {
-    throw new Error(`Pair with ID "${id}" not found.`);
+  const updatePayload = { ...data, updatedAt: new Date().toISOString() };
+  delete (updatePayload as Partial<Pair> & { id?: string }).id;
+
+  const res = await fetch(`/api/pairs/${encodeURIComponent(id)}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(updatePayload),
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || "Failed to update pair");
   }
 
-  const updated: Pair = {
-    ...pairs[index],
-    ...data,
-    updatedAt: new Date().toISOString(),
-  };
-
-  pairs[index] = updated;
-  setItem("PAIRS", pairs);
+  const updated: Pair = await res.json();
+  notifyDataChanged();
   return updated;
 }
 
@@ -113,11 +118,12 @@ export async function endPair(id: string, endDate?: string): Promise<Pair> {
 // ----------------- BREEDING ROUNDS -----------------
 
 export async function getBreedingRounds(pairId?: string): Promise<BreedingRound[]> {
-  const rounds = getItem<BreedingRound[]>("BREEDING_ROUNDS");
-  if (pairId) {
-    return rounds.filter((r) => r.pairId === pairId);
-  }
-  return [...rounds];
+  const url = pairId
+    ? `/api/breeding-rounds?pairId=${encodeURIComponent(pairId)}`
+    : "/api/breeding-rounds";
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("Failed to fetch breeding rounds");
+  return res.json();
 }
 
 export async function getBreedingRoundById(id: string): Promise<BreedingRound | null> {
@@ -172,28 +178,42 @@ export async function createBreedingRound(
     createdAt: now,
   };
 
-  const updatedRounds = [newRound, ...allRounds];
-  setItem("BREEDING_ROUNDS", updatedRounds);
-  return newRound;
+  const res = await fetch("/api/breeding-rounds", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ...newRound, _id: id }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || "Failed to create breeding round");
+  }
+
+  const created: BreedingRound = await res.json();
+  notifyDataChanged();
+  return created;
 }
 
 export async function updateBreedingRound(
   id: string,
   data: Partial<BreedingRound>
 ): Promise<BreedingRound> {
-  const rounds = await getBreedingRounds();
-  const index = rounds.findIndex((r) => r.id === id);
-  if (index === -1) {
-    throw new Error(`Breeding round with ID "${id}" not found.`);
+  const updatePayload = { ...data };
+  delete (updatePayload as Partial<BreedingRound> & { id?: string }).id;
+
+  const res = await fetch(`/api/breeding-rounds/${encodeURIComponent(id)}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(updatePayload),
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || "Failed to update breeding round");
   }
 
-  const updated: BreedingRound = {
-    ...rounds[index],
-    ...data,
-  };
-
-  rounds[index] = updated;
-  setItem("BREEDING_ROUNDS", rounds);
+  const updated: BreedingRound = await res.json();
+  notifyDataChanged();
   return updated;
 }
 
@@ -208,11 +228,10 @@ export async function addBabyToBreedingRound(
 
   const existingBabies = round.babyPigeonIds || [];
   if (!existingBabies.includes(babyPigeonId)) {
-    const updated = await updateBreedingRound(roundId, {
+    return updateBreedingRound(roundId, {
       babyPigeonIds: [...existingBabies, babyPigeonId],
       babiesHatched: Math.max(round.babiesHatched, existingBabies.length + 1),
     });
-    return updated;
   }
   return round;
 }

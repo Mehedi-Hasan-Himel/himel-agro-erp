@@ -72,15 +72,20 @@ export default function SettingsPage() {
     setNewSubtype("");
   };
 
-  const handleExport = () => {
-    const json = exportAllData();
-    const blob = new Blob([json], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `himel-agro-erp-backup-${new Date().toISOString().split("T")[0]}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
+  const handleExport = async () => {
+    try {
+      const json = await exportAllData();
+      const blob = new Blob([json], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `himel-agro-erp-backup-${new Date().toISOString().split("T")[0]}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Export failed:", err);
+      alert("Failed to export data from server.");
+    }
   };
 
   const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -90,9 +95,9 @@ export default function SettingsPage() {
     const reader = new FileReader();
     reader.onload = async (event) => {
       const content = event.target?.result as string;
-      const success = importAllData(content);
+      const success = await importAllData(content);
       if (success) {
-        setImportStatus("Database imported successfully! Refreshing data...");
+        setImportStatus("Database imported successfully from MongoDB! Refreshing data...");
         setTimeout(() => window.location.reload(), 1500);
       } else {
         setImportStatus("Failed to import JSON data. Please verify file format.");
@@ -101,15 +106,20 @@ export default function SettingsPage() {
     reader.readAsText(file);
   };
 
-  const handleResetSeed = () => {
+  const handleResetSeed = async () => {
     if (
       confirm(
-        "Are you sure you want to reset all farm data back to the demo seed dataset (~40 pigeons, pairs, rounds, feed, transactions)?"
+        "Are you sure you want to reset all farm data in MongoDB back to the demo seed dataset (~40 pigeons, pairs, rounds, feed, transactions)?"
       )
     ) {
-      resetToSeedData();
-      setResetSuccess(true);
-      setTimeout(() => window.location.reload(), 1500);
+      try {
+        await resetToSeedData();
+        setResetSuccess(true);
+        setTimeout(() => window.location.reload(), 1500);
+      } catch (err) {
+        console.error("Reset failed:", err);
+        alert("Failed to reset data. Please try again.");
+      }
     }
   };
 
@@ -307,10 +317,9 @@ export default function SettingsPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-xs text-slate-600 leading-relaxed">
-            The MVP uses clean JSON repository storage with browser
-            synchronization. You can export complete backup JSON files, import
-            saved snapshots, or reset to the default demo seed dataset at any
-            time.
+            All farm data is stored in MongoDB Atlas. You can export a complete
+            backup JSON file, import a saved snapshot, or reset to the default
+            demo seed dataset at any time.
           </p>
 
           {importStatus && (

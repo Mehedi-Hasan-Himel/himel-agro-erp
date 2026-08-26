@@ -1,6 +1,5 @@
 import { Pigeon, PigeonStatus, PigeonSource, PigeonSex } from "@/types/pigeon";
-import { getItem, setItem } from "./storageAdapter";
-import { createTransaction } from "./financeRepository";
+import { notifyDataChanged } from "./storageAdapter";
 
 export function generatePigeonId(ringYear: number, ringSerial: number): string {
   const serialStr = String(ringSerial).padStart(3, "0");
@@ -8,13 +7,16 @@ export function generatePigeonId(ringYear: number, ringSerial: number): string {
 }
 
 export async function getPigeons(): Promise<Pigeon[]> {
-  const pigeons = getItem<Pigeon[]>("PIGEONS");
-  return [...pigeons];
+  const res = await fetch("/api/pigeons");
+  if (!res.ok) throw new Error("Failed to fetch pigeons");
+  return res.json();
 }
 
 export async function getPigeonById(id: string): Promise<Pigeon | null> {
-  const pigeons = await getPigeons();
-  return pigeons.find((p) => p.id === id) || null;
+  const res = await fetch(`/api/pigeons/${encodeURIComponent(id)}`);
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error(`Failed to fetch pigeon ${id}`);
+  return res.json();
 }
 
 export async function getPigeonByRing(
@@ -136,12 +138,23 @@ export async function createPigeon(input: CreatePigeonInput): Promise<Pigeon> {
     updatedAt: now,
   };
 
-  const updatedPigeons = [newPigeon, ...pigeons];
-  setItem("PIGEONS", updatedPigeons);
+  const res = await fetch("/api/pigeons", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ...newPigeon, _id: id }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || "Failed to create pigeon");
+  }
+
+  const created: Pigeon = await res.json();
 
   // If purchased with price, record financial transaction
   if (input.source === "PURCHASED" && input.purchasePrice && input.purchasePrice > 0) {
     try {
+      const { createTransaction } = await import("./financeRepository");
       await createTransaction({
         type: "EXPENSE",
         date: input.purchaseDate || input.hatchDate || now.split("T")[0],
@@ -156,7 +169,8 @@ export async function createPigeon(input: CreatePigeonInput): Promise<Pigeon> {
     }
   }
 
-  return newPigeon;
+  notifyDataChanged();
+  return created;
 }
 
 export async function updatePigeon(
@@ -164,14 +178,12 @@ export async function updatePigeon(
   data: Partial<Pigeon>
 ): Promise<Pigeon> {
   const pigeons = await getPigeons();
-  const index = pigeons.findIndex((p) => p.id === id);
-  if (index === -1) {
+  const existing = pigeons.find((p) => p.id === id);
+  if (!existing) {
     throw new Error(`Pigeon with ID "${id}" not found.`);
   }
 
-  const existing = pigeons[index];
-
-  // If changing father/mother, validate
+  // Validate parents if changing
   if (data.fatherId && data.fatherId !== existing.fatherId) {
     if (data.fatherId === id) {
       throw new Error("A pigeon cannot be its own father.");
@@ -192,15 +204,22 @@ export async function updatePigeon(
     }
   }
 
-  const updated: Pigeon = {
-    ...existing,
-    ...data,
-    id: existing.id, // ID must remain stable
-    updatedAt: new Date().toISOString(),
-  };
+  const updatePayload = { ...data, updatedAt: new Date().toISOString() };
+  delete (updatePayload as Partial<Pigeon> & { id?: string }).id;
 
-  pigeons[index] = updated;
-  setItem("PIGEONS", pigeons);
+  const res = await fetch(`/api/pigeons/${encodeURIComponent(id)}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(updatePayload),
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || "Failed to update pigeon");
+  }
+
+  const updated: Pigeon = await res.json();
+  notifyDataChanged();
   return updated;
 }
 
@@ -233,6 +252,7 @@ export async function markPigeonSold(
   // Record income transaction
   if (saleData.salePrice && saleData.salePrice > 0) {
     try {
+      const { createTransaction } = await import("./financeRepository");
       await createTransaction({
         type: "INCOME",
         date: saleData.saleDate,
