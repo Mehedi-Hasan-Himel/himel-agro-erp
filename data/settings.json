@@ -1,10 +1,14 @@
 {
-  "farmName": "Himel Agro",
+  "farmName": "Himel's Pet House",
   "currency": "BDT",
   "currencySymbol": "৳",
-  "contactNumber": "01969038472",
+  "contactNumber": "01560059954",
+  "whatsappNumber": "01560059954",
   "ownerName": "Himel",
   "establishedYear": 2024,
   "location": "Dhaka, Bangladesh",
+  "facebookUrl": "https://www.facebook.com/Himel.Pet.House",
+  "googleMapUrl": "https://maps.app.goo.gl/rxvdsxq8ydnqfEKQ6",
+  "logoUrl": "/logo.png",
   "notes": "Premium Pigeon Breeding, Performance & Genealogy Center"
 }

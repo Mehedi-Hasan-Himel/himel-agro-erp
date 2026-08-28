@@ -1,38 +1,41 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import AppConfigModel from "@/models/AppConfig";
-import breedsSeed from "@/data/breeds.json";
-
-const DEFAULT_BREEDS = breedsSeed;
+import { fallbackStore } from "@/lib/fallbackStore";
 
 export async function GET() {
   try {
-    await connectDB();
-    const doc = await AppConfigModel.findById("BREEDS").lean();
-
-    if (!doc) {
-      return NextResponse.json(DEFAULT_BREEDS);
+    const db = await connectDB();
+    if (db) {
+      const doc = await AppConfigModel.findById("BREEDS").lean();
+      if (doc?.data) {
+        return NextResponse.json(doc.data);
+      }
     }
 
-    return NextResponse.json(doc.data);
+    return NextResponse.json(fallbackStore.get().breeds);
   } catch (error) {
     console.error("GET /api/breeds error:", error);
-    return NextResponse.json({ error: "Failed to fetch breeds" }, { status: 500 });
+    return NextResponse.json(fallbackStore.get().breeds);
   }
 }
 
 export async function PUT(request: NextRequest) {
   try {
-    await connectDB();
     const body = await request.json();
 
-    const doc = await AppConfigModel.findByIdAndUpdate(
-      "BREEDS",
-      { $set: { data: body } },
-      { new: true, upsert: true }
-    ).lean();
+    const db = await connectDB();
+    if (db) {
+      const doc = await AppConfigModel.findByIdAndUpdate(
+        "BREEDS",
+        { $set: { data: body } },
+        { new: true, upsert: true }
+      ).lean();
+      return NextResponse.json(doc?.data ?? body);
+    }
 
-    return NextResponse.json(doc?.data ?? body);
+    fallbackStore.set({ breeds: body });
+    return NextResponse.json(body);
   } catch (error) {
     console.error("PUT /api/breeds error:", error);
     return NextResponse.json({ error: "Failed to update breeds" }, { status: 500 });

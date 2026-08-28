@@ -1,50 +1,76 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import TransactionModel from "@/models/Transaction";
+import { fallbackStore } from "@/lib/fallbackStore";
 
 export async function GET(request: NextRequest) {
   try {
-    await connectDB();
     const { searchParams } = new URL(request.url);
     const type = searchParams.get("type");
     const month = searchParams.get("month"); // YYYY-MM
     const category = searchParams.get("category");
 
-    const query: Record<string, unknown> = {};
+    const db = await connectDB();
+    if (db) {
+      const query: Record<string, unknown> = {};
+      if (type && type !== "ALL") {
+        query.type = type;
+      }
+      if (month) {
+        query.date = { $regex: `^${month}` };
+      }
+      if (category && category !== "ALL") {
+        query.category = category;
+      }
+      const transactions = await TransactionModel.find(query).sort({ date: -1 }).lean();
+      const result = transactions.map((t) => ({ ...t, id: t._id }));
+      return NextResponse.json(result);
+    }
 
+    let txns = fallbackStore.get().transactions;
     if (type && type !== "ALL") {
-      query.type = type;
+      txns = txns.filter((t) => t.type === type);
     }
     if (month) {
-      // Match transactions where date starts with YYYY-MM
-      query.date = { $regex: `^${month}` };
+      txns = txns.filter((t) => String(t.date || "").startsWith(month));
     }
     if (category && category !== "ALL") {
-      query.category = category;
+      txns = txns.filter((t) => t.category === category);
     }
-
-    const transactions = await TransactionModel.find(query).sort({ date: -1 }).lean();
-    const result = transactions.map((t) => ({ ...t, id: t._id }));
-    return NextResponse.json(result);
+    return NextResponse.json(txns);
   } catch (error) {
     console.error("GET /api/transactions error:", error);
-    return NextResponse.json({ error: "Failed to fetch transactions" }, { status: 500 });
+    const txns = fallbackStore.get().transactions;
+    return NextResponse.json(txns);
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    await connectDB();
     const body = await request.json();
+    const id = body._id || body.id;
 
-    if (!body._id) {
+    if (!id) {
       return NextResponse.json({ error: "Transaction ID (_id) is required" }, { status: 400 });
     }
 
-    const txn = new TransactionModel(body);
-    await txn.save();
+    const doc = { ...body, _id: id, id, createdAt: body.createdAt || new Date().toISOString() };
 
-    return NextResponse.json({ ...txn.toJSON(), id: txn._id }, { status: 201 });
+    const db = await connectDB();
+    if (db) {
+      const txn = new TransactionModel(doc);
+      await txn.save();
+      return NextResponse.json({ ...txn.toJSON(), id: txn._id }, { status: 201 });
+    }
+
+    const store = fallbackStore.get();
+    const idx = store.transactions.findIndex((t) => (t._id || t.id) === id);
+    if (idx !== -1) {
+      store.transactions[idx] = doc;
+    } else {
+      store.transactions.unshift(doc);
+    }
+    return NextResponse.json(doc, { status: 201 });
   } catch (error: unknown) {
     console.error("POST /api/transactions error:", error);
     const message = error instanceof Error ? error.message : "Failed to create transaction";

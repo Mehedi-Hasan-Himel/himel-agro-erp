@@ -1,10 +1,12 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
+import { SITE_CONFIG } from "@/lib/config/siteConfig";
 import { PedigreeNodeData } from "@/types/pedigree";
 import { formatRingNumber, formatCompactRing } from "@/lib/formatters/ringFormatter";
 import { formatDate } from "@/lib/formatters/dateFormatter";
-import { Feather, Award, ShieldCheck, CheckCircle } from "lucide-react";
+import { Award, ShieldCheck } from "lucide-react";
 
 export interface PrintablePedigreeProps {
   tree: PedigreeNodeData;
@@ -32,15 +34,23 @@ export function PrintablePedigree({ tree, id = "pedigree-certificate" }: Printab
       {/* Certificate Header */}
       <div className="border-b-2 border-emerald-700 pb-5 mb-6 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 bg-emerald-800 text-emerald-100 rounded-2xl flex items-center justify-center font-bold text-2xl shadow-sm">
-            HA
+          {/* Radiant Green Light Glowing Seal Logo Container */}
+          <div className="relative w-16 h-16 rounded-full bg-emerald-500/15 ring-2 ring-emerald-600/90 shadow-[0_0_14px_rgba(16,185,129,0.4)] flex items-center justify-center shrink-0 overflow-hidden">
+            <Image
+              src={SITE_CONFIG.logoUrl}
+              alt={`${SITE_CONFIG.farmName} Logo`}
+              width={200}
+              height={200}
+              className="w-full h-full object-cover"
+              unoptimized
+            />
           </div>
           <div>
-            <h1 className="text-2xl font-black tracking-wider uppercase text-emerald-900">
-              Himel Agro
+            <h1 className="text-2xl font-black tracking-wider uppercase text-emerald-900 leading-tight">
+              {SITE_CONFIG.farmName}
             </h1>
             <p className="text-xs font-semibold text-emerald-700 uppercase tracking-widest">
-              Pigeon Farm & Performance Genetics Center
+              {SITE_CONFIG.loftSubtitle}
             </p>
             <p className="text-[11px] text-slate-500">
               Official Bloodline & Pedigree Certificate
@@ -52,8 +62,8 @@ export function PrintablePedigree({ tree, id = "pedigree-certificate" }: Printab
           <div className="inline-flex items-center gap-1 font-bold text-emerald-800 bg-emerald-50 px-3 py-1 rounded-md border border-emerald-200">
             <ShieldCheck className="w-4 h-4 text-emerald-600" /> Certified Record
           </div>
-          <p className="text-slate-500 font-mono text-[11px]">
-            Loft Contact: 01969038472
+          <p className="text-slate-600 font-mono text-[11px] font-semibold">
+            Contact / WhatsApp: {SITE_CONFIG.contactNumber}
           </p>
         </div>
       </div>
@@ -284,17 +294,22 @@ export function PrintablePedigree({ tree, id = "pedigree-certificate" }: Printab
       </div>
 
       {/* Certificate Footer with Signatures */}
-      <div className="pt-4 border-t border-slate-200 flex items-center justify-between text-xs text-slate-500">
-        <div>
-          <p className="font-semibold text-slate-800">Himel Agro Pigeon Farm ERP</p>
-          <p className="text-[10px]">
+      <div className="pt-4 border-t border-slate-200 flex flex-wrap items-center justify-between gap-4 text-xs text-slate-500">
+        <div className="space-y-0.5">
+          <p className="font-bold text-slate-800">
+            {SITE_CONFIG.farmName} • {SITE_CONFIG.shortName}
+          </p>
+          <p className="text-[10px] text-emerald-700 font-medium">
+            FB: {SITE_CONFIG.facebookUrl.replace("https://www.", "").replace("https://", "")} • {SITE_CONFIG.location}
+          </p>
+          <p className="text-[10px] text-slate-400">
             Generated: {new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
           </p>
         </div>
 
         <div className="text-center border-t-2 border-slate-400 pt-1 w-48">
           <p className="text-[11px] font-bold text-slate-800">Authorized Signature</p>
-          <p className="text-[9px] text-slate-500">Himel Agro Farm Manager</p>
+          <p className="text-[9px] text-slate-500">{SITE_CONFIG.farmName} Loft Manager</p>
         </div>
       </div>
     </div>

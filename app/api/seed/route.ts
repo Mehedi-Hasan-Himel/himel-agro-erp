@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import mongoose from "mongoose";
 import { connectDB } from "@/lib/mongodb";
 import PigeonModel from "@/models/Pigeon";
 import PairModel from "@/models/Pair";
@@ -22,6 +23,7 @@ import feedUsageSeed from "@/data/feedUsage.json";
 import transactionsSeed from "@/data/transactions.json";
 import breedsSeed from "@/data/breeds.json";
 import settingsSeed from "@/data/settings.json";
+import { fallbackStore } from "@/lib/fallbackStore";
 
 // POST /api/seed — seeds the database from JSON files
 // GET /api/seed — exports all data as JSON dump
@@ -29,7 +31,7 @@ import settingsSeed from "@/data/settings.json";
 
 export async function POST(request: NextRequest) {
   try {
-    await connectDB();
+    const db = await connectDB();
     const { searchParams } = new URL(request.url);
     const isReset = searchParams.get("reset") === "true";
 
@@ -45,8 +47,9 @@ export async function POST(request: NextRequest) {
     let breeds: unknown = breedsSeed;
     let settings: unknown = settingsSeed;
 
-    // If importing user-provided data (not a reset), read from request body
-    if (!isReset) {
+    if (isReset) {
+      fallbackStore.reset();
+    } else {
       const contentType = request.headers.get("content-type") || "";
       if (contentType.includes("application/json")) {
         const body = await request.json();
@@ -67,45 +70,58 @@ export async function POST(request: NextRequest) {
         if (body.transactions) transactions = body.transactions;
         if (body.breeds) breeds = body.breeds;
         if (body.settings) settings = body.settings;
+
+        fallbackStore.set({
+          pigeons: pigeons as Record<string, unknown>[],
+          pairs: pairs as Record<string, unknown>[],
+          breedingRounds: breedingRounds as Record<string, unknown>[],
+          flyingRecords: flyingRecords as Record<string, unknown>[],
+          healthRecords: healthRecords as Record<string, unknown>[],
+          medicineSchedules: medicineSchedules as Record<string, unknown>[],
+          feedPurchases: feedPurchases as Record<string, unknown>[],
+          feedUsage: feedUsage as Record<string, unknown>[],
+          transactions: transactions as Record<string, unknown>[],
+          breeds: breeds as string[],
+          settings: settings as Record<string, unknown>,
+        });
       }
     }
 
-    // Helper: upsert array of docs by _id
-    async function upsertMany(
-      Model: { findByIdAndUpdate: Function },
-      docs: unknown[]
-    ) {
-      const ops = (docs as Record<string, unknown>[]).map((doc) =>
-        Model.findByIdAndUpdate(
-          doc._id || doc.id,
-          { $set: { ...doc, _id: (doc._id || doc.id) as string } },
-          { upsert: true, new: true }
-        )
+    if (db) {
+      // Helper: upsert array of docs by _id
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      async function upsertMany(Model: mongoose.Model<any>, docs: unknown[]) {
+        const ops = (docs as Record<string, unknown>[]).map((doc) =>
+          Model.findByIdAndUpdate(
+            doc._id || doc.id,
+            { $set: { ...doc, _id: (doc._id || doc.id) as string } },
+            { upsert: true, new: true }
+          )
+        );
+        await Promise.all(ops);
+      }
+
+      await upsertMany(PigeonModel, pigeons);
+      await upsertMany(PairModel, pairs);
+      await upsertMany(BreedingRoundModel, breedingRounds);
+      await upsertMany(FlyingRecordModel, flyingRecords);
+      await upsertMany(HealthRecordModel, healthRecords);
+      await upsertMany(MedicineScheduleModel, medicineSchedules);
+      await upsertMany(FeedPurchaseModel, feedPurchases);
+      await upsertMany(FeedUsageModel, feedUsage);
+      await upsertMany(TransactionModel, transactions);
+
+      await AppConfigModel.findByIdAndUpdate(
+        "SETTINGS",
+        { $set: { data: settings } },
+        { upsert: true, new: true }
       );
-      await Promise.all(ops);
+      await AppConfigModel.findByIdAndUpdate(
+        "BREEDS",
+        { $set: { data: breeds } },
+        { upsert: true, new: true }
+      );
     }
-
-    await upsertMany(PigeonModel, pigeons);
-    await upsertMany(PairModel, pairs);
-    await upsertMany(BreedingRoundModel, breedingRounds);
-    await upsertMany(FlyingRecordModel, flyingRecords);
-    await upsertMany(HealthRecordModel, healthRecords);
-    await upsertMany(MedicineScheduleModel, medicineSchedules);
-    await upsertMany(FeedPurchaseModel, feedPurchases);
-    await upsertMany(FeedUsageModel, feedUsage);
-    await upsertMany(TransactionModel, transactions);
-
-    // Upsert settings and breeds as AppConfig docs
-    await AppConfigModel.findByIdAndUpdate(
-      "SETTINGS",
-      { $set: { data: settings } },
-      { upsert: true, new: true }
-    );
-    await AppConfigModel.findByIdAndUpdate(
-      "BREEDS",
-      { $set: { data: breeds } },
-      { upsert: true, new: true }
-    );
 
     return NextResponse.json({
       success: true,
@@ -130,46 +146,62 @@ export async function POST(request: NextRequest) {
 
 export async function GET() {
   try {
-    await connectDB();
+    const db = await connectDB();
+    if (db) {
+      const [
+        pigeons,
+        pairs,
+        breedingRounds,
+        flyingRecords,
+        healthRecords,
+        medicineSchedules,
+        feedPurchases,
+        feedUsage,
+        transactions,
+        settingsDoc,
+        breedsDoc,
+      ] = await Promise.all([
+        PigeonModel.find({}).lean(),
+        PairModel.find({}).lean(),
+        BreedingRoundModel.find({}).lean(),
+        FlyingRecordModel.find({}).lean(),
+        HealthRecordModel.find({}).lean(),
+        MedicineScheduleModel.find({}).lean(),
+        FeedPurchaseModel.find({}).lean(),
+        FeedUsageModel.find({}).lean(),
+        TransactionModel.find({}).lean(),
+        AppConfigModel.findById("SETTINGS").lean(),
+        AppConfigModel.findById("BREEDS").lean(),
+      ]);
 
-    const [
-      pigeons,
-      pairs,
-      breedingRounds,
-      flyingRecords,
-      healthRecords,
-      medicineSchedules,
-      feedPurchases,
-      feedUsage,
-      transactions,
-      settingsDoc,
-      breedsDoc,
-    ] = await Promise.all([
-      PigeonModel.find({}).lean(),
-      PairModel.find({}).lean(),
-      BreedingRoundModel.find({}).lean(),
-      FlyingRecordModel.find({}).lean(),
-      HealthRecordModel.find({}).lean(),
-      MedicineScheduleModel.find({}).lean(),
-      FeedPurchaseModel.find({}).lean(),
-      FeedUsageModel.find({}).lean(),
-      TransactionModel.find({}).lean(),
-      AppConfigModel.findById("SETTINGS").lean(),
-      AppConfigModel.findById("BREEDS").lean(),
-    ]);
+      return NextResponse.json({
+        pigeons: pigeons.map((p) => ({ ...p, id: p._id })),
+        pairs: pairs.map((p) => ({ ...p, id: p._id })),
+        breeding_rounds: breedingRounds.map((r) => ({ ...r, id: r._id })),
+        flying_records: flyingRecords.map((r) => ({ ...r, id: r._id })),
+        health_records: healthRecords.map((r) => ({ ...r, id: r._id })),
+        medicine_schedules: medicineSchedules.map((s) => ({ ...s, id: s._id })),
+        feed_purchases: feedPurchases.map((p) => ({ ...p, id: p._id })),
+        feed_usage: feedUsage.map((u) => ({ ...u, id: u._id })),
+        transactions: transactions.map((t) => ({ ...t, id: t._id })),
+        settings: settingsDoc?.data ?? settingsSeed,
+        breeds: breedsDoc?.data ?? breedsSeed,
+      });
+    }
 
+    const state = fallbackStore.get();
     return NextResponse.json({
-      pigeons: pigeons.map((p) => ({ ...p, id: p._id })),
-      pairs: pairs.map((p) => ({ ...p, id: p._id })),
-      breeding_rounds: breedingRounds.map((r) => ({ ...r, id: r._id })),
-      flying_records: flyingRecords.map((r) => ({ ...r, id: r._id })),
-      health_records: healthRecords.map((r) => ({ ...r, id: r._id })),
-      medicine_schedules: medicineSchedules.map((s) => ({ ...s, id: s._id })),
-      feed_purchases: feedPurchases.map((p) => ({ ...p, id: p._id })),
-      feed_usage: feedUsage.map((u) => ({ ...u, id: u._id })),
-      transactions: transactions.map((t) => ({ ...t, id: t._id })),
-      settings: settingsDoc?.data ?? settingsSeed,
-      breeds: breedsDoc?.data ?? breedsSeed,
+      pigeons: state.pigeons,
+      pairs: state.pairs,
+      breeding_rounds: state.breedingRounds,
+      flying_records: state.flyingRecords,
+      health_records: state.healthRecords,
+      medicine_schedules: state.medicineSchedules,
+      feed_purchases: state.feedPurchases,
+      feed_usage: state.feedUsage,
+      transactions: state.transactions,
+      settings: state.settings,
+      breeds: state.breeds,
     });
   } catch (error) {
     console.error("GET /api/seed error:", error);

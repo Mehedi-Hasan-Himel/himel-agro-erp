@@ -1,32 +1,52 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import FeedUsageModel from "@/models/FeedUsage";
+import { fallbackStore } from "@/lib/fallbackStore";
 
 export async function GET() {
   try {
-    await connectDB();
-    const usages = await FeedUsageModel.find({}).sort({ date: -1 }).lean();
-    const result = usages.map((u) => ({ ...u, id: u._id }));
-    return NextResponse.json(result);
+    const db = await connectDB();
+    if (db) {
+      const usages = await FeedUsageModel.find({}).sort({ date: -1 }).lean();
+      const result = usages.map((u) => ({ ...u, id: u._id }));
+      return NextResponse.json(result);
+    }
+
+    const usages = fallbackStore.get().feedUsage;
+    return NextResponse.json(usages);
   } catch (error) {
     console.error("GET /api/feed-usage error:", error);
-    return NextResponse.json({ error: "Failed to fetch feed usage" }, { status: 500 });
+    const usages = fallbackStore.get().feedUsage;
+    return NextResponse.json(usages);
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    await connectDB();
     const body = await request.json();
+    const id = body._id || body.id;
 
-    if (!body._id) {
+    if (!id) {
       return NextResponse.json({ error: "Usage ID (_id) is required" }, { status: 400 });
     }
 
-    const usage = new FeedUsageModel(body);
-    await usage.save();
+    const doc = { ...body, _id: id, id, createdAt: body.createdAt || new Date().toISOString() };
 
-    return NextResponse.json({ ...usage.toJSON(), id: usage._id }, { status: 201 });
+    const db = await connectDB();
+    if (db) {
+      const usage = new FeedUsageModel(doc);
+      await usage.save();
+      return NextResponse.json({ ...usage.toJSON(), id: usage._id }, { status: 201 });
+    }
+
+    const store = fallbackStore.get();
+    const idx = store.feedUsage.findIndex((u) => (u._id || u.id) === id);
+    if (idx !== -1) {
+      store.feedUsage[idx] = doc;
+    } else {
+      store.feedUsage.unshift(doc);
+    }
+    return NextResponse.json(doc, { status: 201 });
   } catch (error: unknown) {
     console.error("POST /api/feed-usage error:", error);
     const message = error instanceof Error ? error.message : "Failed to create feed usage record";

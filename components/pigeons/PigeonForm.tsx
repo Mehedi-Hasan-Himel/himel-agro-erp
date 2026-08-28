@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Pigeon, PigeonSex, PigeonSource, PigeonStatus } from "@/types/pigeon";
 import { BreedConfig } from "@/types/breed";
+import { SITE_CONFIG } from "@/lib/config/siteConfig";
 import { getPigeons, createPigeon, updatePigeon } from "@/lib/repositories/pigeonRepository";
 import { getBreeds } from "@/lib/repositories/settingsRepository";
 import { formatCompactRing } from "@/lib/formatters/ringFormatter";
@@ -42,10 +43,10 @@ export function PigeonForm({
     initialPigeon?.ringSerial || 1
   );
   const [farmName, setFarmName] = useState<string>(
-    initialPigeon?.farmName || "Himel Agro"
+    initialPigeon?.farmName || SITE_CONFIG.shortName
   );
   const [contactNumber, setContactNumber] = useState<string>(
-    initialPigeon?.contactNumber || "01969038472"
+    initialPigeon?.contactNumber || SITE_CONFIG.contactNumber
   );
   const [hatchDate, setHatchDate] = useState<string>(
     initialPigeon?.hatchDate || todayStr

@@ -1,3 +1,5 @@
+import { SITE_CONFIG } from "@/lib/config/siteConfig";
+
 export interface RingIdentifiable {
   ringYear: number;
   ringSerial: number;
@@ -6,14 +8,14 @@ export interface RingIdentifiable {
 }
 
 /**
- * Full format: 2026 | Himel Agro | 01 | 01969038472
+ * Full format: 2026 | Himel Agro | 01 | 01560059954
  */
 export function formatRingNumber(pigeon?: RingIdentifiable | null): string {
   if (!pigeon) return "Unknown";
   const year = pigeon.ringYear || "----";
-  const farm = pigeon.farmName || "Himel Agro";
+  const farm = pigeon.farmName || SITE_CONFIG.shortName;
   const serial = String(pigeon.ringSerial || 0).padStart(2, "0");
-  const contact = pigeon.contactNumber || "01969038472";
+  const contact = pigeon.contactNumber || SITE_CONFIG.contactNumber;
 
   return `${year} | ${farm} | ${serial} | ${contact}`;
 }

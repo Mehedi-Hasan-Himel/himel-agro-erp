@@ -27,15 +27,15 @@ export function MedicineScheduleModal({
   const [targetType, setTargetType] = useState<"FLOCK" | "INDIVIDUAL">("FLOCK");
   const [pigeonId, setPigeonId] = useState("");
   const [startDate, setStartDate] = useState(
-    new Date().toISOString().split("T")[0]
+    () => new Date().toISOString().split("T")[0]
   );
   const [endDate, setEndDate] = useState(
-    new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split("T")[0]
+    () => new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split("T")[0]
   );
   const [dose, setDose] = useState("");
   const [purpose, setPurpose] = useState("");
   const [status, setStatus] = useState<"UPCOMING" | "IN_PROGRESS">("UPCOMING");
-  const [notes, setNotes] = useState("");
+  const [notes] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

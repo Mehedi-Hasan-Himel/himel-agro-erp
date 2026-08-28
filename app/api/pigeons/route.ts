@@ -1,32 +1,52 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import PigeonModel from "@/models/Pigeon";
+import { fallbackStore } from "@/lib/fallbackStore";
 
 export async function GET() {
   try {
-    await connectDB();
-    const pigeons = await PigeonModel.find({}).sort({ createdAt: -1 }).lean();
-    const result = pigeons.map((p) => ({ ...p, id: p._id }));
-    return NextResponse.json(result);
+    const db = await connectDB();
+    if (db) {
+      const pigeons = await PigeonModel.find({}).sort({ createdAt: -1 }).lean();
+      const result = pigeons.map((p) => ({ ...p, id: p._id }));
+      return NextResponse.json(result);
+    }
+
+    const pigeons = fallbackStore.get().pigeons;
+    return NextResponse.json(pigeons);
   } catch (error) {
     console.error("GET /api/pigeons error:", error);
-    return NextResponse.json({ error: "Failed to fetch pigeons" }, { status: 500 });
+    const pigeons = fallbackStore.get().pigeons;
+    return NextResponse.json(pigeons);
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    await connectDB();
     const body = await request.json();
+    const id = body._id || body.id;
 
-    if (!body._id) {
+    if (!id) {
       return NextResponse.json({ error: "Pigeon ID (_id) is required" }, { status: 400 });
     }
 
-    const pigeon = new PigeonModel(body);
-    await pigeon.save();
+    const doc = { ...body, _id: id, id, createdAt: body.createdAt || new Date().toISOString() };
 
-    return NextResponse.json({ ...pigeon.toJSON(), id: pigeon._id }, { status: 201 });
+    const db = await connectDB();
+    if (db) {
+      const pigeon = new PigeonModel(doc);
+      await pigeon.save();
+      return NextResponse.json({ ...pigeon.toJSON(), id: pigeon._id }, { status: 201 });
+    }
+
+    const store = fallbackStore.get();
+    const idx = store.pigeons.findIndex((p) => (p._id || p.id) === id);
+    if (idx !== -1) {
+      store.pigeons[idx] = doc;
+    } else {
+      store.pigeons.unshift(doc);
+    }
+    return NextResponse.json(doc, { status: 201 });
   } catch (error: unknown) {
     console.error("POST /api/pigeons error:", error);
     const message = error instanceof Error ? error.message : "Failed to create pigeon";

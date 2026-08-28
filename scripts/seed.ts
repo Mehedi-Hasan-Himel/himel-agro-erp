@@ -55,7 +55,12 @@ async function seed() {
   await mongoose.connect(uri);
   console.log("Connected successfully.");
 
-  async function upsertCollection(model: any, data: any[], name: string) {
+  async function upsertCollection(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    model: mongoose.Model<any>,
+    data: Record<string, unknown>[],
+    name: string
+  ) {
     console.log(`Seeding ${name} (${data.length} records)...`);
     for (const item of data) {
       const id = item._id || item.id;

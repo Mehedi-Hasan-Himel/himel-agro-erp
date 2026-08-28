@@ -1,7 +1,9 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import { FarmSettings } from "@/types/settings";
+import { SITE_CONFIG } from "@/lib/config/siteConfig";
 import { BreedConfig } from "@/types/breed";
 import {
   getSettings,
@@ -27,6 +29,9 @@ import {
   CheckCircle2,
   AlertCircle,
   Plus,
+  MapPin,
+  ExternalLink,
+  Globe,
 } from "lucide-react";
 
 export default function SettingsPage() {
@@ -137,8 +142,7 @@ export default function SettingsPage() {
           Farm Settings & Configuration
         </h1>
         <p className="text-xs text-slate-500 mt-1">
-          Loft identity, breed categories, currency specifications, and data
-          backup tools.
+          Loft identity, official branding, Facebook & map integration, and data backup tools.
         </p>
       </div>
 
@@ -149,16 +153,82 @@ export default function SettingsPage() {
         </div>
       )}
 
+      {/* Brand Identity & Media Card */}
+      <div className="p-5 bg-gradient-to-r from-emerald-900 to-slate-900 rounded-2xl text-white shadow-md border border-emerald-800/50 flex flex-col sm:flex-row items-center justify-between gap-5">
+        <div className="flex items-center gap-4">
+          {/* Radiant Green Light Glowing Logo Container */}
+          <div className="relative w-20 h-20 rounded-full bg-emerald-500/20 ring-4 ring-emerald-400/90 ring-offset-4 ring-offset-emerald-950 shadow-[0_0_30px_rgba(16,185,129,0.65)] flex items-center justify-center shrink-0 overflow-hidden">
+            <Image
+              src={SITE_CONFIG.logoUrl}
+              alt={settings.farmName || SITE_CONFIG.farmName}
+              width={240}
+              height={240}
+              className="w-full h-full object-cover"
+              unoptimized
+            />
+          </div>
+          <div>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">
+              Official Farm Branding
+            </span>
+            <h2 className="text-xl font-extrabold text-white">
+              {settings.farmName || SITE_CONFIG.farmName}
+            </h2>
+            <p className="text-xs text-slate-300 flex items-center gap-1.5 mt-0.5">
+              <MapPin className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+              <span>{settings.location || SITE_CONFIG.location}</span>
+            </p>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
+          <a
+            href={settings.whatsappNumber ? `https://wa.me/88${settings.whatsappNumber}` : SITE_CONFIG.whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs font-semibold shadow-sm transition-all"
+          >
+            <span className="font-black text-sm">WA</span>
+            <span>WhatsApp ({settings.whatsappNumber || SITE_CONFIG.whatsappNumber})</span>
+            <ExternalLink className="w-3 h-3" />
+          </a>
+          {(settings.facebookUrl || SITE_CONFIG.facebookUrl) && (
+            <a
+              href={settings.facebookUrl || SITE_CONFIG.facebookUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white text-xs font-semibold shadow-sm transition-all"
+            >
+              <span className="font-black text-sm">f</span>
+              <span>Facebook Page</span>
+              <ExternalLink className="w-3 h-3" />
+            </a>
+          )}
+          {(settings.googleMapUrl || SITE_CONFIG.googleMapUrl) && (
+            <a
+              href={settings.googleMapUrl || SITE_CONFIG.googleMapUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-700 hover:bg-slate-600 active:bg-slate-800 text-white text-xs font-semibold shadow-sm transition-all"
+            >
+              <MapPin className="w-3.5 h-3.5" />
+              <span>Google Maps</span>
+              <ExternalLink className="w-3 h-3" />
+            </a>
+          )}
+        </div>
+      </div>
+
       {/* 1. Farm Identity Settings */}
       <Card>
         <CardHeader>
-          <CardTitle>1. Farm Profile & Identity</CardTitle>
+          <CardTitle>1. Farm Profile & Social Integration</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSaveSettings} className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <Input
-                label="Farm Name"
+                label="Farm / Brand Name"
                 value={settings.farmName}
                 onChange={(e) =>
                   setSettings({ ...settings, farmName: e.target.value })
@@ -172,7 +242,37 @@ export default function SettingsPage() {
                   setSettings({ ...settings, contactNumber: e.target.value })
                 }
                 required
-                helperText="Appears on physical ring tag format"
+                helperText="Primary contact number"
+              />
+              <Input
+                label="WhatsApp Number"
+                value={settings.whatsappNumber || ""}
+                onChange={(e) =>
+                  setSettings({ ...settings, whatsappNumber: e.target.value })
+                }
+                placeholder="01560059954"
+                helperText="For direct WhatsApp chat integration"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Input
+                label="Facebook Page URL"
+                value={settings.facebookUrl || ""}
+                onChange={(e) =>
+                  setSettings({ ...settings, facebookUrl: e.target.value })
+                }
+                placeholder="https://www.facebook.com/Himel.Pet.House"
+                helperText="Direct link to your farm Facebook page"
+              />
+              <Input
+                label="Google Maps Location URL"
+                value={settings.googleMapUrl || ""}
+                onChange={(e) =>
+                  setSettings({ ...settings, googleMapUrl: e.target.value })
+                }
+                placeholder="https://maps.app.goo.gl/..."
+                helperText="Map link for customers & visitors"
               />
             </div>
 

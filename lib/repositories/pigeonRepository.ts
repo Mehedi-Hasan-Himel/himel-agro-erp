@@ -1,4 +1,5 @@
 import { Pigeon, PigeonStatus, PigeonSource, PigeonSex } from "@/types/pigeon";
+import { SITE_CONFIG } from "@/lib/config/siteConfig";
 import { notifyDataChanged } from "./storageAdapter";
 
 export function generatePigeonId(ringYear: number, ringSerial: number): string {
@@ -66,8 +67,8 @@ export interface CreatePigeonInput {
 
 export async function createPigeon(input: CreatePigeonInput): Promise<Pigeon> {
   const pigeons = await getPigeons();
-  const farmName = input.farmName || "Himel Agro";
-  const contactNumber = input.contactNumber || "01969038472";
+  const farmName = input.farmName || SITE_CONFIG.shortName;
+  const contactNumber = input.contactNumber || SITE_CONFIG.contactNumber;
 
   // Validate duplicate ring
   const existing = pigeons.find(
