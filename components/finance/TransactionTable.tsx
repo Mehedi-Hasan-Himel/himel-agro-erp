@@ -6,7 +6,6 @@ import { Transaction, TransactionType } from "@/types/finance";
 import { formatCurrency } from "@/lib/formatters/currencyFormatter";
 import { formatDate } from "@/lib/formatters/dateFormatter";
 import { SearchInput } from "../ui/SearchInput";
-import { Select } from "../ui/Select";
 import { ArrowUpRight, ArrowDownRight, Tag } from "lucide-react";
 
 export interface TransactionTableProps {

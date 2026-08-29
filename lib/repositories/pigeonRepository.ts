@@ -3,8 +3,8 @@ import { SITE_CONFIG } from "@/lib/config/siteConfig";
 import { notifyDataChanged } from "./storageAdapter";
 
 export function generatePigeonId(ringYear: number, ringSerial: number): string {
-  const serialStr = String(ringSerial).padStart(3, "0");
-  return `pigeon_${ringYear}_${serialStr}`;
+  const serialStr = String(ringSerial).padStart(2, "0");
+  return `${ringYear}-${serialStr}`;
 }
 
 export async function getPigeons(): Promise<Pigeon[]> {
@@ -311,4 +311,16 @@ export async function markPigeonLost(
     lostDate: lostData.lostDate,
     lostNotes: lostData.lostNotes || "",
   });
+}
+
+export async function deletePigeon(id: string): Promise<boolean> {
+  const res = await fetch(`/api/pigeons/${encodeURIComponent(id)}`, {
+    method: "DELETE",
+  });
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.error || `Failed to delete pigeon ${id}`);
+  }
+  notifyDataChanged();
+  return true;
 }

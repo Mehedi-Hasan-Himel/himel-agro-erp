@@ -7,7 +7,8 @@ import { createBreedingRound } from "@/lib/repositories/breedingRepository";
 import { Modal } from "../ui/Modal";
 import { Input } from "../ui/Input";
 import { Button } from "../ui/Button";
-import { AlertCircle, PlusCircle, Baby } from "lucide-react";
+import { AlertCircle, PlusCircle } from "lucide-react";
+import { SquabIcon } from "../ui/icons/SquabIcon";
 
 export interface BreedingRoundModalProps {
   pair: Pair;
@@ -178,7 +179,7 @@ export function BreedingRoundModal({
                 className="gap-1.5"
                 title="Save this round and immediately register newborn baby ring"
               >
-                <Baby className="w-4 h-4" /> Save & Register Baby
+                <SquabIcon className="w-4 h-4" /> Save & Register Baby
               </Button>
             )}
           </div>

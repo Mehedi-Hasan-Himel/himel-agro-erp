@@ -20,16 +20,16 @@ export function MonthlyProfitLossCard({
   const isProfit = summary.profitLoss >= 0;
 
   return (
-    <Card className="bg-linear-to-br from-white to-slate-50/50 border-slate-200 shadow-xs">
-      <CardContent className="p-6">
+    <Card className="bg-gradient-to-br from-white to-slate-50/50 border-slate-200 shadow-xs w-full max-w-full min-w-0">
+      <CardContent className="p-4 sm:p-6">
         {/* Header */}
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-          <div>
-            <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-              <DollarSign className="w-5 h-5 text-emerald-600" />
-              <span>Monthly Financial Overview</span>
+        <div className="flex flex-wrap items-center justify-between gap-3 sm:gap-4 mb-5 sm:mb-6">
+          <div className="min-w-0">
+            <h3 className="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2 truncate">
+              <DollarSign className="w-5 h-5 text-emerald-600 shrink-0" />
+              <span className="truncate">Monthly Financial Overview</span>
             </h3>
-            <p className="text-xs text-slate-500">
+            <p className="text-[11px] sm:text-xs text-slate-500">
               Income, expenses, and net profit/loss for selected period
             </p>
           </div>

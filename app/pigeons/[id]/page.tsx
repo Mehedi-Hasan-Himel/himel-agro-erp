@@ -39,13 +39,14 @@ import { PedigreePDFModal } from "@/components/pedigree/PedigreePDFModal";
 import { BreedingStatsCard } from "@/components/breeding/BreedingStatsCard";
 import { SaleModal } from "@/components/pigeons/SaleModal";
 import { DeathModal } from "@/components/pigeons/DeathModal";
+import { DeletePigeonModal } from "@/components/pigeons/DeletePigeonModal";
 import { PairFormModal } from "@/components/breeding/PairFormModal";
+import { SquabIcon } from "@/components/ui/icons/SquabIcon";
 
 import {
   Feather,
   GitFork,
   Heart,
-  Baby,
   Trophy,
   HeartPulse,
   DollarSign,
@@ -61,6 +62,7 @@ import {
   Clock,
   Egg,
   Tag,
+  Trash2,
 } from "lucide-react";
 
 export default function PigeonProfilePage({
@@ -96,6 +98,7 @@ export default function PigeonProfilePage({
   const [isSaleModalOpen, setIsSaleModalOpen] = useState(false);
   const [isDeathModalOpen, setIsDeathModalOpen] = useState(false);
   const [isPairModalOpen, setIsPairModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const loadPigeonData = async () => {
     try {
@@ -211,7 +214,7 @@ export default function PigeonProfilePage({
     {
       id: "offspring",
       label: "Offspring (Children)",
-      icon: Baby,
+      icon: SquabIcon,
       count: childrenList.length,
     },
     { id: "pedigree", label: "Pedigree Bloodline", icon: GitFork },
@@ -315,6 +318,16 @@ export default function PigeonProfilePage({
               className="gap-1.5 text-xs"
             >
               <Download className="w-3.5 h-3.5" /> Pedigree PDF
+            </Button>
+
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => setIsDeleteModalOpen(true)}
+              className="gap-1.5 text-xs text-rose-600 hover:bg-rose-50 border border-rose-200"
+              title="Delete or Archive Pigeon"
+            >
+              <Trash2 className="w-3.5 h-3.5" /> Delete
             </Button>
           </div>
         </div>
@@ -991,6 +1004,20 @@ export default function PigeonProfilePage({
           onSuccess={() => loadPigeonData()}
           defaultMaleId={pigeon.sex === "MALE" ? pigeon.id : ""}
           defaultFemaleId={pigeon.sex === "FEMALE" ? pigeon.id : ""}
+        />
+      )}
+
+      {/* Delete Pigeon Modal */}
+      {isDeleteModalOpen && (
+        <DeletePigeonModal
+          pigeon={pigeon}
+          isOpen={isDeleteModalOpen}
+          onClose={() => setIsDeleteModalOpen(false)}
+          onDeleted={() => {
+            setIsDeleteModalOpen(false);
+            router.push("/pigeons");
+            router.refresh();
+          }}
         />
       )}
     </div>

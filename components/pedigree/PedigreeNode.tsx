@@ -6,7 +6,7 @@ import { PedigreeNodeData } from "@/types/pedigree";
 import { formatCompactRing } from "@/lib/formatters/ringFormatter";
 import { formatDate } from "@/lib/formatters/dateFormatter";
 import { StatusBadge } from "../pigeons/StatusBadge";
-import { ArrowRight, Trophy, Sparkles } from "lucide-react";
+import { ArrowRight, Trophy } from "lucide-react";
 
 export interface PedigreeNodeProps {
   node: PedigreeNodeData;

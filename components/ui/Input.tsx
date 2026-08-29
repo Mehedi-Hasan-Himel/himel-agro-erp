@@ -21,25 +21,25 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className="block text-xs font-semibold uppercase tracking-wider text-slate-600"
+            className="block text-xs font-bold uppercase tracking-wider text-slate-700"
           >
             {label}
-            {props.required && <span className="text-rose-500 ml-1">*</span>}
+            {props.required && <span className="text-rose-600 ml-1 font-black">*</span>}
           </label>
         )}
         <input
           id={inputId}
           ref={ref}
           className={cn(
-            "w-full rounded-xl border bg-white px-3.5 py-2 text-sm text-slate-800 placeholder-slate-400 transition-colors focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 disabled:bg-slate-50 disabled:text-slate-400",
-            error ? "border-rose-400 focus:border-rose-500 focus:ring-rose-500/20" : "border-slate-200",
+            "w-full rounded-xl border bg-white px-3.5 py-2 text-sm text-slate-900 placeholder-slate-500 transition-colors focus:border-emerald-600 focus:outline-hidden focus:ring-2 focus:ring-emerald-500/25 disabled:bg-slate-100 disabled:text-slate-500",
+            error ? "border-rose-500 focus:border-rose-600 focus:ring-rose-500/25" : "border-slate-300",
             className
           )}
           {...props}
         />
-        {error && <p className="text-xs text-rose-500 font-medium">{error}</p>}
+        {error && <p className="text-xs text-rose-700 font-semibold">{error}</p>}
         {!error && helperText && (
-          <p className="text-xs text-slate-500">{helperText}</p>
+          <p className="text-xs text-slate-600 font-medium">{helperText}</p>
         )}
       </div>
     );

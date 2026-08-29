@@ -1,7 +1,8 @@
 import React from "react";
 import { HatchingStats } from "@/types/breeding";
 import { Card, CardContent } from "../ui/Card";
-import { Egg, CheckCircle2, TrendingUp, RefreshCw } from "lucide-react";
+import { Egg, RefreshCw } from "lucide-react";
+import { SquabIcon } from "../ui/icons/SquabIcon";
 
 export interface BreedingStatsCardProps {
   stats: HatchingStats;
@@ -18,19 +19,19 @@ export function BreedingStatsCard({
   const isModerateRate = stats.hatchingRate >= 60 && stats.hatchingRate < 80;
 
   return (
-    <Card className="bg-linear-to-br from-white to-emerald-50/30 border-emerald-200/80 shadow-xs">
-      <CardContent className="p-6">
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-          <div>
-            <h3 className="text-base font-bold text-slate-900">{title}</h3>
-            <p className="text-xs text-slate-500">{subtitle}</p>
+    <Card className="bg-gradient-to-br from-white to-emerald-50/30 border-emerald-200/80 shadow-xs w-full max-w-full min-w-0">
+      <CardContent className="p-4 sm:p-6">
+        <div className="flex flex-wrap items-center justify-between gap-3 sm:gap-4 mb-5 sm:mb-6">
+          <div className="min-w-0">
+            <h3 className="text-sm sm:text-base font-bold text-slate-900 truncate">{title}</h3>
+            <p className="text-[11px] sm:text-xs text-slate-500">{subtitle}</p>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-slate-500 uppercase">
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="text-xs font-semibold text-slate-500 uppercase hidden sm:inline">
               Overall Hatch Rate:
             </span>
             <span
-              className={`text-lg font-black px-3 py-1 rounded-xl border ${
+              className={`text-base sm:text-lg font-black px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-xl border ${
                 isHighRate
                   ? "bg-emerald-100 text-emerald-800 border-emerald-300"
                   : isModerateRate
@@ -44,7 +45,7 @@ export function BreedingStatsCard({
         </div>
 
         {/* 3 Metric Pills */}
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
           {/* Total Rounds */}
           <div className="bg-white p-3.5 rounded-xl border border-slate-200/80 shadow-2xs">
             <div className="flex items-center gap-2 text-slate-500 text-xs mb-1">
@@ -69,11 +70,11 @@ export function BreedingStatsCard({
 
           {/* Total Babies Hatched */}
           <div className="bg-white p-3.5 rounded-xl border border-slate-200/80 shadow-2xs">
-            <div className="flex items-center gap-2 text-slate-500 text-xs mb-1">
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+            <div className="flex items-center gap-2 text-slate-500 text-xs mb-1 font-medium">
+              <SquabIcon className="w-3.5 h-3.5 text-emerald-700" />
               <span>Babies Hatched</span>
             </div>
-            <div className="text-xl font-extrabold text-emerald-700">
+            <div className="text-xl font-extrabold text-emerald-800">
               {stats.totalHatched}
             </div>
           </div>

@@ -4,7 +4,7 @@ import React from "react";
 import { MedicineSchedule } from "@/types/health";
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/Card";
 import { formatDate } from "@/lib/formatters/dateFormatter";
-import { Pill, Clock, CheckCircle2, AlertCircle, Calendar } from "lucide-react";
+import { Pill, Clock, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 
 export interface MedicineDueCardProps {

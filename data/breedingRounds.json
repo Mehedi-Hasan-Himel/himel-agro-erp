@@ -8,7 +8,7 @@
     "eggsLaid": 2,
     "babiesHatched": 1,
     "babyPigeonIds": [
-      "pigeon_2026_001"
+      "2026-01"
     ],
     "notes": "First clutch of 2026 season. Produced flagship cock 2026-001.",
     "createdAt": "2025-12-18T10:00:00Z"
@@ -22,7 +22,7 @@
     "eggsLaid": 2,
     "babiesHatched": 1,
     "babyPigeonIds": [
-      "pigeon_2026_002"
+      "2026-02"
     ],
     "notes": "Produced prime hen 2026-002.",
     "createdAt": "2025-12-22T10:00:00Z"
@@ -36,8 +36,8 @@
     "eggsLaid": 2,
     "babiesHatched": 2,
     "babyPigeonIds": [
-      "pigeon_2026_003",
-      "pigeon_2026_004"
+      "2026-03",
+      "2026-04"
     ],
     "notes": "100% hatch rate. Produced top racing pair siblings 2026-003 and 2026-004.",
     "createdAt": "2025-12-28T10:00:00Z"
@@ -51,8 +51,8 @@
     "eggsLaid": 2,
     "babiesHatched": 2,
     "babyPigeonIds": [
-      "pigeon_2026_009",
-      "pigeon_2026_010"
+      "2026-09",
+      "2026-10"
     ],
     "notes": "Outstanding hatch, 2 fertile eggs. Produced 2026-009 & 2026-010.",
     "createdAt": "2026-02-08T08:00:00Z"
@@ -66,8 +66,8 @@
     "eggsLaid": 2,
     "babiesHatched": 2,
     "babyPigeonIds": [
-      "pigeon_2026_023",
-      "pigeon_2026_024"
+      "2026-23",
+      "2026-24"
     ],
     "notes": "Both eggs hatched vigorously.",
     "createdAt": "2026-04-20T08:00:00Z"
@@ -81,8 +81,8 @@
     "eggsLaid": 2,
     "babiesHatched": 2,
     "babyPigeonIds": [
-      "pigeon_2026_033",
-      "pigeon_2026_034"
+      "2026-33",
+      "2026-34"
     ],
     "notes": "Third round for pair 2026-01. Hatching rate 100% (6/6 eggs).",
     "createdAt": "2026-06-20T08:00:00Z"
@@ -96,8 +96,8 @@
     "eggsLaid": 2,
     "babiesHatched": 2,
     "babyPigeonIds": [
-      "pigeon_2026_011",
-      "pigeon_2026_012"
+      "2026-11",
+      "2026-12"
     ],
     "notes": "Produced star racers 2026-011 and 2026-012.",
     "createdAt": "2026-02-22T08:00:00Z"
@@ -111,8 +111,8 @@
     "eggsLaid": 2,
     "babiesHatched": 2,
     "babyPigeonIds": [
-      "pigeon_2026_025",
-      "pigeon_2026_026"
+      "2026-25",
+      "2026-26"
     ],
     "notes": "Round 2 for racer pair.",
     "createdAt": "2026-05-01T08:00:00Z"
@@ -126,8 +126,8 @@
     "eggsLaid": 2,
     "babiesHatched": 2,
     "babyPigeonIds": [
-      "pigeon_2026_013",
-      "pigeon_2026_014"
+      "2026-13",
+      "2026-14"
     ],
     "notes": "Produced 2026-013 & 2026-014.",
     "createdAt": "2026-03-05T08:00:00Z"
@@ -141,8 +141,8 @@
     "eggsLaid": 2,
     "babiesHatched": 2,
     "babyPigeonIds": [
-      "pigeon_2026_027",
-      "pigeon_2026_028"
+      "2026-27",
+      "2026-28"
     ],
     "notes": "Produced 2026-027 & 2026-028.",
     "createdAt": "2026-05-12T08:00:00Z"
@@ -156,8 +156,8 @@
     "eggsLaid": 2,
     "babiesHatched": 2,
     "babyPigeonIds": [
-      "pigeon_2026_037",
-      "pigeon_2026_038"
+      "2026-37",
+      "2026-38"
     ],
     "notes": "Round 3 for pair 2026-03.",
     "createdAt": "2026-07-12T08:00:00Z"
@@ -171,8 +171,8 @@
     "eggsLaid": 2,
     "babiesHatched": 2,
     "babyPigeonIds": [
-      "pigeon_2026_029",
-      "pigeon_2026_030"
+      "2026-29",
+      "2026-30"
     ],
     "notes": "Produced speed cross squabs 2026-029 & 2026-030.",
     "createdAt": "2026-05-25T08:00:00Z"
@@ -186,8 +186,8 @@
     "eggsLaid": 2,
     "babiesHatched": 2,
     "babyPigeonIds": [
-      "pigeon_2026_031",
-      "pigeon_2026_032"
+      "2026-31",
+      "2026-32"
     ],
     "notes": "Heritage cross 4th generation squabs.",
     "createdAt": "2026-06-08T08:00:00Z"
@@ -201,8 +201,8 @@
     "eggsLaid": 2,
     "babiesHatched": 2,
     "babyPigeonIds": [
-      "pigeon_2026_035",
-      "pigeon_2026_036"
+      "2026-35",
+      "2026-36"
     ],
     "notes": "Young racer pair 1st round.",
     "createdAt": "2026-07-01T08:00:00Z"
@@ -216,8 +216,8 @@
     "eggsLaid": 2,
     "babiesHatched": 2,
     "babyPigeonIds": [
-      "pigeon_2026_039",
-      "pigeon_2026_040"
+      "2026-39",
+      "2026-40"
     ],
     "notes": "Pure white x red bar pair 1st round.",
     "createdAt": "2026-07-18T08:00:00Z"

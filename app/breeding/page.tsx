@@ -14,7 +14,7 @@ import { PairTable } from "@/components/breeding/PairTable";
 import { PairFormModal } from "@/components/breeding/PairFormModal";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { HeartHandshake, GitFork, PlusCircle, Egg, Baby, ArrowRight } from "lucide-react";
+import { HeartHandshake, GitFork, PlusCircle, ArrowRight } from "lucide-react";
 
 export default function BreedingOverviewPage() {
   const [pairs, setPairs] = useState<Pair[]>([]);

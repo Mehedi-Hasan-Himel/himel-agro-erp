@@ -40,11 +40,11 @@ import {
   Clock,
   ArrowRight,
   Egg,
-  Baby,
   ShieldCheck,
   MapPin,
   ExternalLink,
 } from "lucide-react";
+import { SquabIcon } from "@/components/ui/icons/SquabIcon";
 
 export default function DashboardPage() {
   const [pigeons, setPigeons] = useState<Pigeon[]>([]);
@@ -147,87 +147,104 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-7 sm:space-y-8">
       {/* Top Welcome Banner */}
-      <div className="bg-gradient-to-r from-emerald-800 via-emerald-900 to-slate-900 text-white rounded-3xl p-6 sm:p-8 shadow-sm relative overflow-hidden">
-        <div className="absolute right-0 top-0 bottom-0 opacity-10 flex items-center pr-8 pointer-events-none">
-          <Feather className="w-64 h-64 text-white" />
-        </div>
+      <div className="bg-gradient-to-r from-emerald-800 via-emerald-900 to-slate-900 text-white rounded-2xl sm:rounded-3xl p-5 sm:p-7 lg:p-8 shadow-sm relative overflow-hidden w-full max-w-full min-w-0">
+        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6 sm:gap-8 min-w-0 w-full">
+          {/* Main Brand & Info Area */}
+          <div className="flex flex-col gap-3.5 sm:gap-4 min-w-0 flex-1 w-full">
+            {/* Top Row: Glowing Logo on Left, Live Title + Status on Right */}
+            <div className="flex items-center gap-4 sm:gap-6 min-w-0 w-full">
+              {/* Radiant Green Light Glowing Logo Container */}
+              <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-emerald-950/90 ring-4 ring-emerald-400 ring-offset-2 sm:ring-offset-4 ring-offset-emerald-950 shadow-xl sm:shadow-2xl shadow-emerald-400/50 flex items-center justify-center shrink-0 overflow-hidden">
+                <Image
+                  src={SITE_CONFIG.logoUrl}
+                  alt={SITE_CONFIG.farmName}
+                  width={240}
+                  height={240}
+                  className="w-full h-full object-cover"
+                  unoptimized
+                  priority
+                />
+              </div>
 
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="flex items-start gap-4 sm:gap-5 max-w-2xl">
-            {/* Radiant Green Light Glowing Logo Container */}
-            <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-emerald-500/20 ring-4 ring-emerald-400/90 ring-offset-4 ring-offset-emerald-950 shadow-[0_0_30px_rgba(16,185,129,0.65)] flex items-center justify-center shrink-0 overflow-hidden">
-              <Image
-                src={SITE_CONFIG.logoUrl}
-                alt={SITE_CONFIG.farmName}
-                width={240}
-                height={240}
-                className="w-full h-full object-cover"
-                unoptimized
-                priority
-              />
+              {/* Title & Live Status on Right of Logo */}
+              <div className="min-w-0 flex-1">
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-700/60 border border-emerald-500/30 text-emerald-300 text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider mb-1.5 shadow-2xs max-w-full">
+                  <span className="relative flex h-2 w-2 shrink-0">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
+                  </span>
+                  <span className="truncate">Live Loft • {stats.totalActive} Active Birds</span>
+                </div>
+                <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white tracking-tight leading-tight break-words">
+                  {SITE_CONFIG.farmName}
+                </h1>
+                <p className="text-emerald-200/90 text-xs sm:text-sm flex items-center gap-2 mt-1 truncate">
+                  <span>{SITE_CONFIG.ownerName}</span>
+                  <span>•</span>
+                  <span>{SITE_CONFIG.contactNumber}</span>
+                </p>
+              </div>
             </div>
-            <div>
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-700/60 border border-emerald-500/30 text-emerald-300 text-[11px] font-semibold uppercase tracking-wider mb-1.5 shadow-2xs">
-                <ShieldCheck className="w-3 h-3" /> Live Loft Status • {SITE_CONFIG.shortName} ERP
-              </div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-                {SITE_CONFIG.farmName}
-              </h1>
-              <p className="text-emerald-100/80 text-xs sm:text-sm mt-1 leading-relaxed">
-                Managing <strong>{stats.totalActive} Active Pigeons</strong> across{" "}
-                {Object.keys(stats.breedDistribution).length} breed lines with complete
-                genealogy and performance tracking.
-              </p>
 
-              <div className="mt-4 flex flex-wrap items-center gap-2">
-                <Link
-                  href="/pigeons/new"
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 active:bg-emerald-600 text-slate-950 font-bold text-xs shadow-sm transition-all"
-                >
-                  <PlusCircle className="w-4 h-4" /> Register Pigeon
-                </Link>
-                <Link
-                  href="/breeding/pairs"
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-xs border border-white/10 transition-all"
-                >
-                  <GitFork className="w-4 h-4" /> Form Pair
-                </Link>
-              </div>
+            {/* Description */}
+            <p className="text-emerald-100/80 text-xs sm:text-sm leading-relaxed break-words mt-1 max-w-2xl">
+              Managing <strong>{stats.totalActive} Active Pigeons</strong> across{" "}
+              {Object.keys(stats.breedDistribution).length} breed lines with complete
+              genealogy and performance tracking.
+            </p>
+
+            {/* Quick Action Buttons */}
+            <div className="mt-2 sm:mt-3 flex flex-wrap items-center gap-2.5 sm:gap-3 w-full sm:w-auto">
+              <Link
+                href="/pigeons/new"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 active:bg-emerald-600 text-slate-950 font-bold text-xs shadow-sm transition-all flex-1 sm:flex-initial text-center cursor-pointer"
+              >
+                <PlusCircle className="w-4 h-4 shrink-0" />
+                <span>Register Pigeon</span>
+              </Link>
+              <Link
+                href="/breeding/pairs"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-xs border border-white/10 transition-all flex-1 sm:flex-initial text-center cursor-pointer"
+              >
+                <GitFork className="w-4 h-4 shrink-0" />
+                <span>Form Pair</span>
+              </Link>
             </div>
           </div>
 
-          <div className="flex flex-wrap md:flex-col gap-2 shrink-0">
+          {/* Contact / Social Quick Links */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 lg:flex lg:flex-col gap-2.5 w-full lg:w-48 xl:w-56 shrink-0 pt-4 lg:pt-0 border-t border-emerald-700/40 lg:border-t-0 mt-2 lg:mt-0">
             <a
               href={SITE_CONFIG.whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold shadow-sm transition-all"
+              className="inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold shadow-sm transition-all w-full text-center"
             >
               <span className="font-black text-sm">WA</span>
-              <span>WhatsApp ({SITE_CONFIG.whatsappNumber})</span>
-              <ExternalLink className="w-3.5 h-3.5 opacity-80" />
+              <span className="truncate">WhatsApp ({SITE_CONFIG.whatsappNumber})</span>
+              <ExternalLink className="w-3.5 h-3.5 opacity-80 shrink-0" />
             </a>
             <a
               href={SITE_CONFIG.facebookUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl bg-blue-600/90 hover:bg-blue-500 text-white text-xs font-bold shadow-sm transition-all border border-blue-400/30"
+              className="inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-blue-600/90 hover:bg-blue-500 text-white text-xs font-bold shadow-sm transition-all border border-blue-400/30 w-full text-center"
             >
               <span className="font-black">f</span>
               <span>Facebook Page</span>
-              <ExternalLink className="w-3.5 h-3.5 opacity-80" />
+              <ExternalLink className="w-3.5 h-3.5 opacity-80 shrink-0" />
             </a>
             <a
               href={SITE_CONFIG.googleMapUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold shadow-sm transition-all border border-white/10"
+              className="inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold shadow-sm transition-all border border-white/10 w-full text-center"
             >
-              <MapPin className="w-3.5 h-3.5 text-emerald-300" />
+              <MapPin className="w-3.5 h-3.5 text-emerald-300 shrink-0" />
               <span>Loft Location</span>
-              <ExternalLink className="w-3.5 h-3.5 opacity-80" />
+              <ExternalLink className="w-3.5 h-3.5 opacity-80 shrink-0" />
             </a>
           </div>
         </div>
@@ -236,12 +253,12 @@ export default function DashboardPage() {
       {/* Pigeon KPI Cards Grid */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700">
             Flock Population & Inventory (Live)
           </h2>
           <Link
             href="/pigeons"
-            className="text-xs font-semibold text-emerald-700 hover:underline flex items-center gap-1"
+            className="text-xs font-bold text-emerald-800 hover:text-emerald-900 hover:underline flex items-center gap-1"
           >
             View All Pigeons <ArrowRight className="w-3.5 h-3.5" />
           </Link>
@@ -249,80 +266,80 @@ export default function DashboardPage() {
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
           {/* Total Pigeons */}
-          <Card className="bg-white border-slate-200/80 hover:border-emerald-300 transition-all">
+          <Card className="bg-white border-slate-200/80 hover:border-emerald-300 transition-all shadow-xs">
             <CardContent className="p-4 sm:p-5">
-              <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
-                <span className="font-semibold text-slate-600">Total Active</span>
-                <Feather className="w-4 h-4 text-emerald-600" />
+              <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
+                <span className="font-bold text-slate-700">Total Active</span>
+                <Feather className="w-4 h-4 text-emerald-700" />
               </div>
               <div className="text-2xl sm:text-3xl font-black text-slate-900">
                 {stats.totalActive}
               </div>
-              <span className="text-[10px] text-slate-400 mt-1 block">
+              <span className="text-[11px] text-slate-500 mt-1 block font-medium">
                 {stats.totalHistorical} total recorded in ERP
               </span>
             </CardContent>
           </Card>
 
           {/* Active Males */}
-          <Card className="bg-white border-slate-200/80 hover:border-sky-300 transition-all">
+          <Card className="bg-white border-slate-200/80 hover:border-sky-300 transition-all shadow-xs">
             <CardContent className="p-4 sm:p-5">
-              <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
-                <span className="font-semibold text-slate-600">Male (Cocks)</span>
-                <span className="text-sky-600 font-bold text-sm">♂</span>
+              <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
+                <span className="font-bold text-slate-700">Male (Cocks)</span>
+                <span className="text-sky-700 font-bold text-base">♂</span>
               </div>
-              <div className="text-2xl sm:text-3xl font-black text-sky-700">
+              <div className="text-2xl sm:text-3xl font-black text-sky-800">
                 {stats.activeMales}
               </div>
-              <span className="text-[10px] text-slate-400 mt-1 block">
+              <span className="text-[11px] text-slate-500 mt-1 block font-medium">
                 Breeding & racing cocks
               </span>
             </CardContent>
           </Card>
 
           {/* Active Females */}
-          <Card className="bg-white border-slate-200/80 hover:border-pink-300 transition-all">
+          <Card className="bg-white border-slate-200/80 hover:border-pink-300 transition-all shadow-xs">
             <CardContent className="p-4 sm:p-5">
-              <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
-                <span className="font-semibold text-slate-600">Female (Hens)</span>
-                <span className="text-pink-600 font-bold text-sm">♀</span>
+              <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
+                <span className="font-bold text-slate-700">Female (Hens)</span>
+                <span className="text-pink-700 font-bold text-base">♀</span>
               </div>
-              <div className="text-2xl sm:text-3xl font-black text-pink-700">
+              <div className="text-2xl sm:text-3xl font-black text-pink-800">
                 {stats.activeFemales}
               </div>
-              <span className="text-[10px] text-slate-400 mt-1 block">
+              <span className="text-[11px] text-slate-500 mt-1 block font-medium">
                 Breeding & racing hens
               </span>
             </CardContent>
           </Card>
 
           {/* Babies / Squabs */}
-          <Card className="bg-white border-slate-200/80 hover:border-emerald-300 transition-all">
+          <Card className="bg-white border-slate-200/80 hover:border-emerald-300 transition-all shadow-xs">
             <CardContent className="p-4 sm:p-5">
-              <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
-                <span className="font-semibold text-slate-600">Babies (Squabs)</span>
-                <Baby className="w-4 h-4 text-emerald-600" />
+              <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
+                <span className="font-bold text-slate-700">Babies (Squabs)</span>
+                <SquabIcon className="w-4 h-4 text-emerald-700" />
               </div>
-              <div className="text-2xl sm:text-3xl font-black text-emerald-700">
+              <div className="text-2xl sm:text-3xl font-black text-emerald-800">
                 {stats.activeBabies}
               </div>
-              <span className="text-[10px] text-slate-400 mt-1 block">
+              <span className="text-[11px] text-slate-500 mt-1 block font-medium">
                 Nursery & young squabs
               </span>
             </CardContent>
           </Card>
 
           {/* Available for Sale */}
-          <Card className="bg-white border-slate-200/80 hover:border-blue-300 transition-all col-span-2 sm:col-span-1">
+          <Card className="bg-white border-slate-200/80 hover:border-blue-300 transition-all shadow-xs col-span-2 sm:col-span-1">
             <CardContent className="p-4 sm:p-5">
-              <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
-                <span className="font-semibold text-slate-600">Available Sale</span>
-                <DollarSign className="w-4 h-4 text-blue-600" />
+              <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
+                <span className="font-bold text-slate-700">Available Sale</span>
+                <DollarSign className="w-4 h-4 text-blue-700" />
               </div>
-              <div className="text-2xl sm:text-3xl font-black text-blue-700">
+              <div className="text-2xl sm:text-3xl font-black text-blue-800">
                 {stats.availableForSale}
               </div>
-              <span className="text-[10px] text-slate-400 mt-1 block">
+              <span className="text-[11px] text-slate-500 mt-1 block font-medium">
                 Ready for enthusiasts
               </span>
             </CardContent>

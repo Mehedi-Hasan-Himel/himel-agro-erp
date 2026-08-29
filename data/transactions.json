@@ -79,7 +79,7 @@
     "category": "Pigeon Sale",
     "amount": 5500,
     "description": "Sold 2026-HAG-19 (Lal Chila Male) to Tanvir Ahmed",
-    "pigeonId": "pigeon_2026_019",
+    "pigeonId": "2026-19",
     "notes": "Uttara delivery completed"
   },
   {
@@ -107,7 +107,7 @@
     "category": "Pigeon Sale",
     "amount": 9000,
     "description": "Sold 2026-HAG-20 (Blue Bar Racer Hen) to Kazi Firoz",
-    "pigeonId": "pigeon_2026_020",
+    "pigeonId": "2026-20",
     "notes": "Dhanmondi Loft pickup"
   },
   {

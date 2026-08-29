@@ -35,7 +35,7 @@ export function PrintablePedigree({ tree, id = "pedigree-certificate" }: Printab
       <div className="border-b-2 border-emerald-700 pb-5 mb-6 flex items-center justify-between">
         <div className="flex items-center gap-4">
           {/* Radiant Green Light Glowing Seal Logo Container */}
-          <div className="relative w-16 h-16 rounded-full bg-emerald-500/15 ring-2 ring-emerald-600/90 shadow-[0_0_14px_rgba(16,185,129,0.4)] flex items-center justify-center shrink-0 overflow-hidden">
+          <div className="relative w-16 h-16 rounded-full bg-emerald-50 ring-2 ring-emerald-600 shadow-md shadow-emerald-700/30 flex items-center justify-center shrink-0 overflow-hidden">
             <Image
               src={SITE_CONFIG.logoUrl}
               alt={`${SITE_CONFIG.farmName} Logo`}

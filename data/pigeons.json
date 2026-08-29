@@ -1,6 +1,6 @@
 [
   {
-    "id": "pigeon_2025_001",
+    "id": "2025-01",
     "ringYear": 2025,
     "ringSerial": 1,
     "farmName": "Himel Agro",
@@ -22,7 +22,7 @@
     "updatedAt": "2026-08-25T12:00:00Z"
   },
   {
-    "id": "pigeon_2025_002",
+    "id": "2025-02",
     "ringYear": 2025,
     "ringSerial": 2,
     "farmName": "Himel Agro",
@@ -43,7 +43,7 @@
     "updatedAt": "2026-08-25T12:00:00Z"
   },
   {
-    "id": "pigeon_2025_003",
+    "id": "2025-03",
     "ringYear": 2025,
     "ringSerial": 3,
     "farmName": "Himel Agro",
@@ -64,7 +64,7 @@
     "updatedAt": "2026-08-25T12:00:00Z"
   },
   {
-    "id": "pigeon_2025_004",
+    "id": "2025-04",
     "ringYear": 2025,
     "ringSerial": 4,
     "farmName": "Himel Agro",
@@ -85,7 +85,7 @@
     "updatedAt": "2026-08-25T12:00:00Z"
   },
   {
-    "id": "pigeon_2025_005",
+    "id": "2025-05",
     "ringYear": 2025,
     "ringSerial": 5,
     "farmName": "Himel Agro",
@@ -106,7 +106,7 @@
     "updatedAt": "2026-08-25T12:00:00Z"
   },
   {
-    "id": "pigeon_2025_006",
+    "id": "2025-06",
     "ringYear": 2025,
     "ringSerial": 6,
     "farmName": "Himel Agro",
@@ -127,7 +127,7 @@
     "updatedAt": "2026-08-25T12:00:00Z"
   },
   {
-    "id": "pigeon_2025_007",
+    "id": "2025-07",
     "ringYear": 2025,
     "ringSerial": 7,
     "farmName": "Himel Agro",
@@ -148,7 +148,7 @@
     "updatedAt": "2026-08-25T12:00:00Z"
   },
   {
-    "id": "pigeon_2025_008",
+    "id": "2025-08",
     "ringYear": 2025,
     "ringSerial": 8,
     "farmName": "Himel Agro",
@@ -169,7 +169,7 @@
     "updatedAt": "2026-08-25T12:00:00Z"
   },
   {
-    "id": "pigeon_2026_001",
+    "id": "2026-01",
     "ringYear": 2026,
     "ringSerial": 1,
     "farmName": "Himel Agro",
@@ -178,8 +178,8 @@
     "sex": "MALE",
     "breed": "Giribaz / Local",
     "breedSubtype": "Khaki",
-    "fatherId": "pigeon_2025_001",
-    "motherId": "pigeon_2025_002",
+    "fatherId": "2025-01",
+    "motherId": "2025-02",
     "source": "BORN_HIMEL_AGRO",
     "status": "ACTIVE",
     "firstFlyingDate": "2026-02-28",
@@ -188,7 +188,7 @@
     "updatedAt": "2026-08-25T12:00:00Z"
   },
   {
-    "id": "pigeon_2026_002",
+    "id": "2026-02",
     "ringYear": 2026,
     "ringSerial": 2,
     "farmName": "Himel Agro",
@@ -197,8 +197,8 @@
     "sex": "FEMALE",
     "breed": "Giribaz / Local",
     "breedSubtype": "Lal Chila",
-    "fatherId": "pigeon_2025_003",
-    "motherId": "pigeon_2025_004",
+    "fatherId": "2025-03",
+    "motherId": "2025-04",
     "source": "BORN_HIMEL_AGRO",
     "status": "ACTIVE",
     "firstFlyingDate": "2026-03-05",
@@ -207,7 +207,7 @@
     "updatedAt": "2026-08-25T12:00:00Z"
   },
   {
-    "id": "pigeon_2026_003",
+    "id": "2026-03",
     "ringYear": 2026,
     "ringSerial": 3,
     "farmName": "Himel Agro",
@@ -216,8 +216,8 @@
     "sex": "MALE",
     "breed": "Racer",
     "breedSubtype": "Blue Bar Racer",
-    "fatherId": "pigeon_2025_005",
-    "motherId": "pigeon_2025_006",
+    "fatherId": "2025-05",
+    "motherId": "2025-06",
     "source": "BORN_HIMEL_AGRO",
     "status": "ACTIVE",
     "firstFlyingDate": "2026-03-10",
@@ -226,7 +226,7 @@
     "updatedAt": "2026-08-25T12:00:00Z"
   },
   {
-    "id": "pigeon_2026_004",
+    "id": "2026-04",
     "ringYear": 2026,
     "ringSerial": 4,
     "farmName": "Himel Agro",
@@ -235,8 +235,8 @@
     "sex": "FEMALE",
     "breed": "Racer",
     "breedSubtype": "Maxi Racer",
-    "fatherId": "pigeon_2025_005",
-    "motherId": "pigeon_2025_006",
+    "fatherId": "2025-05",
+    "motherId": "2025-06",
     "source": "BORN_HIMEL_AGRO",
     "status": "ACTIVE",
     "firstFlyingDate": "2026-03-12",
@@ -245,7 +245,7 @@
     "updatedAt": "2026-08-25T12:00:00Z"
   },
   {
-    "id": "pigeon_2026_005",
+    "id": "2026-05",
     "ringYear": 2026,
     "ringSerial": 5,
     "farmName": "Himel Agro",
@@ -254,8 +254,8 @@
     "sex": "MALE",
     "breed": "Giribaz / Local",
     "breedSubtype": "Mosaldom",
-    "fatherId": "pigeon_2025_001",
-    "motherId": "pigeon_2025_004",
+    "fatherId": "2025-01",
+    "motherId": "2025-04",
     "source": "BORN_HIMEL_AGRO",
     "status": "ACTIVE",
     "notes": "Strong head profile and distinctive Mosaldom coloration.",
@@ -263,7 +263,7 @@
     "updatedAt": "2026-08-25T12:00:00Z"
   },
   {
-    "id": "pigeon_2026_006",
+    "id": "2026-06",
     "ringYear": 2026,
     "ringSerial": 6,
     "farmName": "Himel Agro",
@@ -272,8 +272,8 @@
     "sex": "FEMALE",
     "breed": "Giribaz / Local",
     "breedSubtype": "Kalo Chila",
-    "fatherId": "pigeon_2025_003",
-    "motherId": "pigeon_2025_002",
+    "fatherId": "2025-03",
+    "motherId": "2025-02",
     "source": "BORN_HIMEL_AGRO",
     "status": "ACTIVE",
     "notes": "Dark black and reddish pattern. Excellent brooding mother.",
@@ -281,7 +281,7 @@
     "updatedAt": "2026-08-25T12:00:00Z"
   },
   {
-    "id": "pigeon_2026_007",
+    "id": "2026-07",
     "ringYear": 2026,
     "ringSerial": 7,
     "farmName": "Himel Agro",
@@ -290,8 +290,8 @@
     "sex": "MALE",
     "breed": "Racer",
     "breedSubtype": "Chequer Racer",
-    "fatherId": "pigeon_2025_007",
-    "motherId": "pigeon_2025_008",
+    "fatherId": "2025-07",
+    "motherId": "2025-08",
     "source": "BORN_HIMEL_AGRO",
     "status": "ACTIVE",
     "notes": "High speed sprinter, won loft toss test at 80km.",
@@ -299,7 +299,7 @@
     "updatedAt": "2026-08-25T12:00:00Z"
   },
   {
-    "id": "pigeon_2026_008",
+    "id": "2026-08",
     "ringYear": 2026,
     "ringSerial": 8,
     "farmName": "Himel Agro",
@@ -308,8 +308,8 @@
     "sex": "FEMALE",
     "breed": "Racer",
     "breedSubtype": "Mili Racer",
-    "fatherId": "pigeon_2025_007",
-    "motherId": "pigeon_2025_006",
+    "fatherId": "2025-07",
+    "motherId": "2025-06",
     "source": "BORN_HIMEL_AGRO",
     "status": "ACTIVE",
     "notes": "Cross-line racer hen with silky feather texture.",
@@ -317,7 +317,7 @@
     "updatedAt": "2026-08-25T12:00:00Z"
   },
   {
-    "id": "pigeon_2026_009",
+    "id": "2026-09",
     "ringYear": 2026,
     "ringSerial": 9,
     "farmName": "Himel Agro",
@@ -326,8 +326,8 @@
     "sex": "MALE",
     "breed": "Giribaz / Local",
     "breedSubtype": "Standard Giribaz",
-    "fatherId": "pigeon_2026_001",
-    "motherId": "pigeon_2026_002",
+    "fatherId": "2026-01",
+    "motherId": "2026-02",
     "source": "BORN_HIMEL_AGRO",
     "status": "ACTIVE",
     "firstFlyingDate": "2026-04-15",
@@ -336,7 +336,7 @@
     "updatedAt": "2026-08-25T12:00:00Z"
   },
   {
-    "id": "pigeon_2026_010",
+    "id": "2026-10",
     "ringYear": 2026,
     "ringSerial": 10,
     "farmName": "Himel Agro",
@@ -345,8 +345,8 @@
     "sex": "FEMALE",
     "breed": "Giribaz / Local",
     "breedSubtype": "Chuina",
-    "fatherId": "pigeon_2026_001",
-    "motherId": "pigeon_2026_002",
+    "fatherId": "2026-01",
+    "motherId": "2026-02",
     "source": "BORN_HIMEL_AGRO",
     "status": "ACTIVE",
     "notes": "Full sister to 2026-009, high-flying family line.",
@@ -354,7 +354,7 @@
     "updatedAt": "2026-08-25T12:00:00Z"
   },
   {
-    "id": "pigeon_2026_011",
+    "id": "2026-11",
     "ringYear": 2026,
     "ringSerial": 11,
     "farmName": "Himel Agro",
@@ -363,8 +363,8 @@
     "sex": "MALE",
     "breed": "Racer",
     "breedSubtype": "Blue Bar Racer",
-    "fatherId": "pigeon_2026_003",
-    "motherId": "pigeon_2026_008",
+    "fatherId": "2026-03",
+    "motherId": "2026-08",
     "source": "BORN_HIMEL_AGRO",
     "status": "ACTIVE",
     "firstFlyingDate": "2026-04-25",
@@ -373,7 +373,7 @@
     "updatedAt": "2026-08-25T12:00:00Z"
   },
   {
-    "id": "pigeon_2026_012",
+    "id": "2026-12",
     "ringYear": 2026,
     "ringSerial": 12,
     "farmName": "Himel Agro",
@@ -382,8 +382,8 @@
     "sex": "FEMALE",
     "breed": "Racer",
     "breedSubtype": "Maxi Racer",
-    "fatherId": "pigeon_2026_003",
-    "motherId": "pigeon_2026_008",
+    "fatherId": "2026-03",
+    "motherId": "2026-08",
     "source": "BORN_HIMEL_AGRO",
     "status": "ACTIVE",
     "notes": "Sleek aerodynamic racer hen, pristine health record.",
@@ -391,7 +391,7 @@
     "updatedAt": "2026-08-25T12:00:00Z"
   },
   {
-    "id": "pigeon_2026_013",
+    "id": "2026-13",
     "ringYear": 2026,
     "ringSerial": 13,
     "farmName": "Himel Agro",
@@ -400,8 +400,8 @@
     "sex": "MALE",
     "breed": "Giribaz / Local",
     "breedSubtype": "Khoyragola",
-    "fatherId": "pigeon_2026_005",
-    "motherId": "pigeon_2026_006",
+    "fatherId": "2026-05",
+    "motherId": "2026-06",
     "source": "BORN_HIMEL_AGRO",
     "status": "ACTIVE",
     "notes": "Khoyragola pattern with chestnut neck collar.",
@@ -409,7 +409,7 @@
     "updatedAt": "2026-08-25T12:00:00Z"
   },
   {
-    "id": "pigeon_2026_014",
+    "id": "2026-14",
     "ringYear": 2026,
     "ringSerial": 14,
     "farmName": "Himel Agro",
@@ -418,8 +418,8 @@
     "sex": "FEMALE",
     "breed": "Giribaz / Local",
     "breedSubtype": "Chila",
-    "fatherId": "pigeon_2026_005",
-    "motherId": "pigeon_2026_006",
+    "fatherId": "2026-05",
+    "motherId": "2026-06",
     "source": "BORN_HIMEL_AGRO",
     "status": "ACTIVE",
     "notes": "Compact build, quick tumbler.",
@@ -427,7 +427,7 @@
     "updatedAt": "2026-08-25T12:00:00Z"
   },
   {
-    "id": "pigeon_2026_015",
+    "id": "2026-15",
     "ringYear": 2026,
     "ringSerial": 15,
     "farmName": "Himel Agro",
@@ -448,7 +448,7 @@
     "updatedAt": "2026-08-25T12:00:00Z"
   },
   {
-    "id": "pigeon_2026_016",
+    "id": "2026-16",
     "ringYear": 2026,
     "ringSerial": 16,
     "farmName": "Himel Agro",
@@ -469,7 +469,7 @@
     "updatedAt": "2026-08-25T12:00:00Z"
   },
   {
-    "id": "pigeon_2026_017",
+    "id": "2026-17",
     "ringYear": 2026,
     "ringSerial": 17,
     "farmName": "Himel Agro",
@@ -490,7 +490,7 @@
     "updatedAt": "2026-08-25T12:00:00Z"
   },
   {
-    "id": "pigeon_2026_018",
+    "id": "2026-18",
     "ringYear": 2026,
     "ringSerial": 18,
     "farmName": "Himel Agro",
@@ -511,7 +511,7 @@
     "updatedAt": "2026-08-25T12:00:00Z"
   },
   {
-    "id": "pigeon_2026_019",
+    "id": "2026-19",
     "ringYear": 2026,
     "ringSerial": 19,
     "farmName": "Himel Agro",
@@ -520,8 +520,8 @@
     "sex": "MALE",
     "breed": "Giribaz / Local",
     "breedSubtype": "Lal Chila",
-    "fatherId": "pigeon_2026_001",
-    "motherId": "pigeon_2026_006",
+    "fatherId": "2026-01",
+    "motherId": "2026-06",
     "source": "BORN_HIMEL_AGRO",
     "status": "SOLD",
     "saleDate": "2026-08-01",
@@ -533,7 +533,7 @@
     "updatedAt": "2026-08-01T14:00:00Z"
   },
   {
-    "id": "pigeon_2026_020",
+    "id": "2026-20",
     "ringYear": 2026,
     "ringSerial": 20,
     "farmName": "Himel Agro",
@@ -542,8 +542,8 @@
     "sex": "FEMALE",
     "breed": "Racer",
     "breedSubtype": "Blue Bar Racer",
-    "fatherId": "pigeon_2026_003",
-    "motherId": "pigeon_2026_004",
+    "fatherId": "2026-03",
+    "motherId": "2026-04",
     "source": "BORN_HIMEL_AGRO",
     "status": "SOLD",
     "saleDate": "2026-08-15",
@@ -555,7 +555,7 @@
     "updatedAt": "2026-08-15T15:00:00Z"
   },
   {
-    "id": "pigeon_2026_021",
+    "id": "2026-21",
     "ringYear": 2026,
     "ringSerial": 21,
     "farmName": "Himel Agro",
@@ -564,8 +564,8 @@
     "sex": "MALE",
     "breed": "Giribaz / Local",
     "breedSubtype": "Khaki",
-    "fatherId": "pigeon_2025_001",
-    "motherId": "pigeon_2025_002",
+    "fatherId": "2025-01",
+    "motherId": "2025-02",
     "source": "BORN_HIMEL_AGRO",
     "status": "DEAD",
     "deathDate": "2026-07-10",
@@ -575,7 +575,7 @@
     "updatedAt": "2026-07-10T16:00:00Z"
   },
   {
-    "id": "pigeon_2026_022",
+    "id": "2026-22",
     "ringYear": 2026,
     "ringSerial": 22,
     "farmName": "Himel Agro",
@@ -584,8 +584,8 @@
     "sex": "FEMALE",
     "breed": "Giribaz / Local",
     "breedSubtype": "Pankhi",
-    "fatherId": "pigeon_2025_001",
-    "motherId": "pigeon_2025_002",
+    "fatherId": "2025-01",
+    "motherId": "2025-02",
     "source": "BORN_HIMEL_AGRO",
     "status": "LOST",
     "lostDate": "2026-07-28",
@@ -595,7 +595,7 @@
     "updatedAt": "2026-07-28T18:00:00Z"
   },
   {
-    "id": "pigeon_2026_023",
+    "id": "2026-23",
     "ringYear": 2026,
     "ringSerial": 23,
     "farmName": "Himel Agro",
@@ -604,8 +604,8 @@
     "sex": "MALE",
     "breed": "Giribaz / Local",
     "breedSubtype": "Khaki",
-    "fatherId": "pigeon_2026_001",
-    "motherId": "pigeon_2026_002",
+    "fatherId": "2026-01",
+    "motherId": "2026-02",
     "source": "BORN_HIMEL_AGRO",
     "status": "ACTIVE",
     "firstFlyingDate": "2026-06-30",
@@ -614,7 +614,7 @@
     "updatedAt": "2026-08-25T12:00:00Z"
   },
   {
-    "id": "pigeon_2026_024",
+    "id": "2026-24",
     "ringYear": 2026,
     "ringSerial": 24,
     "farmName": "Himel Agro",
@@ -623,8 +623,8 @@
     "sex": "FEMALE",
     "breed": "Giribaz / Local",
     "breedSubtype": "Lal Chila",
-    "fatherId": "pigeon_2026_001",
-    "motherId": "pigeon_2026_002",
+    "fatherId": "2026-01",
+    "motherId": "2026-02",
     "source": "BORN_HIMEL_AGRO",
     "status": "ACTIVE",
     "notes": "Nestmate to 2026-023. Very calm temperament in loft.",
@@ -632,7 +632,7 @@
     "updatedAt": "2026-08-25T12:00:00Z"
   },
   {
-    "id": "pigeon_2026_025",
+    "id": "2026-25",
     "ringYear": 2026,
     "ringSerial": 25,
     "farmName": "Himel Agro",
@@ -641,8 +641,8 @@
     "sex": "MALE",
     "breed": "Racer",
     "breedSubtype": "Blue Bar Racer",
-    "fatherId": "pigeon_2026_003",
-    "motherId": "pigeon_2026_008",
+    "fatherId": "2026-03",
+    "motherId": "2026-08",
     "source": "BORN_HIMEL_AGRO",
     "status": "ACTIVE",
     "firstFlyingDate": "2026-07-10",
@@ -651,7 +651,7 @@
     "updatedAt": "2026-08-25T12:00:00Z"
   },
   {
-    "id": "pigeon_2026_026",
+    "id": "2026-26",
     "ringYear": 2026,
     "ringSerial": 26,
     "farmName": "Himel Agro",
@@ -660,8 +660,8 @@
     "sex": "FEMALE",
     "breed": "Racer",
     "breedSubtype": "Maxi Racer",
-    "fatherId": "pigeon_2026_003",
-    "motherId": "pigeon_2026_008",
+    "fatherId": "2026-03",
+    "motherId": "2026-08",
     "source": "BORN_HIMEL_AGRO",
     "status": "ACTIVE",
     "notes": "Nestmate to 2026-025.",
@@ -669,7 +669,7 @@
     "updatedAt": "2026-08-25T12:00:00Z"
   },
   {
-    "id": "pigeon_2026_027",
+    "id": "2026-27",
     "ringYear": 2026,
     "ringSerial": 27,
     "farmName": "Himel Agro",
@@ -678,8 +678,8 @@
     "sex": "MALE",
     "breed": "Giribaz / Local",
     "breedSubtype": "Mosaldom",
-    "fatherId": "pigeon_2026_005",
-    "motherId": "pigeon_2026_006",
+    "fatherId": "2026-05",
+    "motherId": "2026-06",
     "source": "BORN_HIMEL_AGRO",
     "status": "ACTIVE",
     "notes": "Young active cock, fast wing beat.",
@@ -687,7 +687,7 @@
     "updatedAt": "2026-08-25T12:00:00Z"
   },
   {
-    "id": "pigeon_2026_028",
+    "id": "2026-28",
     "ringYear": 2026,
     "ringSerial": 28,
     "farmName": "Himel Agro",
@@ -696,8 +696,8 @@
     "sex": "FEMALE",
     "breed": "Giribaz / Local",
     "breedSubtype": "Kalo Chila",
-    "fatherId": "pigeon_2026_005",
-    "motherId": "pigeon_2026_006",
+    "fatherId": "2026-05",
+    "motherId": "2026-06",
     "source": "BORN_HIMEL_AGRO",
     "status": "ACTIVE",
     "notes": "Dark blackish pattern, vigorous feeder.",
@@ -705,7 +705,7 @@
     "updatedAt": "2026-08-25T12:00:00Z"
   },
   {
-    "id": "pigeon_2026_029",
+    "id": "2026-29",
     "ringYear": 2026,
     "ringSerial": 29,
     "farmName": "Himel Agro",
@@ -714,8 +714,8 @@
     "sex": "MALE",
     "breed": "Racer",
     "breedSubtype": "Chequer Racer",
-    "fatherId": "pigeon_2026_007",
-    "motherId": "pigeon_2026_004",
+    "fatherId": "2026-07",
+    "motherId": "2026-04",
     "source": "BORN_HIMEL_AGRO",
     "status": "ACTIVE",
     "notes": "Bred from high-velocity cross.",
@@ -723,7 +723,7 @@
     "updatedAt": "2026-08-25T12:00:00Z"
   },
   {
-    "id": "pigeon_2026_030",
+    "id": "2026-30",
     "ringYear": 2026,
     "ringSerial": 30,
     "farmName": "Himel Agro",
@@ -732,8 +732,8 @@
     "sex": "FEMALE",
     "breed": "Racer",
     "breedSubtype": "Blue Bar Racer",
-    "fatherId": "pigeon_2026_007",
-    "motherId": "pigeon_2026_004",
+    "fatherId": "2026-07",
+    "motherId": "2026-04",
     "source": "BORN_HIMEL_AGRO",
     "status": "ACTIVE",
     "notes": "Healthy young hen.",
@@ -741,7 +741,7 @@
     "updatedAt": "2026-08-25T12:00:00Z"
   },
   {
-    "id": "pigeon_2026_031",
+    "id": "2026-31",
     "ringYear": 2026,
     "ringSerial": 31,
     "farmName": "Himel Agro",
@@ -750,8 +750,8 @@
     "sex": "MALE",
     "breed": "Giribaz / Local",
     "breedSubtype": "Standard Giribaz",
-    "fatherId": "pigeon_2026_009",
-    "motherId": "pigeon_2026_016",
+    "fatherId": "2026-09",
+    "motherId": "2026-16",
     "source": "BORN_HIMEL_AGRO",
     "status": "ACTIVE",
     "notes": "4th generation squab from 2026-009!",
@@ -759,7 +759,7 @@
     "updatedAt": "2026-08-25T12:00:00Z"
   },
   {
-    "id": "pigeon_2026_032",
+    "id": "2026-32",
     "ringYear": 2026,
     "ringSerial": 32,
     "farmName": "Himel Agro",
@@ -768,8 +768,8 @@
     "sex": "FEMALE",
     "breed": "Giribaz / Local",
     "breedSubtype": "Standard Giribaz",
-    "fatherId": "pigeon_2026_009",
-    "motherId": "pigeon_2026_016",
+    "fatherId": "2026-09",
+    "motherId": "2026-16",
     "source": "BORN_HIMEL_AGRO",
     "status": "ACTIVE",
     "notes": "Twin squab to 2026-031.",
@@ -777,7 +777,7 @@
     "updatedAt": "2026-08-25T12:00:00Z"
   },
   {
-    "id": "pigeon_2026_033",
+    "id": "2026-33",
     "ringYear": 2026,
     "ringSerial": 33,
     "farmName": "Himel Agro",
@@ -786,8 +786,8 @@
     "sex": "UNKNOWN",
     "breed": "Giribaz / Local",
     "breedSubtype": "Khaki",
-    "fatherId": "pigeon_2026_001",
-    "motherId": "pigeon_2026_002",
+    "fatherId": "2026-01",
+    "motherId": "2026-02",
     "source": "BORN_HIMEL_AGRO",
     "status": "ACTIVE",
     "notes": "Recently feathered baby squab in nursery.",
@@ -795,7 +795,7 @@
     "updatedAt": "2026-08-25T12:00:00Z"
   },
   {
-    "id": "pigeon_2026_034",
+    "id": "2026-34",
     "ringYear": 2026,
     "ringSerial": 34,
     "farmName": "Himel Agro",
@@ -804,8 +804,8 @@
     "sex": "UNKNOWN",
     "breed": "Giribaz / Local",
     "breedSubtype": "Lal Chila",
-    "fatherId": "pigeon_2026_001",
-    "motherId": "pigeon_2026_002",
+    "fatherId": "2026-01",
+    "motherId": "2026-02",
     "source": "BORN_HIMEL_AGRO",
     "status": "ACTIVE",
     "notes": "Baby squab in nursery.",
@@ -813,7 +813,7 @@
     "updatedAt": "2026-08-25T12:00:00Z"
   },
   {
-    "id": "pigeon_2026_035",
+    "id": "2026-35",
     "ringYear": 2026,
     "ringSerial": 35,
     "farmName": "Himel Agro",
@@ -822,8 +822,8 @@
     "sex": "UNKNOWN",
     "breed": "Racer",
     "breedSubtype": "Blue Bar Racer",
-    "fatherId": "pigeon_2026_011",
-    "motherId": "pigeon_2026_012",
+    "fatherId": "2026-11",
+    "motherId": "2026-12",
     "source": "BORN_HIMEL_AGRO",
     "status": "ACTIVE",
     "notes": "4th generation racer baby squab!",
@@ -831,7 +831,7 @@
     "updatedAt": "2026-08-25T12:00:00Z"
   },
   {
-    "id": "pigeon_2026_036",
+    "id": "2026-36",
     "ringYear": 2026,
     "ringSerial": 36,
     "farmName": "Himel Agro",
@@ -840,8 +840,8 @@
     "sex": "UNKNOWN",
     "breed": "Racer",
     "breedSubtype": "Maxi Racer",
-    "fatherId": "pigeon_2026_011",
-    "motherId": "pigeon_2026_012",
+    "fatherId": "2026-11",
+    "motherId": "2026-12",
     "source": "BORN_HIMEL_AGRO",
     "status": "ACTIVE",
     "notes": "Healthy racer baby squab in nursery.",
@@ -849,7 +849,7 @@
     "updatedAt": "2026-08-25T12:00:00Z"
   },
   {
-    "id": "pigeon_2026_037",
+    "id": "2026-37",
     "ringYear": 2026,
     "ringSerial": 37,
     "farmName": "Himel Agro",
@@ -858,8 +858,8 @@
     "sex": "UNKNOWN",
     "breed": "Giribaz / Local",
     "breedSubtype": "Mosaldom",
-    "fatherId": "pigeon_2026_005",
-    "motherId": "pigeon_2026_006",
+    "fatherId": "2026-05",
+    "motherId": "2026-06",
     "source": "BORN_HIMEL_AGRO",
     "status": "ACTIVE",
     "notes": "Newly ringed 2-week-old baby.",
@@ -867,7 +867,7 @@
     "updatedAt": "2026-08-25T12:00:00Z"
   },
   {
-    "id": "pigeon_2026_038",
+    "id": "2026-38",
     "ringYear": 2026,
     "ringSerial": 38,
     "farmName": "Himel Agro",
@@ -876,8 +876,8 @@
     "sex": "UNKNOWN",
     "breed": "Giribaz / Local",
     "breedSubtype": "Kalo Chila",
-    "fatherId": "pigeon_2026_005",
-    "motherId": "pigeon_2026_006",
+    "fatherId": "2026-05",
+    "motherId": "2026-06",
     "source": "BORN_HIMEL_AGRO",
     "status": "ACTIVE",
     "notes": "Newly ringed baby.",
@@ -885,7 +885,7 @@
     "updatedAt": "2026-08-25T12:00:00Z"
   },
   {
-    "id": "pigeon_2026_039",
+    "id": "2026-39",
     "ringYear": 2026,
     "ringSerial": 39,
     "farmName": "Himel Agro",
@@ -894,8 +894,8 @@
     "sex": "UNKNOWN",
     "breed": "Racer",
     "breedSubtype": "White Racer",
-    "fatherId": "pigeon_2026_017",
-    "motherId": "pigeon_2026_018",
+    "fatherId": "2026-17",
+    "motherId": "2026-18",
     "source": "BORN_HIMEL_AGRO",
     "status": "ACTIVE",
     "notes": "Baby from newly formed pure racer pair.",
@@ -903,7 +903,7 @@
     "updatedAt": "2026-08-25T12:00:00Z"
   },
   {
-    "id": "pigeon_2026_040",
+    "id": "2026-40",
     "ringYear": 2026,
     "ringSerial": 40,
     "farmName": "Himel Agro",
@@ -912,8 +912,8 @@
     "sex": "UNKNOWN",
     "breed": "Racer",
     "breedSubtype": "Red Bar Racer",
-    "fatherId": "pigeon_2026_017",
-    "motherId": "pigeon_2026_018",
+    "fatherId": "2026-17",
+    "motherId": "2026-18",
     "source": "BORN_HIMEL_AGRO",
     "status": "ACTIVE",
     "notes": "Baby from racer pair.",

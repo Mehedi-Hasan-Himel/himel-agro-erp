@@ -69,3 +69,41 @@ export async function PUT(
     return NextResponse.json({ error: "Failed to update pigeon" }, { status: 500 });
   }
 }
+
+export async function DELETE(
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    const db = await connectDB();
+    if (db) {
+      const deleted = await PigeonModel.findByIdAndDelete(id).lean();
+      if (!deleted) {
+        return NextResponse.json({ error: "Pigeon not found" }, { status: 404 });
+      }
+      return NextResponse.json({ success: true, message: `Pigeon ${id} deleted permanently.` });
+    }
+
+    const store = fallbackStore.get();
+    const idx = store.pigeons.findIndex((p) => (p._id || p.id) === id);
+    if (idx === -1) {
+      return NextResponse.json({ error: "Pigeon not found" }, { status: 404 });
+    }
+
+    store.pigeons.splice(idx, 1);
+
+    // Also end any active pairs containing this pigeon
+    store.pairs = store.pairs.map((pair) => {
+      if ((pair.maleId === id || pair.femaleId === id) && pair.status === "ACTIVE") {
+        return { ...pair, status: "ENDED", endDate: new Date().toISOString().split("T")[0] };
+      }
+      return pair;
+    });
+
+    return NextResponse.json({ success: true, message: `Pigeon ${id} deleted permanently.` });
+  } catch (error) {
+    console.error("DELETE /api/pigeons/[id] error:", error);
+    return NextResponse.json({ error: "Failed to delete pigeon" }, { status: 500 });
+  }
+}

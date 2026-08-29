@@ -26,7 +26,7 @@
   {
     "id": "health_003",
     "targetType": "INDIVIDUAL",
-    "pigeonId": "pigeon_2026_001",
+    "pigeonId": "2026-01",
     "medicineName": "Tylosin Tartrate 20%",
     "startDate": "2026-06-10",
     "endDate": "2026-06-15",
@@ -38,7 +38,7 @@
   {
     "id": "health_004",
     "targetType": "INDIVIDUAL",
-    "pigeonId": "pigeon_2026_003",
+    "pigeonId": "2026-03",
     "medicineName": "Vitamin E + Selenium (Sel-E)",
     "startDate": "2026-05-10",
     "endDate": "2026-05-17",

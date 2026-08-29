@@ -21,11 +21,14 @@ export function formatRingNumber(pigeon?: RingIdentifiable | null): string {
 }
 
 /**
- * Compact badge format: 2026-HAG-01
+ * Compact badge & Unique ID format: 2026-09
  */
-export function formatCompactRing(pigeon?: RingIdentifiable | null): string {
+export function formatCompactRing(pigeon?: (RingIdentifiable & { id?: string }) | null): string {
   if (!pigeon) return "Unknown";
+  if (pigeon.id && /^\d{4}-\d+$/.test(pigeon.id)) {
+    return pigeon.id;
+  }
   const year = pigeon.ringYear || "----";
   const serial = String(pigeon.ringSerial || 0).padStart(2, "0");
-  return `${year}-HAG-${serial}`;
+  return `${year}-${serial}`;
 }

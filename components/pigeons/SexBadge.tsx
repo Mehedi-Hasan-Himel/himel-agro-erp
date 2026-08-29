@@ -2,6 +2,7 @@ import React from "react";
 import { PigeonSex } from "@/types/pigeon";
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { SquabIcon } from "../ui/icons/SquabIcon";
 
 function cn(...inputs: (string | undefined | null | false)[]) {
   return twMerge(clsx(inputs));
@@ -49,11 +50,12 @@ export function SexBadge({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 border border-slate-200",
+        "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200",
         className
       )}
     >
-      <span>Baby / Unknown</span>
+      {showIcon && <SquabIcon className="w-3 h-3 text-emerald-700 shrink-0" />}
+      <span>Baby / Young</span>
     </span>
   );
 }

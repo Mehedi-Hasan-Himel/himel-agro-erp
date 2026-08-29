@@ -12,7 +12,7 @@ import { Button } from "../ui/Button";
 import { Input } from "../ui/Input";
 import { Select } from "../ui/Select";
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/Card";
-import { AlertCircle, CheckCircle2, Save, ArrowLeft } from "lucide-react";
+import { AlertCircle, Save, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
 export interface PigeonFormProps {
@@ -280,9 +280,14 @@ export function PigeonForm({
       <Card>
         <CardHeader>
           <CardTitle>1. Physical Ring Identity</CardTitle>
-          <span className="text-xs font-mono bg-emerald-50 text-emerald-800 border border-emerald-200 px-2.5 py-1 rounded-lg">
-            Display: {ringYear} | {farmName} | {String(ringSerial).padStart(2, "0")} | {contactNumber}
-          </span>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-xs font-mono font-bold bg-emerald-50 text-emerald-800 border border-emerald-300 px-2.5 py-1 rounded-lg shadow-2xs">
+              Unique ID: {ringYear}-{String(ringSerial).padStart(2, "0")}
+            </span>
+            <span className="text-xs font-mono bg-slate-100 text-slate-600 border border-slate-200 px-2.5 py-1 rounded-lg hidden sm:inline-block">
+              Tag: {ringYear} | {farmName} | {String(ringSerial).padStart(2, "0")} | {contactNumber}
+            </span>
+          </div>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

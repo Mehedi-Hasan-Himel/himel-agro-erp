@@ -10,23 +10,24 @@ import { SexBadge } from "./SexBadge";
 import { formatDate, calculateAge } from "@/lib/formatters/dateFormatter";
 import { formatCompactRing } from "@/lib/formatters/ringFormatter";
 import { SearchInput } from "../ui/SearchInput";
-import { Select } from "../ui/Select";
-import { ArrowRight, Eye, GitFork, Plus, UserPlus } from "lucide-react";
-import { Button } from "../ui/Button";
+import { Eye, GitFork, Edit, Trash2 } from "lucide-react";
+import { DeletePigeonModal } from "./DeletePigeonModal";
 
 export interface PigeonTableProps {
   pigeons: Pigeon[];
   pairs?: Pair[];
   onAddPigeon?: () => void;
+  onRefresh?: () => void;
 }
 
-export function PigeonTable({ pigeons, pairs = [] }: PigeonTableProps) {
+export function PigeonTable({ pigeons, pairs = [], onRefresh }: PigeonTableProps) {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [sexFilter, setSexFilter] = useState("ALL");
   const [breedFilter, setBreedFilter] = useState("ALL");
   const [yearFilter, setYearFilter] = useState("ALL");
   const [sortBy, setSortBy] = useState("hatchDate_desc");
+  const [selectedPigeonForDelete, setSelectedPigeonForDelete] = useState<Pigeon | null>(null);
 
   // Create lookup maps for fast parent & pair retrieval
   const pigeonMap = new Map<string, Pigeon>();
@@ -210,7 +211,7 @@ export function PigeonTable({ pigeons, pairs = [] }: PigeonTableProps) {
           <table className="w-full text-left text-xs border-collapse">
             <thead>
               <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-semibold uppercase tracking-wider">
-                <th className="py-3 px-4">Ring Identity</th>
+                <th className="py-3 px-4">Unique ID / Ring</th>
                 <th className="py-3 px-4">Sex</th>
                 <th className="py-3 px-4">Breed & Subtype</th>
                 <th className="py-3 px-4">Hatch Date / Age</th>
@@ -243,9 +244,12 @@ export function PigeonTable({ pigeons, pairs = [] }: PigeonTableProps) {
                       key={pigeon.id}
                       className="hover:bg-slate-50/80 transition-colors group"
                     >
-                      {/* Ring */}
+                      {/* Ring & Unique ID */}
                       <td className="py-3.5 px-4 font-mono font-medium">
                         <RingBadge pigeon={pigeon} size="sm" />
+                        <div className="text-[10px] text-slate-400 font-mono mt-0.5 truncate max-w-[180px]">
+                          {pigeon.ringYear} | {pigeon.farmName || "Himel Agro"} | {String(pigeon.ringSerial).padStart(2, "0")}
+                        </div>
                       </td>
 
                       {/* Sex */}
@@ -329,7 +333,7 @@ export function PigeonTable({ pigeons, pairs = [] }: PigeonTableProps) {
 
                       {/* Actions */}
                       <td className="py-3.5 px-4 text-right">
-                        <div className="flex items-center justify-end gap-1.5">
+                        <div className="flex items-center justify-end gap-1">
                           <Link
                             href={`/pigeons/${pigeon.id}`}
                             className="p-1.5 text-slate-500 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors"
@@ -344,6 +348,21 @@ export function PigeonTable({ pigeons, pairs = [] }: PigeonTableProps) {
                           >
                             <GitFork className="w-4 h-4" />
                           </Link>
+                          <Link
+                            href={`/pigeons/${pigeon.id}/edit`}
+                            className="p-1.5 text-slate-500 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors"
+                            title="Edit Pigeon"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </Link>
+                          <button
+                            type="button"
+                            onClick={() => setSelectedPigeonForDelete(pigeon)}
+                            className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                            title="Delete Pigeon"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -354,6 +373,19 @@ export function PigeonTable({ pigeons, pairs = [] }: PigeonTableProps) {
           </table>
         </div>
       </div>
+
+      {/* Delete Pigeon Modal */}
+      {selectedPigeonForDelete && (
+        <DeletePigeonModal
+          pigeon={selectedPigeonForDelete}
+          isOpen={!!selectedPigeonForDelete}
+          onClose={() => setSelectedPigeonForDelete(null)}
+          onDeleted={() => {
+            setSelectedPigeonForDelete(null);
+            if (onRefresh) onRefresh();
+          }}
+        />
+      )}
     </div>
   );
 }

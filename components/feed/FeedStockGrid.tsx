@@ -2,7 +2,7 @@ import React from "react";
 import { FeedStockSummary } from "@/types/feed";
 import { Card, CardContent } from "../ui/Card";
 import { formatCurrency } from "@/lib/formatters/currencyFormatter";
-import { Wheat, AlertTriangle, CheckCircle2, TrendingDown } from "lucide-react";
+import { Wheat, AlertTriangle } from "lucide-react";
 
 export interface FeedStockGridProps {
   summaries: FeedStockSummary[];

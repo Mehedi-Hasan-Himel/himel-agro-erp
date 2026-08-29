@@ -1,7 +1,7 @@
 import { Pigeon } from "@/types/pigeon";
 import { PedigreeNodeData } from "@/types/pedigree";
 import { getPigeons } from "@/lib/repositories/pigeonRepository";
-import { getBreedingRoundsForPigeon, calculateHatchingStats } from "@/lib/repositories/breedingRepository";
+import { calculateHatchingStats } from "@/lib/repositories/breedingRepository";
 import { getFlyingRecords } from "@/lib/repositories/flyingRepository";
 
 export async function buildPedigreeTree(

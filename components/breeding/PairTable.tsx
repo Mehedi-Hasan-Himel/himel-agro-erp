@@ -1,16 +1,15 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from "next/link";
 import { Pair, BreedingRound } from "@/types/breeding";
 import { Pigeon } from "@/types/pigeon";
-import { formatCompactRing } from "@/lib/formatters/ringFormatter";
 import { formatDate } from "@/lib/formatters/dateFormatter";
 import { calculateHatchingStats } from "@/lib/repositories/breedingRepository";
 import { endPair } from "@/lib/repositories/breedingRepository";
 import { RingBadge } from "../pigeons/RingBadge";
 import { Button } from "../ui/Button";
-import { Plus, CheckCircle2, History, GitFork, XCircle } from "lucide-react";
+import { Plus, XCircle, Egg } from "lucide-react";
+import { SquabIcon } from "../ui/icons/SquabIcon";
 import { BreedingRoundModal } from "./BreedingRoundModal";
 
 export interface PairTableProps {
@@ -183,13 +182,17 @@ export function PairTable({
 
                       {/* Eggs / Hatched */}
                       <td className="py-3.5 px-4">
-                        <span className="font-semibold text-slate-800">
-                          {stats.totalEggs} eggs
-                        </span>{" "}
-                        /{" "}
-                        <span className="font-bold text-emerald-700">
-                          {stats.totalHatched} hatched
-                        </span>
+                        <div className="flex items-center gap-1.5 text-xs font-semibold">
+                          <span className="inline-flex items-center gap-1 text-slate-800">
+                            <Egg className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                            {stats.totalEggs}
+                          </span>
+                          <span className="text-slate-400 font-normal">/</span>
+                          <span className="inline-flex items-center gap-1 text-emerald-800 font-bold">
+                            <SquabIcon className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
+                            {stats.totalHatched}
+                          </span>
+                        </div>
                       </td>
 
                       {/* Rate */}

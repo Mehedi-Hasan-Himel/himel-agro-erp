@@ -75,17 +75,20 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
       {/* Brand Header */}
       <div className="p-4 border-b border-slate-800 flex items-center justify-between">
         <Link href="/dashboard" className="flex items-center gap-3 group">
-          {/* Radiant Green Light Logo Container */}
-          <div className="relative w-11 h-11 rounded-full flex items-center justify-center shrink-0 bg-emerald-500/20 ring-2 ring-emerald-400/90 ring-offset-2 ring-offset-slate-900 shadow-[0_0_16px_rgba(16,185,129,0.5)] group-hover:scale-105 group-hover:shadow-[0_0_22px_rgba(16,185,129,0.7)] transition-all overflow-hidden">
-            <Image
-              src={SITE_CONFIG.logoUrl}
-              alt={`${SITE_CONFIG.farmName} Logo`}
-              width={160}
-              height={160}
-              className="w-full h-full object-cover"
-              unoptimized
-              priority
-            />
+          {/* Radiant Green Light Logo Container with Live Loft Pulse Effect */}
+          <div className="relative w-11 h-11 shrink-0 flex items-center justify-center">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 pointer-events-none"></span>
+            <div className="relative w-full h-full rounded-full flex items-center justify-center bg-emerald-950/90 ring-2 ring-emerald-400 ring-offset-2 ring-offset-slate-900 shadow-lg shadow-emerald-500/50 group-hover:scale-105 transition-all overflow-hidden">
+              <Image
+                src={SITE_CONFIG.logoUrl}
+                alt={`${SITE_CONFIG.farmName} Logo`}
+                width={160}
+                height={160}
+                className="w-full h-full object-cover"
+                unoptimized
+                priority
+              />
+            </div>
           </div>
           <div className="overflow-hidden">
             <h1 className="font-black text-white text-sm sm:text-base tracking-tight leading-tight truncate">
@@ -132,15 +135,15 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
               key={item.href}
               href={item.href}
               onClick={onClose}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all ${
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-400 ${
                 isActive
-                  ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-xs"
-                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/60"
+                  ? "bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 shadow-xs font-bold"
+                  : "text-slate-300 hover:text-white hover:bg-slate-800/80"
               }`}
             >
               <Icon
                 className={`w-4 h-4 transition-colors ${
-                  isActive ? "text-emerald-400" : "text-slate-400"
+                  isActive ? "text-emerald-300" : "text-slate-400"
                 }`}
               />
               <span>{item.label}</span>
@@ -188,7 +191,7 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
         <div className="p-2.5 bg-slate-800/60 rounded-xl border border-slate-700/60 space-y-1.5">
           <div className="flex items-center justify-between text-[11px]">
             <span className="font-semibold text-slate-300">{SITE_CONFIG.farmName}</span>
-            <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
+            <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
           </div>
           <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono">
             <span>Contact / Loft:</span>

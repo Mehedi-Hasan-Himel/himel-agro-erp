@@ -154,10 +154,10 @@ export default function SettingsPage() {
       )}
 
       {/* Brand Identity & Media Card */}
-      <div className="p-5 bg-gradient-to-r from-emerald-900 to-slate-900 rounded-2xl text-white shadow-md border border-emerald-800/50 flex flex-col sm:flex-row items-center justify-between gap-5">
-        <div className="flex items-center gap-4">
+      <div className="p-4 sm:p-5 bg-gradient-to-r from-emerald-900 to-slate-900 rounded-2xl text-white shadow-md border border-emerald-800/50 flex flex-col md:flex-row items-start md:items-center justify-between gap-5 w-full max-w-full min-w-0">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3.5 sm:gap-4 min-w-0 w-full">
           {/* Radiant Green Light Glowing Logo Container */}
-          <div className="relative w-20 h-20 rounded-full bg-emerald-500/20 ring-4 ring-emerald-400/90 ring-offset-4 ring-offset-emerald-950 shadow-[0_0_30px_rgba(16,185,129,0.65)] flex items-center justify-center shrink-0 overflow-hidden">
+          <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-emerald-950/80 ring-4 ring-emerald-400 ring-offset-2 sm:ring-offset-4 ring-offset-emerald-950 shadow-xl sm:shadow-2xl shadow-emerald-400/50 flex items-center justify-center shrink-0 overflow-hidden">
             <Image
               src={SITE_CONFIG.logoUrl}
               alt={settings.farmName || SITE_CONFIG.farmName}
@@ -167,41 +167,41 @@ export default function SettingsPage() {
               unoptimized
             />
           </div>
-          <div>
+          <div className="min-w-0 flex-1">
             <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">
               Official Farm Branding
             </span>
-            <h2 className="text-xl font-extrabold text-white">
+            <h2 className="text-lg sm:text-xl font-extrabold text-white truncate">
               {settings.farmName || SITE_CONFIG.farmName}
             </h2>
-            <p className="text-xs text-slate-300 flex items-center gap-1.5 mt-0.5">
+            <p className="text-xs text-slate-300 flex items-center gap-1.5 mt-0.5 truncate">
               <MapPin className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-              <span>{settings.location || SITE_CONFIG.location}</span>
+              <span className="truncate">{settings.location || SITE_CONFIG.location}</span>
             </p>
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-3 md:flex md:flex-col lg:flex-row items-center gap-2 w-full md:w-auto shrink-0 pt-2 md:pt-0 border-t border-emerald-800/50 md:border-t-0">
           <a
             href={settings.whatsappNumber ? `https://wa.me/88${settings.whatsappNumber}` : SITE_CONFIG.whatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs font-semibold shadow-sm transition-all"
+            className="w-full md:w-auto inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs font-semibold shadow-sm transition-all text-center"
           >
             <span className="font-black text-sm">WA</span>
-            <span>WhatsApp ({settings.whatsappNumber || SITE_CONFIG.whatsappNumber})</span>
-            <ExternalLink className="w-3 h-3" />
+            <span className="truncate">WhatsApp ({settings.whatsappNumber || SITE_CONFIG.whatsappNumber})</span>
+            <ExternalLink className="w-3 h-3 shrink-0 opacity-80" />
           </a>
           {(settings.facebookUrl || SITE_CONFIG.facebookUrl) && (
             <a
               href={settings.facebookUrl || SITE_CONFIG.facebookUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white text-xs font-semibold shadow-sm transition-all"
+              className="w-full md:w-auto inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white text-xs font-semibold shadow-sm transition-all text-center"
             >
               <span className="font-black text-sm">f</span>
               <span>Facebook Page</span>
-              <ExternalLink className="w-3 h-3" />
+              <ExternalLink className="w-3 h-3 shrink-0 opacity-80" />
             </a>
           )}
           {(settings.googleMapUrl || SITE_CONFIG.googleMapUrl) && (
@@ -209,11 +209,11 @@ export default function SettingsPage() {
               href={settings.googleMapUrl || SITE_CONFIG.googleMapUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-700 hover:bg-slate-600 active:bg-slate-800 text-white text-xs font-semibold shadow-sm transition-all"
+              className="w-full md:w-auto inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-slate-700 hover:bg-slate-600 active:bg-slate-800 text-white text-xs font-semibold shadow-sm transition-all text-center"
             >
-              <MapPin className="w-3.5 h-3.5" />
+              <MapPin className="w-3.5 h-3.5 shrink-0" />
               <span>Google Maps</span>
-              <ExternalLink className="w-3 h-3" />
+              <ExternalLink className="w-3 h-3 shrink-0 opacity-80" />
             </a>
           )}
         </div>

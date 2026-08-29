@@ -77,15 +77,12 @@ export function DeathModal({
           </div>
         )}
 
-        <div className="p-3.5 rounded-xl bg-rose-50/70 border border-rose-100 text-xs text-rose-900 leading-relaxed">
-          <p className="font-semibold mb-1 flex items-center gap-1.5 text-rose-700">
-            <AlertTriangle className="w-4 h-4" /> Permanent Archival Notice:
+        <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-700 leading-relaxed">
+          <p className="font-semibold mb-1 flex items-center gap-1.5 text-slate-800">
+            <AlertTriangle className="w-4 h-4 text-amber-500" /> Archival Record Notice:
           </p>
           <p>
-            The pigeon will be updated to <strong>DEAD</strong> status. As per
-            Himel Agro data rules, this pigeon will <strong>NEVER</strong> be
-            deleted. Its full genealogy, breeding records, and offspring history
-            will remain permanently active for ancestry and research.
+            Recording demise updates the pigeon status to <strong>DEAD</strong> while safely preserving its bloodline genealogy and breeding history. (To completely remove mistakenly created records, use the <strong>Delete Pigeon</strong> option instead).
           </p>
         </div>
 
