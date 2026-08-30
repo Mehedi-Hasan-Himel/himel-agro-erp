@@ -2,7 +2,7 @@ import React from "react";
 import { PigeonSex } from "@/types/pigeon";
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { SquabIcon } from "../ui/icons/SquabIcon";
+import { CockPigeonIcon, HenPigeonIcon, SquabIcon } from "../ui/icons";
 
 function cn(...inputs: (string | undefined | null | false)[]) {
   return twMerge(clsx(inputs));
@@ -23,12 +23,12 @@ export function SexBadge({
     return (
       <span
         className={cn(
-          "inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-sky-50 text-sky-700 border border-sky-200",
+          "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-sky-50 text-sky-700 border border-sky-200",
           className
         )}
       >
-        {showIcon && <span className="font-bold">♂</span>}
-        <span>Cock (Male)</span>
+        {showIcon && <CockPigeonIcon className="w-3.5 h-3.5 text-sky-700 shrink-0" />}
+        <span>Male</span>
       </span>
     );
   }
@@ -37,12 +37,12 @@ export function SexBadge({
     return (
       <span
         className={cn(
-          "inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-pink-50 text-pink-700 border border-pink-200",
+          "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-pink-50 text-pink-700 border border-pink-200",
           className
         )}
       >
-        {showIcon && <span className="font-bold">♀</span>}
-        <span>Hen (Female)</span>
+        {showIcon && <HenPigeonIcon className="w-3.5 h-3.5 text-pink-700 shrink-0" />}
+        <span>Female</span>
       </span>
     );
   }
@@ -54,8 +54,10 @@ export function SexBadge({
         className
       )}
     >
-      {showIcon && <SquabIcon className="w-3 h-3 text-emerald-700 shrink-0" />}
+      {showIcon && <SquabIcon className="w-3.5 h-3.5 text-emerald-700 shrink-0" />}
       <span>Baby / Young</span>
     </span>
   );
 }
+
+export default SexBadge;

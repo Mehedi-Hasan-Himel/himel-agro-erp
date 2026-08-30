@@ -36,30 +36,39 @@ export function calculateAge(
     const ref = referenceDateStr ? new Date(referenceDateStr) : new Date();
     if (isNaN(hatch.getTime())) return "Unknown";
 
-    let months =
-      (ref.getFullYear() - hatch.getFullYear()) * 12 +
-      (ref.getMonth() - hatch.getMonth());
-    if (ref.getDate() < hatch.getDate()) {
+    let years = ref.getFullYear() - hatch.getFullYear();
+    let months = ref.getMonth() - hatch.getMonth();
+    let days = ref.getDate() - hatch.getDate();
+
+    if (days < 0) {
       months -= 1;
+      const prevMonthLastDay = new Date(
+        ref.getFullYear(),
+        ref.getMonth(),
+        0
+      ).getDate();
+      days += prevMonthLastDay;
     }
 
-    if (months < 0) return "Just hatched";
-    if (months === 0) {
-      const days = Math.floor(
-        (ref.getTime() - hatch.getTime()) / (1000 * 60 * 60 * 24)
-      );
-      return `${Math.max(1, days)} days`;
-    }
-    if (months < 12) {
-      return `${months} ${months === 1 ? "month" : "months"}`;
+    if (months < 0) {
+      years -= 1;
+      months += 12;
     }
 
-    const years = Math.floor(months / 12);
-    const remMonths = months % 12;
-    if (remMonths === 0) {
-      return `${years} ${years === 1 ? "yr" : "yrs"}`;
+    if (years < 0) return "Just hatched";
+
+    const parts: string[] = [];
+    if (years > 0) {
+      parts.push(`${years} ${years === 1 ? "year" : "years"}`);
     }
-    return `${years} yr ${remMonths} mo`;
+    if (months > 0) {
+      parts.push(`${months} ${months === 1 ? "month" : "months"}`);
+    }
+    if (days > 0 || parts.length === 0) {
+      parts.push(`${days} ${days === 1 ? "day" : "days"}`);
+    }
+
+    return parts.join(", ");
   } catch {
     return "Unknown";
   }

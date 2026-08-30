@@ -64,6 +64,9 @@ export function Modal({
 
       {/* Modal Dialog */}
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={title || "Modal Dialog"}
         className={cn(
           "relative w-full bg-white rounded-2xl shadow-2xl border border-slate-200 z-10 my-8 overflow-hidden transform transition-all animate-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col",
           maxWidths[maxWidth]
@@ -81,7 +84,8 @@ export function Modal({
             </div>
             <button
               onClick={onClose}
-              className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
+              aria-label="Close modal dialog"
+              className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none"
             >
               <X className="w-5 h-5" />
             </button>

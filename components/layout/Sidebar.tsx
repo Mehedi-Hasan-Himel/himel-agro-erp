@@ -12,12 +12,12 @@ import {
   HeartHandshake,
   Activity,
   Wheat,
-  DollarSign,
   Settings,
   X,
   PlusCircle,
   MapPin,
 } from "lucide-react";
+import { TakaIcon } from "../ui/icons";
 
 export interface SidebarProps {
   isOpen?: boolean;
@@ -58,7 +58,7 @@ const navItems = [
   {
     href: "/finance",
     label: "Finance & Accounts",
-    icon: DollarSign,
+    icon: TakaIcon,
   },
   {
     href: "/settings",

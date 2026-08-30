@@ -40,6 +40,8 @@ const BreedingRoundSchema = new Schema<IBreedingRound>(
 );
 
 BreedingRoundSchema.index({ pairId: 1 });
+BreedingRoundSchema.index({ babyPigeonIds: 1 });
+BreedingRoundSchema.index({ date: -1 });
 
 const BreedingRoundModel: Model<IBreedingRound> =
   mongoose.models.BreedingRound ||

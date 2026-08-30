@@ -1,10 +1,12 @@
 import { FeedPurchase, FeedUsage, FeedStockSummary } from "@/types/feed";
-import { notifyDataChanged } from "./storageAdapter";
+import { notifyDataChanged, fetchWithCache } from "./storageAdapter";
 
 export async function getFeedPurchases(): Promise<FeedPurchase[]> {
-  const res = await fetch("/api/feed-purchases");
-  if (!res.ok) throw new Error("Failed to fetch feed purchases");
-  return res.json();
+  return fetchWithCache("feed_purchases", async () => {
+    const res = await fetch("/api/feed-purchases");
+    if (!res.ok) throw new Error("Failed to fetch feed purchases");
+    return res.json();
+  });
 }
 
 export async function createFeedPurchase(
@@ -58,9 +60,11 @@ export async function createFeedPurchase(
 }
 
 export async function getFeedUsages(): Promise<FeedUsage[]> {
-  const res = await fetch("/api/feed-usage");
-  if (!res.ok) throw new Error("Failed to fetch feed usage");
-  return res.json();
+  return fetchWithCache("feed_usages", async () => {
+    const res = await fetch("/api/feed-usage");
+    if (!res.ok) throw new Error("Failed to fetch feed usage");
+    return res.json();
+  });
 }
 
 export async function createFeedUsage(

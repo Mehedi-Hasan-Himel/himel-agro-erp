@@ -7,7 +7,8 @@ import { Modal } from "../ui/Modal";
 import { Input } from "../ui/Input";
 import { Select } from "../ui/Select";
 import { Button } from "../ui/Button";
-import { DollarSign, AlertCircle } from "lucide-react";
+import { AlertCircle } from "lucide-react";
+import { TakaIcon } from "../ui/icons";
 
 export interface TransactionModalProps {
   isOpen: boolean;
@@ -203,7 +204,7 @@ export function TransactionModal({
             isLoading={isLoading}
             className="gap-1.5"
           >
-            <DollarSign className="w-4 h-4" /> Save {type === "INCOME" ? "Income" : "Expense"}
+            <TakaIcon className="w-4 h-4" /> Save {type === "INCOME" ? "Income" : "Expense"}
           </Button>
         </div>
       </form>

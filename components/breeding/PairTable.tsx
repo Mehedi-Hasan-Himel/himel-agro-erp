@@ -9,7 +9,7 @@ import { endPair } from "@/lib/repositories/breedingRepository";
 import { RingBadge } from "../pigeons/RingBadge";
 import { Button } from "../ui/Button";
 import { Plus, XCircle, Egg } from "lucide-react";
-import { SquabIcon } from "../ui/icons/SquabIcon";
+import { SquabIcon, CockPigeonIcon, HenPigeonIcon } from "../ui/icons";
 import { BreedingRoundModal } from "./BreedingRoundModal";
 
 export interface PairTableProps {
@@ -91,8 +91,18 @@ export function PairTable({
             <thead>
               <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-semibold uppercase tracking-wider">
                 <th className="py-3 px-4">Pair ID / Cage</th>
-                <th className="py-3 px-4">Male Cock (Sire)</th>
-                <th className="py-3 px-4">Female Hen (Dam)</th>
+                <th className="py-3 px-4">
+                  <span className="inline-flex items-center gap-1.5">
+                    <CockPigeonIcon className="w-3.5 h-3.5 text-sky-700" />
+                    <span>Male (Sire)</span>
+                  </span>
+                </th>
+                <th className="py-3 px-4">
+                  <span className="inline-flex items-center gap-1.5">
+                    <HenPigeonIcon className="w-3.5 h-3.5 text-pink-700" />
+                    <span>Female (Dam)</span>
+                  </span>
+                </th>
                 <th className="py-3 px-4">Active Period</th>
                 <th className="py-3 px-4">Rounds</th>
                 <th className="py-3 px-4">Eggs / Hatched</th>

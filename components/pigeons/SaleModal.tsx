@@ -7,7 +7,8 @@ import { formatRingNumber } from "@/lib/formatters/ringFormatter";
 import { Modal } from "../ui/Modal";
 import { Input } from "../ui/Input";
 import { Button } from "../ui/Button";
-import { DollarSign, AlertCircle } from "lucide-react";
+import { AlertCircle } from "lucide-react";
+import { TakaIcon } from "../ui/icons";
 
 export interface SaleModalProps {
   pigeon: Pigeon | null;
@@ -154,7 +155,7 @@ export function SaleModal({
             isLoading={isLoading}
             className="gap-1.5"
           >
-            <DollarSign className="w-4 h-4" /> Record Sale & Income
+            <TakaIcon className="w-4 h-4" /> Record Sale & Income
           </Button>
         </div>
       </form>

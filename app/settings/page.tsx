@@ -38,7 +38,7 @@ export default function SettingsPage() {
   const [settings, setSettings] = useState<FarmSettings | null>(null);
   const [breeds, setBreeds] = useState<BreedConfig | null>(null);
   const [newSubtype, setNewSubtype] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("Giribaz / Local");
+  const [selectedCategory, setSelectedCategory] = useState("Giribaz");
 
   const [isSavingSettings, setIsSavingSettings] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);

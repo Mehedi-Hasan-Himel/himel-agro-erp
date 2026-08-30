@@ -1,36 +1,53 @@
 import { Pigeon } from "@/types/pigeon";
 import { PedigreeNodeData } from "@/types/pedigree";
+import { BreedingRound } from "@/types/breeding";
+import { FlyingRecord } from "@/types/flying";
 import { getPigeons } from "@/lib/repositories/pigeonRepository";
-import { calculateHatchingStats } from "@/lib/repositories/breedingRepository";
+import { calculateHatchingStats, getBreedingRounds } from "@/lib/repositories/breedingRepository";
 import { getFlyingRecords } from "@/lib/repositories/flyingRepository";
 
 export async function buildPedigreeTree(
   rootPigeonId: string,
   maxGenerations: number = 3
 ): Promise<PedigreeNodeData | null> {
-  const pigeons = await getPigeons();
+  const [pigeons, allRounds, allFlying] = await Promise.all([
+    getPigeons().catch(() => []),
+    getBreedingRounds().catch(() => []),
+    getFlyingRecords().catch(() => []),
+  ]);
+
+  // Build O(1) fast lookup Hash Maps
   const pigeonMap = new Map<string, Pigeon>();
   pigeons.forEach((p) => pigeonMap.set(p.id, p));
 
   const rootPigeon = pigeonMap.get(rootPigeonId);
   if (!rootPigeon) return null;
 
-  const allRounds = await (async () => {
-    try {
-      const { getBreedingRounds } = await import("@/lib/repositories/breedingRepository");
-      return await getBreedingRounds();
-    } catch {
-      return [];
+  // Index breeding rounds by baby pigeon ID: O(R) time once, instead of O(R) per node
+  const babyToRoundsMap = new Map<string, BreedingRound[]>();
+  allRounds.forEach((round) => {
+    if (Array.isArray(round.babyPigeonIds)) {
+      round.babyPigeonIds.forEach((babyId) => {
+        const list = babyToRoundsMap.get(babyId) || [];
+        list.push(round);
+        babyToRoundsMap.set(babyId, list);
+      });
     }
-  })();
+  });
 
-  const allFlying = await getFlyingRecords();
+  // Index flying records by pigeon ID: O(F) time once
+  const pigeonToFlightsMap = new Map<string, FlyingRecord[]>();
+  allFlying.forEach((flight) => {
+    const list = pigeonToFlightsMap.get(flight.pigeonId) || [];
+    list.push(flight);
+    pigeonToFlightsMap.set(flight.pigeonId, list);
+  });
 
-  async function buildNode(
+  function buildNode(
     pigeonId: string | null | undefined,
     currentGen: number,
     relation: string
-  ): Promise<PedigreeNodeData> {
+  ): PedigreeNodeData {
     if (!pigeonId) {
       return {
         pigeon: null,
@@ -48,14 +65,12 @@ export async function buildPedigreeTree(
       };
     }
 
-    // Hatching stats for this pigeon
-    const pigeonRounds = allRounds.filter(
-      (r) => r.babyPigeonIds?.includes(pigeon.id) || false
-    );
+    // O(1) Hatching stats lookup
+    const pigeonRounds = babyToRoundsMap.get(pigeon.id) || [];
     const hatchingStats = calculateHatchingStats(pigeonRounds);
 
-    // Flying performance
-    const flights = allFlying.filter((f) => f.pigeonId === pigeon.id);
+    // O(1) Flying performance lookup
+    const flights = pigeonToFlightsMap.get(pigeon.id) || [];
     const bestFlying = flights.length > 0 ? flights[0] : null;
 
     let fatherNode: PedigreeNodeData | null = null;
@@ -71,8 +86,8 @@ export async function buildPedigreeTree(
           ? "Mother"
           : `${relation}'s Mother`;
 
-      fatherNode = await buildNode(pigeon.fatherId, currentGen + 1, fatherRel);
-      motherNode = await buildNode(pigeon.motherId, currentGen + 1, motherRel);
+      fatherNode = buildNode(pigeon.fatherId, currentGen + 1, fatherRel);
+      motherNode = buildNode(pigeon.motherId, currentGen + 1, motherRel);
     }
 
     return {

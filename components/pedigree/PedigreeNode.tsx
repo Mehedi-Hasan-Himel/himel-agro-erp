@@ -7,6 +7,7 @@ import { formatCompactRing } from "@/lib/formatters/ringFormatter";
 import { formatDate } from "@/lib/formatters/dateFormatter";
 import { StatusBadge } from "../pigeons/StatusBadge";
 import { ArrowRight, Trophy } from "lucide-react";
+import { CockPigeonIcon, HenPigeonIcon, SquabIcon } from "../ui/icons";
 
 export interface PedigreeNodeProps {
   node: PedigreeNodeData;
@@ -68,15 +69,30 @@ export function PedigreeNode({ node, isRoot = false }: PedigreeNodeProps) {
           <div className="font-mono font-bold text-slate-900 text-sm flex items-center justify-between">
             <span>{formatCompactRing(pigeon)}</span>
             <span
-              className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${
+              className={`inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full font-semibold ${
                 isMale
                   ? "bg-sky-100 text-sky-800"
                   : isFemale
                   ? "bg-pink-100 text-pink-800"
-                  : "bg-slate-100 text-slate-600"
+                  : "bg-emerald-100 text-emerald-800"
               }`}
             >
-              {isMale ? "Cock ♂" : isFemale ? "Hen ♀" : "Baby"}
+              {isMale ? (
+                <>
+                  <CockPigeonIcon className="w-3 h-3 text-sky-700 shrink-0" />
+                  <span>Male</span>
+                </>
+              ) : isFemale ? (
+                <>
+                  <HenPigeonIcon className="w-3 h-3 text-pink-700 shrink-0" />
+                  <span>Female</span>
+                </>
+              ) : (
+                <>
+                  <SquabIcon className="w-3 h-3 text-emerald-700 shrink-0" />
+                  <span>Baby</span>
+                </>
+              )}
             </span>
           </div>
           <p className="font-semibold text-slate-700 text-xs mt-0.5 truncate">

@@ -13,7 +13,7 @@ import { MonthlyProfitLossCard } from "@/components/finance/MonthlyProfitLossCar
 import { TransactionTable } from "@/components/finance/TransactionTable";
 import { TransactionModal } from "@/components/finance/TransactionModal";
 import { Button } from "@/components/ui/Button";
-import { DollarSign, PlusCircle, TrendingUp, TrendingDown, Tag } from "lucide-react";
+import { PlusCircle, TrendingUp, TrendingDown, Tag } from "lucide-react";
 
 export default function FinanceManagementPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);

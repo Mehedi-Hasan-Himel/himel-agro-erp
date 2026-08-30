@@ -1,13 +1,16 @@
 import { HealthRecord, MedicineSchedule } from "@/types/health";
-import { notifyDataChanged } from "./storageAdapter";
+import { notifyDataChanged, fetchWithCache } from "./storageAdapter";
 
 export async function getHealthRecords(pigeonId?: string): Promise<HealthRecord[]> {
-  const url = pigeonId
-    ? `/api/health-records?pigeonId=${encodeURIComponent(pigeonId)}`
-    : "/api/health-records";
-  const res = await fetch(url);
-  if (!res.ok) throw new Error("Failed to fetch health records");
-  return res.json();
+  const cacheKey = pigeonId ? `health_${pigeonId}` : "health_all";
+  return fetchWithCache(cacheKey, async () => {
+    const url = pigeonId
+      ? `/api/health-records?pigeonId=${encodeURIComponent(pigeonId)}`
+      : "/api/health-records";
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("Failed to fetch health records");
+    return res.json();
+  });
 }
 
 export async function createHealthRecord(
@@ -39,9 +42,11 @@ export async function createHealthRecord(
 }
 
 export async function getMedicineSchedules(): Promise<MedicineSchedule[]> {
-  const res = await fetch("/api/medicine-schedules");
-  if (!res.ok) throw new Error("Failed to fetch medicine schedules");
-  return res.json();
+  return fetchWithCache("medicine_schedules", async () => {
+    const res = await fetch("/api/medicine-schedules");
+    if (!res.ok) throw new Error("Failed to fetch medicine schedules");
+    return res.json();
+  });
 }
 
 export async function createMedicineSchedule(

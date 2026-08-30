@@ -23,12 +23,13 @@ export function formatRingNumber(pigeon?: RingIdentifiable | null): string {
 /**
  * Compact badge & Unique ID format: 2026-09
  */
-export function formatCompactRing(pigeon?: (RingIdentifiable & { id?: string }) | null): string {
+export function formatCompactRing(pigeon?: (RingIdentifiable & { id?: string; breed?: string }) | null): string {
   if (!pigeon) return "Unknown";
-  if (pigeon.id && /^\d{4}-\d+$/.test(pigeon.id)) {
+  if (pigeon.id) {
     return pigeon.id;
   }
   const year = pigeon.ringYear || "----";
   const serial = String(pigeon.ringSerial || 0).padStart(2, "0");
-  return `${year}-${serial}`;
+  const breedChar = (pigeon.breed || "Giribaz").trim().charAt(0).toUpperCase() || "G";
+  return `${year}-${serial}-${breedChar}`;
 }

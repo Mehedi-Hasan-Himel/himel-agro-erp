@@ -1,10 +1,12 @@
 import { Pair, BreedingRound, HatchingStats } from "@/types/breeding";
-import { notifyDataChanged } from "./storageAdapter";
+import { notifyDataChanged, fetchWithCache } from "./storageAdapter";
 
 export async function getPairs(): Promise<Pair[]> {
-  const res = await fetch("/api/pairs");
-  if (!res.ok) throw new Error("Failed to fetch pairs");
-  return res.json();
+  return fetchWithCache("pairs", async () => {
+    const res = await fetch("/api/pairs");
+    if (!res.ok) throw new Error("Failed to fetch pairs");
+    return res.json();
+  });
 }
 
 export async function getPairById(id: string): Promise<Pair | null> {
@@ -118,12 +120,15 @@ export async function endPair(id: string, endDate?: string): Promise<Pair> {
 // ----------------- BREEDING ROUNDS -----------------
 
 export async function getBreedingRounds(pairId?: string): Promise<BreedingRound[]> {
-  const url = pairId
-    ? `/api/breeding-rounds?pairId=${encodeURIComponent(pairId)}`
-    : "/api/breeding-rounds";
-  const res = await fetch(url);
-  if (!res.ok) throw new Error("Failed to fetch breeding rounds");
-  return res.json();
+  const cacheKey = pairId ? `rounds_pair_${pairId}` : "breeding_rounds_all";
+  return fetchWithCache(cacheKey, async () => {
+    const url = pairId
+      ? `/api/breeding-rounds?pairId=${encodeURIComponent(pairId)}`
+      : "/api/breeding-rounds";
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("Failed to fetch breeding rounds");
+    return res.json();
+  });
 }
 
 export async function getBreedingRoundById(id: string): Promise<BreedingRound | null> {

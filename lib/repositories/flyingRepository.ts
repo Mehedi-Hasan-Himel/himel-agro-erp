@@ -1,13 +1,16 @@
 import { FlyingRecord } from "@/types/flying";
-import { notifyDataChanged } from "./storageAdapter";
+import { notifyDataChanged, fetchWithCache } from "./storageAdapter";
 
 export async function getFlyingRecords(pigeonId?: string): Promise<FlyingRecord[]> {
-  const url = pigeonId
-    ? `/api/flying-records?pigeonId=${encodeURIComponent(pigeonId)}`
-    : "/api/flying-records";
-  const res = await fetch(url);
-  if (!res.ok) throw new Error("Failed to fetch flying records");
-  return res.json();
+  const cacheKey = pigeonId ? `flying_${pigeonId}` : "flying_all";
+  return fetchWithCache(cacheKey, async () => {
+    const url = pigeonId
+      ? `/api/flying-records?pigeonId=${encodeURIComponent(pigeonId)}`
+      : "/api/flying-records";
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("Failed to fetch flying records");
+    return res.json();
+  });
 }
 
 export async function createFlyingRecord(

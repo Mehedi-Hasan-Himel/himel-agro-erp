@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, use } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Pigeon } from "@/types/pigeon";
 import { PedigreeNodeData } from "@/types/pedigree";
 import { getPigeonById } from "@/lib/repositories/pigeonRepository";
@@ -19,6 +20,7 @@ export default function DedicatedPedigreePage({
 }) {
   const resolvedParams = use(params);
   const pigeonId = resolvedParams.id;
+  const router = useRouter();
 
   const [pigeon, setPigeon] = useState<Pigeon | null>(null);
   const [tree, setTree] = useState<PedigreeNodeData | null>(null);
@@ -31,12 +33,19 @@ export default function DedicatedPedigreePage({
         getPigeonById(pigeonId),
         buildPedigreeTree(pigeonId, 3),
       ]);
+      if (p && p.id && p.id.toLowerCase() !== pigeonId.toLowerCase()) {
+        if (typeof window !== "undefined") {
+          window.history.replaceState(null, "", `/pigeons/${p.id}/pedigree`);
+        }
+        router.replace(`/pigeons/${p.id}/pedigree`);
+        return;
+      }
       setPigeon(p);
       setTree(pedigree);
       setIsLoading(false);
     }
     load();
-  }, [pigeonId]);
+  }, [pigeonId, router]);
 
   if (isLoading) {
     return (

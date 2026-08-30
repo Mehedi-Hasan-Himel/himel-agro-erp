@@ -1,23 +1,32 @@
 import { Pigeon, PigeonStatus, PigeonSource, PigeonSex } from "@/types/pigeon";
 import { SITE_CONFIG } from "@/lib/config/siteConfig";
-import { notifyDataChanged } from "./storageAdapter";
+import { notifyDataChanged, fetchWithCache } from "./storageAdapter";
 
-export function generatePigeonId(ringYear: number, ringSerial: number): string {
+export function generatePigeonId(
+  ringYear: number,
+  ringSerial: number,
+  breed?: string
+): string {
   const serialStr = String(ringSerial).padStart(2, "0");
-  return `${ringYear}-${serialStr}`;
+  const breedChar = (breed || "Giribaz").trim().charAt(0).toUpperCase() || "G";
+  return `${ringYear}-${serialStr}-${breedChar}`;
 }
 
 export async function getPigeons(): Promise<Pigeon[]> {
-  const res = await fetch("/api/pigeons");
-  if (!res.ok) throw new Error("Failed to fetch pigeons");
-  return res.json();
+  return fetchWithCache("pigeons", async () => {
+    const res = await fetch("/api/pigeons");
+    if (!res.ok) throw new Error("Failed to fetch pigeons");
+    return res.json();
+  });
 }
 
 export async function getPigeonById(id: string): Promise<Pigeon | null> {
-  const res = await fetch(`/api/pigeons/${encodeURIComponent(id)}`);
-  if (res.status === 404) return null;
-  if (!res.ok) throw new Error(`Failed to fetch pigeon ${id}`);
-  return res.json();
+  return fetchWithCache(`pigeon_${id}`, async () => {
+    const res = await fetch(`/api/pigeons/${encodeURIComponent(id)}`);
+    if (res.status === 404) return null;
+    if (!res.ok) throw new Error(`Failed to fetch pigeon ${id}`);
+    return res.json();
+  });
 }
 
 export async function getPigeonByRing(
@@ -54,6 +63,7 @@ export interface CreatePigeonInput {
   breed: string;
   breedSubtype?: string;
   photoUrl?: string;
+  photos?: string[];
   fatherId?: string | null;
   motherId?: string | null;
   source: PigeonSource;
@@ -61,6 +71,8 @@ export interface CreatePigeonInput {
   purchasePrice?: number;
   seller?: string;
   status?: PigeonStatus;
+  isForSale?: boolean;
+  askingPrice?: number;
   firstFlyingDate?: string;
   notes?: string;
 }
@@ -112,7 +124,7 @@ export async function createPigeon(input: CreatePigeonInput): Promise<Pigeon> {
     }
   }
 
-  const id = input.id || generatePigeonId(input.ringYear, input.ringSerial);
+  const id = input.id || generatePigeonId(input.ringYear, input.ringSerial, input.breed);
   const now = new Date().toISOString();
 
   const newPigeon: Pigeon = {
@@ -126,6 +138,7 @@ export async function createPigeon(input: CreatePigeonInput): Promise<Pigeon> {
     breed: input.breed,
     breedSubtype: input.breedSubtype || "",
     photoUrl: input.photoUrl || "",
+    photos: input.photos || (input.photoUrl ? [input.photoUrl] : []),
     fatherId: input.fatherId || null,
     motherId: input.motherId || null,
     source: input.source,
@@ -133,6 +146,8 @@ export async function createPigeon(input: CreatePigeonInput): Promise<Pigeon> {
     purchasePrice: input.purchasePrice,
     seller: input.seller,
     status: input.status || "ACTIVE",
+    isForSale: input.isForSale || false,
+    askingPrice: input.askingPrice,
     firstFlyingDate: input.firstFlyingDate,
     notes: input.notes || "",
     createdAt: now,
@@ -205,8 +220,7 @@ export async function updatePigeon(
     }
   }
 
-  const updatePayload = { ...data, updatedAt: new Date().toISOString() };
-  delete (updatePayload as Partial<Pigeon> & { id?: string }).id;
+  const updatePayload = { ...data, newId: data.id, updatedAt: new Date().toISOString() };
 
   const res = await fetch(`/api/pigeons/${encodeURIComponent(id)}`, {
     method: "PUT",
@@ -323,4 +337,39 @@ export async function deletePigeon(id: string): Promise<boolean> {
   }
   notifyDataChanged();
   return true;
+}
+
+export async function deletePigeonsBulk(ids: string[]): Promise<number> {
+  if (!ids || ids.length === 0) return 0;
+
+  const res = await fetch("/api/pigeons", {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ids }),
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.error || "Failed to delete selected pigeons");
+  }
+
+  const data = await res.json();
+  notifyDataChanged();
+  return data.deletedCount ?? ids.length;
+}
+
+export async function togglePigeonForSale(
+  id: string,
+  isForSale: boolean,
+  askingPrice?: number
+): Promise<Pigeon> {
+  const pigeon = await getPigeonById(id);
+  if (!pigeon) {
+    throw new Error(`Pigeon with ID "${id}" not found.`);
+  }
+
+  return updatePigeon(id, {
+    isForSale,
+    ...(askingPrice !== undefined ? { askingPrice } : {}),
+  });
 }

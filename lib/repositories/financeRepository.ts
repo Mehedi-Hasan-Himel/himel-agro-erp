@@ -3,7 +3,7 @@ import {
   TransactionType,
   MonthlyFinancialSummary,
 } from "@/types/finance";
-import { notifyDataChanged } from "./storageAdapter";
+import { notifyDataChanged, fetchWithCache } from "./storageAdapter";
 
 export async function getTransactions(filter?: {
   type?: TransactionType | "ALL";
@@ -16,10 +16,15 @@ export async function getTransactions(filter?: {
   if (filter?.category && filter.category !== "ALL")
     params.set("category", filter.category);
 
-  const url = `/api/transactions${params.toString() ? `?${params.toString()}` : ""}`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error("Failed to fetch transactions");
-  return res.json();
+  const queryStr = params.toString();
+  const cacheKey = `transactions_${queryStr || "all"}`;
+
+  return fetchWithCache(cacheKey, async () => {
+    const url = `/api/transactions${queryStr ? `?${queryStr}` : ""}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("Failed to fetch transactions");
+    return res.json();
+  });
 }
 
 export async function createTransaction(

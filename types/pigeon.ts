@@ -20,6 +20,7 @@ export interface Pigeon {
   breedSubtype?: string;
 
   photoUrl?: string;
+  photos?: string[];
 
   fatherId?: string | null;
   motherId?: string | null;
@@ -31,6 +32,8 @@ export interface Pigeon {
   seller?: string;
 
   status: PigeonStatus;
+  isForSale?: boolean;
+  askingPrice?: number;
 
   saleDate?: string;
   salePrice?: number;

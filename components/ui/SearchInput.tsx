@@ -31,13 +31,22 @@ export function SearchInput({
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Escape" && value) {
+            e.preventDefault();
+            onChange("");
+          }
+        }}
         placeholder={placeholder}
+        aria-label={placeholder}
         className="w-full rounded-xl border border-slate-200 bg-white pl-10 pr-9 py-2 text-sm text-slate-800 placeholder-slate-400 transition-colors focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
       />
       {value && (
         <button
+          type="button"
           onClick={() => onChange("")}
-          className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer"
+          aria-label="Clear search text"
+          className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 focus-visible:outline-none focus-visible:text-slate-800 cursor-pointer"
         >
           <X className="w-4 h-4" />
         </button>

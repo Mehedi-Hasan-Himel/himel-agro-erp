@@ -12,6 +12,7 @@ export interface IPigeon {
   breed: string;
   breedSubtype?: string;
   photoUrl?: string;
+  photos?: string[];
   fatherId?: string | null;
   motherId?: string | null;
   source: "BORN_HIMEL_AGRO" | "PURCHASED";
@@ -19,6 +20,8 @@ export interface IPigeon {
   purchasePrice?: number;
   seller?: string;
   status: "ACTIVE" | "SOLD" | "DEAD" | "LOST";
+  isForSale?: boolean;
+  askingPrice?: number;
   saleDate?: string;
   salePrice?: number;
   buyer?: string;
@@ -45,6 +48,7 @@ const PigeonSchema = new Schema<IPigeon>(
     breed: { type: String, required: true },
     breedSubtype: { type: String, default: "" },
     photoUrl: { type: String, default: "" },
+    photos: { type: [String], default: [] },
     fatherId: { type: String, default: null },
     motherId: { type: String, default: null },
     source: { type: String, enum: ["BORN_HIMEL_AGRO", "PURCHASED"], required: true },
@@ -52,6 +56,8 @@ const PigeonSchema = new Schema<IPigeon>(
     purchasePrice: { type: Number },
     seller: { type: String },
     status: { type: String, enum: ["ACTIVE", "SOLD", "DEAD", "LOST"], default: "ACTIVE" },
+    isForSale: { type: Boolean, default: false },
+    askingPrice: { type: Number },
     saleDate: { type: String },
     salePrice: { type: Number },
     buyer: { type: String },
@@ -79,8 +85,10 @@ const PigeonSchema = new Schema<IPigeon>(
 
 PigeonSchema.index({ ringYear: 1, ringSerial: 1, farmName: 1 }, { unique: true });
 PigeonSchema.index({ status: 1 });
+PigeonSchema.index({ status: 1, isForSale: 1 });
 PigeonSchema.index({ fatherId: 1 });
 PigeonSchema.index({ motherId: 1 });
+PigeonSchema.index({ createdAt: -1 });
 
 const PigeonModel: Model<IPigeon> =
   mongoose.models.Pigeon || mongoose.model<IPigeon>("Pigeon", PigeonSchema);

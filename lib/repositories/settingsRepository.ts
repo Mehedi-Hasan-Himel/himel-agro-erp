@@ -1,11 +1,13 @@
 import { FarmSettings } from "@/types/settings";
 import { BreedConfig } from "@/types/breed";
-import { notifyDataChanged } from "./storageAdapter";
+import { notifyDataChanged, fetchWithCache } from "./storageAdapter";
 
 export async function getSettings(): Promise<FarmSettings> {
-  const res = await fetch("/api/settings");
-  if (!res.ok) throw new Error("Failed to fetch settings");
-  return res.json();
+  return fetchWithCache("settings", async () => {
+    const res = await fetch("/api/settings");
+    if (!res.ok) throw new Error("Failed to fetch settings");
+    return res.json();
+  });
 }
 
 export async function updateSettings(data: Partial<FarmSettings>): Promise<FarmSettings> {
@@ -29,9 +31,11 @@ export async function updateSettings(data: Partial<FarmSettings>): Promise<FarmS
 }
 
 export async function getBreeds(): Promise<BreedConfig> {
-  const res = await fetch("/api/breeds");
-  if (!res.ok) throw new Error("Failed to fetch breeds");
-  return res.json();
+  return fetchWithCache("breeds_config", async () => {
+    const res = await fetch("/api/breeds");
+    if (!res.ok) throw new Error("Failed to fetch breeds");
+    return res.json();
+  });
 }
 
 export async function updateBreeds(config: BreedConfig): Promise<BreedConfig> {

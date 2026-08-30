@@ -94,12 +94,12 @@ export function PairFormModal({
         )}
 
         <Select
-          label="Select Male Cock (Sire)"
+          label="Select Male (Sire)"
           value={maleId}
           onChange={(e) => setMaleId(e.target.value)}
           required
         >
-          <option value="">-- Choose Active Male Cock --</option>
+          <option value="">-- Choose Active Male --</option>
           {malePigeons.map((m) => (
             <option key={m.id} value={m.id}>
               {formatCompactRing(m)} — {m.breedSubtype || m.breed} ({m.ringYear})
@@ -108,12 +108,12 @@ export function PairFormModal({
         </Select>
 
         <Select
-          label="Select Female Hen (Dam)"
+          label="Select Female (Dam)"
           value={femaleId}
           onChange={(e) => setFemaleId(e.target.value)}
           required
         >
-          <option value="">-- Choose Active Female Hen --</option>
+          <option value="">-- Choose Active Female --</option>
           {femalePigeons.map((f) => (
             <option key={f.id} value={f.id}>
               {formatCompactRing(f)} — {f.breedSubtype || f.breed} ({f.ringYear})

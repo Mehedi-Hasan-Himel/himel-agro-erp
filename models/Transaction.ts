@@ -42,6 +42,7 @@ const TransactionSchema = new Schema<ITransaction>(
 TransactionSchema.index({ date: -1 });
 TransactionSchema.index({ type: 1 });
 TransactionSchema.index({ category: 1 });
+TransactionSchema.index({ pigeonId: 1 });
 
 const TransactionModel: Model<ITransaction> =
   mongoose.models.Transaction ||

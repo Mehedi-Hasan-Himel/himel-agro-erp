@@ -71,13 +71,27 @@ export function PrintablePedigree({ tree, id = "pedigree-certificate" }: Printab
       {/* Subject Pigeon Identity Banner */}
       <div className="bg-slate-900 text-white rounded-xl p-5 mb-6">
         <div className="flex flex-wrap items-center justify-between gap-4 mb-3 border-b border-slate-700 pb-3">
-          <div>
-            <span className="text-[10px] uppercase tracking-widest text-emerald-400 font-bold block">
-              Ring Identity Number
-            </span>
-            <h2 className="text-lg sm:text-xl font-mono font-bold text-emerald-300">
-              {formatRingNumber(subject)}
-            </h2>
+          <div className="flex items-center gap-3.5">
+            {subject.photoUrl && (
+              <div className="w-14 h-14 rounded-lg overflow-hidden bg-slate-800 border border-slate-600 shrink-0">
+                <img
+                  src={subject.photoUrl}
+                  alt={subject.id}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    (e.target as HTMLElement).style.display = "none";
+                  }}
+                />
+              </div>
+            )}
+            <div>
+              <span className="text-[10px] uppercase tracking-widest text-emerald-400 font-bold block">
+                Ring Identity Number
+              </span>
+              <h2 className="text-lg sm:text-xl font-mono font-bold text-emerald-300">
+                {formatRingNumber(subject)}
+              </h2>
+            </div>
           </div>
           <div className="text-right">
             <span className="text-[10px] uppercase tracking-widest text-slate-400 font-bold block">
@@ -106,9 +120,9 @@ export function PrintablePedigree({ tree, id = "pedigree-certificate" }: Printab
             </span>
             <span className="font-bold text-white text-sm">
               {subject.sex === "MALE"
-                ? "Cock (Male ♂)"
+                ? "Male (♂)"
                 : subject.sex === "FEMALE"
-                ? "Hen (Female ♀)"
+                ? "Female (♀)"
                 : "Squab / Unknown"}
             </span>
           </div>

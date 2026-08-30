@@ -58,11 +58,12 @@ export function calculatePigeonStats(pigeons: Pigeon[]): FarmPigeonStats {
       activeBabies += 1;
     }
 
-    // Available for sale logic: active birds with sale note or squabs >= 2 months
+    // Available for sale logic: active birds marked as for sale
     if (
       p.status === "ACTIVE" &&
-      (p.notes?.toLowerCase().includes("sale") ||
-        (p.source === "BORN_HIMEL_AGRO" && !p.notes?.toLowerCase().includes("breeder")))
+      (p.isForSale === true ||
+        p.notes?.toLowerCase().includes("[for_sale]") ||
+        p.notes?.toLowerCase().includes("for sale"))
     ) {
       availableForSale += 1;
     }
@@ -77,7 +78,7 @@ export function calculatePigeonStats(pigeons: Pigeon[]): FarmPigeonStats {
     soldCount,
     deadCount,
     lostCount,
-    availableForSale: Math.max(availableForSale, 10), // Realistic floor for demo
+    availableForSale,
     breedDistribution,
   };
 }

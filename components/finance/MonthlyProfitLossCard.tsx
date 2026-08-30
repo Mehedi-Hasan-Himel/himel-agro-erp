@@ -2,7 +2,8 @@ import React from "react";
 import { MonthlyFinancialSummary } from "@/types/finance";
 import { formatCurrency } from "@/lib/formatters/currencyFormatter";
 import { Card, CardContent } from "../ui/Card";
-import { TrendingUp, TrendingDown, DollarSign, ArrowUpRight, ArrowDownRight } from "lucide-react";
+import { TrendingUp, TrendingDown, ArrowUpRight, ArrowDownRight } from "lucide-react";
+import { TakaIcon } from "../ui/icons";
 
 export interface MonthlyProfitLossCardProps {
   summary: MonthlyFinancialSummary;
@@ -26,7 +27,7 @@ export function MonthlyProfitLossCard({
         <div className="flex flex-wrap items-center justify-between gap-3 sm:gap-4 mb-5 sm:mb-6">
           <div className="min-w-0">
             <h3 className="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2 truncate">
-              <DollarSign className="w-5 h-5 text-emerald-600 shrink-0" />
+              <TakaIcon className="w-5 h-5 text-emerald-600 shrink-0" />
               <span className="truncate">Monthly Financial Overview</span>
             </h3>
             <p className="text-[11px] sm:text-xs text-slate-500">

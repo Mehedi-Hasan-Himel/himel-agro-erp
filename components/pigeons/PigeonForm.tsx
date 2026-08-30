@@ -12,7 +12,7 @@ import { Button } from "../ui/Button";
 import { Input } from "../ui/Input";
 import { Select } from "../ui/Select";
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/Card";
-import { AlertCircle, Save, ArrowLeft } from "lucide-react";
+import { AlertCircle, Save, ArrowLeft, Trash2, Image as ImageIcon } from "lucide-react";
 import Link from "next/link";
 
 export interface PigeonFormProps {
@@ -53,7 +53,9 @@ export function PigeonForm({
   );
   const [sex, setSex] = useState<PigeonSex>(initialPigeon?.sex || "UNKNOWN");
   const [breed, setBreed] = useState<string>(
-    initialPigeon?.breed || "Giribaz / Local"
+    initialPigeon?.breed === "Giribaz / Local"
+      ? "Giribaz"
+      : initialPigeon?.breed || "Giribaz"
   );
   const [breedSubtype, setBreedSubtype] = useState<string>(
     initialPigeon?.breedSubtype || "Standard Giribaz"
@@ -61,6 +63,15 @@ export function PigeonForm({
   const [photoUrl, setPhotoUrl] = useState<string>(
     initialPigeon?.photoUrl || ""
   );
+  const [photos, setPhotos] = useState<string[]>(() => {
+    const arr = [...(initialPigeon?.photos || [])];
+    if (initialPigeon?.photoUrl && !arr.includes(initialPigeon.photoUrl)) {
+      arr.unshift(initialPigeon.photoUrl);
+    }
+    return arr;
+  });
+  const [galleryInput, setGalleryInput] = useState<string>("");
+  const [galleryError, setGalleryError] = useState<string | null>(null);
 
   const [fatherId, setFatherId] = useState<string>(
     initialPigeon?.fatherId || defaultFatherId || ""
@@ -82,6 +93,12 @@ export function PigeonForm({
 
   const [status, setStatus] = useState<PigeonStatus>(
     initialPigeon?.status || "ACTIVE"
+  );
+  const [isForSale, setIsForSale] = useState<boolean>(
+    initialPigeon?.isForSale || false
+  );
+  const [askingPrice, setAskingPrice] = useState<string>(
+    initialPigeon?.askingPrice ? String(initialPigeon.askingPrice) : ""
   );
   const [firstFlyingDate, setFirstFlyingDate] = useState<string>(
     initialPigeon?.firstFlyingDate || ""
@@ -117,6 +134,17 @@ export function PigeonForm({
     loadData();
   }, [ringYear, isEdit, initialPigeon]);
 
+  useEffect(() => {
+    if (initialPigeon) {
+      const arr = [...(initialPigeon.photos || [])];
+      if (initialPigeon.photoUrl && !arr.includes(initialPigeon.photoUrl)) {
+        arr.unshift(initialPigeon.photoUrl);
+      }
+      setPhotos(arr);
+      setPhotoUrl(initialPigeon.photoUrl || "");
+    }
+  }, [initialPigeon]);
+
   // Sync ring year when hatch date changes
   const handleHatchDateChange = (val: string) => {
     setHatchDate(val);
@@ -142,6 +170,10 @@ export function PigeonForm({
   );
   const availableSubtypes = activeCategory ? activeCategory.subtypes : [];
 
+  // Dynamic Unique ID: Hatching Year + Ring Number + Breed Category first letter
+  const breedChar = (breed || "Giribaz").trim().charAt(0).toUpperCase() || "G";
+  const dynamicUniqueId = `${ringYear}-${String(ringSerial).padStart(2, "0")}-${breedChar}`;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -156,8 +188,13 @@ export function PigeonForm({
         );
       }
 
+      const finalPhotos = Array.from(
+        new Set([...photos, photoUrl].filter(Boolean))
+      );
+
       if (isEdit && initialPigeon) {
         await updatePigeon(initialPigeon.id, {
+          id: dynamicUniqueId,
           ringYear,
           ringSerial,
           farmName,
@@ -166,7 +203,8 @@ export function PigeonForm({
           sex,
           breed,
           breedSubtype,
-          photoUrl,
+          photoUrl: photoUrl || (finalPhotos.length > 0 ? finalPhotos[0] : ""),
+          photos: finalPhotos,
           fatherId: fatherId || null,
           motherId: motherId || null,
           source,
@@ -177,13 +215,16 @@ export function PigeonForm({
               : undefined,
           seller: source === "PURCHASED" ? seller : undefined,
           status,
+          isForSale,
+          askingPrice: isForSale && askingPrice ? parseFloat(askingPrice) : undefined,
           firstFlyingDate: firstFlyingDate || undefined,
           notes,
         });
 
-        router.push(`/pigeons/${initialPigeon.id}`);
+        router.push(`/pigeons/${dynamicUniqueId}`);
       } else {
         const created = await createPigeon({
+          id: dynamicUniqueId,
           ringYear,
           ringSerial,
           farmName,
@@ -192,7 +233,8 @@ export function PigeonForm({
           sex,
           breed,
           breedSubtype,
-          photoUrl,
+          photoUrl: photoUrl || (finalPhotos.length > 0 ? finalPhotos[0] : ""),
+          photos: finalPhotos,
           fatherId: fatherId || null,
           motherId: motherId || null,
           source,
@@ -203,6 +245,8 @@ export function PigeonForm({
               : undefined,
           seller: source === "PURCHASED" ? seller : undefined,
           status,
+          isForSale,
+          askingPrice: isForSale && askingPrice ? parseFloat(askingPrice) : undefined,
           firstFlyingDate: firstFlyingDate || undefined,
           notes,
         });
@@ -226,14 +270,14 @@ export function PigeonForm({
       <div className="flex items-center justify-between">
         <div>
           <Link
-            href={isEdit && initialPigeon ? `/pigeons/${initialPigeon.id}` : "/pigeons"}
+            href={isEdit && initialPigeon ? `/pigeons/${dynamicUniqueId}` : "/pigeons"}
             className="inline-flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-emerald-700 mb-2"
           >
             <ArrowLeft className="w-4 h-4" /> Back to{" "}
             {isEdit ? "Pigeon Profile" : "Pigeons List"}
           </Link>
           <h1 className="text-2xl font-bold text-slate-900">
-            {isEdit ? `Edit Pigeon ${initialPigeon?.id}` : "Register New Pigeon"}
+            {isEdit ? `Edit Pigeon ${dynamicUniqueId}` : "Register New Pigeon"}
           </h1>
           <p className="text-sm text-slate-500">
             {isEdit
@@ -248,7 +292,7 @@ export function PigeonForm({
             variant="outline"
             onClick={() =>
               router.push(
-                isEdit && initialPigeon ? `/pigeons/${initialPigeon.id}` : "/pigeons"
+                isEdit && initialPigeon ? `/pigeons/${dynamicUniqueId}` : "/pigeons"
               )
             }
           >
@@ -282,7 +326,7 @@ export function PigeonForm({
           <CardTitle>1. Physical Ring Identity</CardTitle>
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-xs font-mono font-bold bg-emerald-50 text-emerald-800 border border-emerald-300 px-2.5 py-1 rounded-lg shadow-2xs">
-              Unique ID: {ringYear}-{String(ringSerial).padStart(2, "0")}
+              Unique ID: {dynamicUniqueId}
             </span>
             <span className="text-xs font-mono bg-slate-100 text-slate-600 border border-slate-200 px-2.5 py-1 rounded-lg hidden sm:inline-block">
               Tag: {ringYear} | {farmName} | {String(ringSerial).padStart(2, "0")} | {contactNumber}
@@ -362,9 +406,9 @@ export function PigeonForm({
               onChange={(e) => setSex(e.target.value as PigeonSex)}
               required
             >
+              <option value="MALE">Male (♂)</option>
+              <option value="FEMALE">Female (♀)</option>
               <option value="UNKNOWN">Baby / Unknown</option>
-              <option value="MALE">Cock (Male ♂)</option>
-              <option value="FEMALE">Hen (Female ♀)</option>
             </Select>
 
             <Select
@@ -384,7 +428,7 @@ export function PigeonForm({
             >
               {breedConfig?.categories.map((cat) => (
                 <option key={cat.name} value={cat.name}>
-                  {cat.name}
+                  {cat.name} ({cat.name.charAt(0).toUpperCase()})
                 </option>
               ))}
             </Select>
@@ -496,10 +540,61 @@ export function PigeonForm({
         </CardContent>
       </Card>
 
-      {/* Section 5: Performance & Media */}
+      {/* Section 5: Commercial & Sales Listing */}
+      <Card className={isForSale ? "border-emerald-300 ring-1 ring-emerald-300/40 bg-emerald-50/20" : ""}>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>5. Commercial & Sales Listing</CardTitle>
+              <span className="text-xs text-slate-500">
+                Mark this pigeon as available for enthusiasts and pigeon buyers.
+              </span>
+            </div>
+            {isForSale && (
+              <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold">
+                Available for Sale
+              </span>
+            )}
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <label className="flex items-start gap-3 p-3.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50/80 cursor-pointer transition-colors">
+            <input
+              type="checkbox"
+              checked={isForSale}
+              onChange={(e) => setIsForSale(e.target.checked)}
+              className="mt-0.5 w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer"
+            />
+            <div className="text-xs">
+              <span className="font-bold text-slate-800 block">
+                List this pigeon as "Available for Sale"
+              </span>
+              <span className="text-slate-500">
+                Bird will appear in the "Available Sale" dashboard count and sales directory.
+              </span>
+            </div>
+          </label>
+
+          {isForSale && (
+            <div className="pt-2">
+              <Input
+                label="Asking / Listing Price (৳ BDT)"
+                type="number"
+                min={0}
+                placeholder="e.g. 5000"
+                value={askingPrice}
+                onChange={(e) => setAskingPrice(e.target.value)}
+                helperText="Expected price for enthusiasts (can be negotiated at time of sale)"
+              />
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Section 6: Performance & Media */}
       <Card>
         <CardHeader>
-          <CardTitle>5. Flight Records & Notes</CardTitle>
+          <CardTitle>6. Flight Records & Notes</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -510,13 +605,151 @@ export function PigeonForm({
               onChange={(e) => setFirstFlyingDate(e.target.value)}
               helperText="Date bird took its first roof toss or training flight"
             />
-            <Input
-              label="Photo URL (Optional)"
-              placeholder="https://..."
-              value={photoUrl}
-              onChange={(e) => setPhotoUrl(e.target.value)}
-              helperText="Pigeon portrait URL or image link"
-            />
+            <div>
+              <Input
+                label="Primary Portrait Photo URL (Optional)"
+                placeholder="https://..."
+                value={photoUrl}
+                onChange={(e) => setPhotoUrl(e.target.value)}
+                helperText="Main avatar portrait for registry & pedigree"
+              />
+              {photoUrl && (
+                <div className="mt-2 flex items-center gap-3 p-2 bg-slate-50 rounded-xl border border-slate-200">
+                  <div className="w-12 h-12 rounded-lg overflow-hidden bg-slate-200 shrink-0 border border-slate-300">
+                    <img
+                      src={photoUrl}
+                      alt="Primary Portrait Preview"
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        (e.target as HTMLElement).style.display = "none";
+                      }}
+                    />
+                  </div>
+                  <span className="text-xs text-slate-500 font-medium">
+                    Primary Photo Preview
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Gallery Images & Media Upload Link */}
+          <div className="pt-3 border-t border-slate-100 space-y-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+                  Gallery Images & Media ({photos.length})
+                </label>
+                <p className="text-xs text-slate-500">
+                  Add image links for high-res loft photos, eye signs, and wing plumage documentation.
+                </p>
+              </div>
+            </div>
+
+            {/* Input to add image link to gallery */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+              <div className="flex-1">
+                <Input
+                  placeholder="Paste Image URL (e.g. Imgur, Cloudinary, Drive link)"
+                  value={galleryInput}
+                  onChange={(e) => {
+                    setGalleryInput(e.target.value);
+                    setGalleryError(null);
+                  }}
+                  className="bg-white text-xs"
+                />
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  const url = galleryInput.trim();
+                  if (!url) {
+                    setGalleryError("Please enter an image URL");
+                    return;
+                  }
+                  if (photos.includes(url)) {
+                    setGalleryError("Image URL is already added to the gallery");
+                    return;
+                  }
+                  setPhotos([...photos, url]);
+                  if (!photoUrl) {
+                    setPhotoUrl(url);
+                  }
+                  setGalleryInput("");
+                }}
+                className="gap-1.5 shrink-0 text-xs font-bold"
+              >
+                <ImageIcon className="w-3.5 h-3.5" /> + Add to Gallery
+              </Button>
+            </div>
+
+            {galleryError && (
+              <p className="text-xs text-rose-600 font-semibold">{galleryError}</p>
+            )}
+
+            {/* Gallery Thumbnails List with preview and actions */}
+            {photos.length > 0 && (
+              <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-2.5 pt-1">
+                {photos.map((pUrl, idx) => {
+                  const isPrimary = photoUrl === pUrl;
+                  return (
+                    <div
+                      key={idx}
+                      className={`relative group aspect-square rounded-xl overflow-hidden border bg-slate-100 shadow-2xs ${
+                        isPrimary
+                          ? "ring-2 ring-emerald-500 border-emerald-400"
+                          : "border-slate-200"
+                      }`}
+                    >
+                      <img
+                        src={pUrl}
+                        alt={`Gallery Photo ${idx + 1}`}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          (e.target as HTMLElement).style.opacity = "0.3";
+                        }}
+                      />
+                      {isPrimary && (
+                        <div className="absolute top-1 left-1">
+                          <span className="bg-emerald-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow-xs">
+                            ★ Primary
+                          </span>
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 flex flex-col justify-between">
+                        <div className="flex justify-end">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const updated = photos.filter((p) => p !== pUrl);
+                              setPhotos(updated);
+                              if (photoUrl === pUrl) {
+                                setPhotoUrl(updated.length > 0 ? updated[0] : "");
+                              }
+                            }}
+                            className="p-1 rounded bg-rose-600 hover:bg-rose-700 text-white shadow-xs cursor-pointer"
+                            title="Remove Photo"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </button>
+                        </div>
+                        {!isPrimary && (
+                          <button
+                            type="button"
+                            onClick={() => setPhotoUrl(pUrl)}
+                            className="bg-white/90 hover:bg-emerald-600 hover:text-white text-slate-800 text-[9px] font-bold py-0.5 px-1 rounded shadow-xs cursor-pointer"
+                          >
+                            Set Main
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           <div>

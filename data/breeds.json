@@ -1,7 +1,7 @@
 {
   "categories": [
     {
-      "name": "Giribaz / Local",
+      "name": "Giribaz",
       "subtypes": [
         "Standard Giribaz",
         "Khaki",
@@ -24,16 +24,6 @@
         "Chequer Racer",
         "White Racer",
         "Red Bar Racer"
-      ]
-    },
-    {
-      "name": "Fancy / Other",
-      "subtypes": [
-        "Lotan",
-        "Siraji",
-        "Fantail",
-        "Jacobin",
-        "Lahore"
       ]
     }
   ]

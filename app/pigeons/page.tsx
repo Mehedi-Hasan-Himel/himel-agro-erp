@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { Pigeon } from "@/types/pigeon";
 import { Pair } from "@/types/breeding";
 import { getPigeons } from "@/lib/repositories/pigeonRepository";
@@ -9,10 +10,12 @@ import { getPairs } from "@/lib/repositories/breedingRepository";
 import { DATA_CHANGE_EVENT } from "@/lib/repositories/storageAdapter";
 import { PigeonTable } from "@/components/pigeons/PigeonTable";
 import { PigeonCard } from "@/components/pigeons/PigeonCard";
-import { Button } from "@/components/ui/Button";
-import { PlusCircle, LayoutGrid, List, Feather } from "lucide-react";
+import { PlusCircle, LayoutGrid, List } from "lucide-react";
 
-export default function PigeonsListPage() {
+function PigeonsListContent() {
+  const searchParams = useSearchParams();
+  const initialStatus = searchParams?.get("status") || "ALL";
+
   const [pigeons, setPigeons] = useState<Pigeon[]>([]);
   const [pairs, setPairs] = useState<Pair[]>([]);
   const [viewMode, setViewMode] = useState<"TABLE" | "GRID">("TABLE");
@@ -60,8 +63,7 @@ export default function PigeonsListPage() {
             </span>
           </div>
           <p className="text-xs text-slate-500 mt-1">
-            Permanent identity, genealogy, physical ring records, and current
-            statuses.
+            Permanent identity, genealogy, physical ring records, commercial listings, and current statuses.
           </p>
         </div>
 
@@ -107,7 +109,12 @@ export default function PigeonsListPage() {
           <span>Loading pigeon directory...</span>
         </div>
       ) : viewMode === "TABLE" ? (
-        <PigeonTable pigeons={pigeons} pairs={pairs} onRefresh={loadData} />
+        <PigeonTable
+          pigeons={pigeons}
+          pairs={pairs}
+          initialStatusFilter={initialStatus}
+          onRefresh={loadData}
+        />
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {pigeons.map((pigeon) => (
@@ -116,5 +123,20 @@ export default function PigeonsListPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function PigeonsListPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center py-20 text-slate-400">
+          <div className="animate-spin rounded-full h-7 w-7 border-b-2 border-emerald-600 mr-3" />
+          <span>Loading pigeon directory...</span>
+        </div>
+      }
+    >
+      <PigeonsListContent />
+    </Suspense>
   );
 }

@@ -30,7 +30,6 @@ import {
   Feather,
   GitFork,
   Wheat,
-  DollarSign,
   TrendingUp,
   TrendingDown,
   ArrowUpRight,
@@ -44,7 +43,13 @@ import {
   MapPin,
   ExternalLink,
 } from "lucide-react";
-import { SquabIcon } from "@/components/ui/icons/SquabIcon";
+import {
+  SquabIcon,
+  CockPigeonIcon,
+  HenPigeonIcon,
+  FlockPigeonIcon,
+  TakaIcon,
+} from "@/components/ui/icons";
 
 export default function DashboardPage() {
   const [pigeons, setPigeons] = useState<Pigeon[]>([]);
@@ -66,6 +71,30 @@ export default function DashboardPage() {
 
   const loadDashboardData = async () => {
     try {
+      // Fast path: Try consolidated dashboard endpoint
+      const dashRes = await fetch("/api/dashboard").catch(() => null);
+      if (dashRes && dashRes.ok) {
+        const data = await dashRes.json();
+        if (data && Array.isArray(data.pigeons)) {
+          const [allFeed, meds, financialMonths] = await Promise.all([
+            getFeedStockSummaries(),
+            getDueMedicineSchedules(),
+            getMonthlySummaries(),
+          ]);
+
+          setPigeons(data.pigeons);
+          setStats(data.stats || calculatePigeonStats(data.pigeons));
+          setPairs(data.pairs || []);
+          setRounds(data.rounds || []);
+          setFeedSummaries(allFeed);
+          setDueMedicines(meds);
+          setMonthlySummaries(financialMonths);
+          setRecentTransactions((data.transactions || []).slice(0, 5));
+          return;
+        }
+      }
+
+      // Fallback path
       const [
         allPigeons,
         allPairs,
@@ -268,9 +297,13 @@ export default function DashboardPage() {
           {/* Total Pigeons */}
           <Card className="bg-white border-slate-200/80 hover:border-emerald-300 transition-all shadow-xs">
             <CardContent className="p-4 sm:p-5">
-              <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
+              <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
                 <span className="font-bold text-slate-700">Total Active</span>
-                <Feather className="w-4 h-4 text-emerald-700" />
+                <div className="flex items-center gap-1 p-1 rounded-xl bg-gradient-to-r from-sky-50 via-emerald-50 to-pink-50 border border-slate-200/60 shadow-2xs">
+                  <CockPigeonIcon className="w-4 h-4 text-sky-700" />
+                  <SquabIcon className="w-3.5 h-3.5 text-emerald-700" />
+                  <HenPigeonIcon className="w-4 h-4 text-pink-700" />
+                </div>
               </div>
               <div className="text-2xl sm:text-3xl font-black text-slate-900">
                 {stats.totalActive}
@@ -284,9 +317,11 @@ export default function DashboardPage() {
           {/* Active Males */}
           <Card className="bg-white border-slate-200/80 hover:border-sky-300 transition-all shadow-xs">
             <CardContent className="p-4 sm:p-5">
-              <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
-                <span className="font-bold text-slate-700">Male (Cocks)</span>
-                <span className="text-sky-700 font-bold text-base">♂</span>
+              <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
+                <span className="font-bold text-slate-700">Male</span>
+                <div className="w-8 h-8 rounded-xl bg-sky-100/90 border border-sky-200/70 flex items-center justify-center shadow-2xs">
+                  <CockPigeonIcon className="w-5 h-5 text-sky-700" />
+                </div>
               </div>
               <div className="text-2xl sm:text-3xl font-black text-sky-800">
                 {stats.activeMales}
@@ -300,9 +335,11 @@ export default function DashboardPage() {
           {/* Active Females */}
           <Card className="bg-white border-slate-200/80 hover:border-pink-300 transition-all shadow-xs">
             <CardContent className="p-4 sm:p-5">
-              <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
-                <span className="font-bold text-slate-700">Female (Hens)</span>
-                <span className="text-pink-700 font-bold text-base">♀</span>
+              <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
+                <span className="font-bold text-slate-700">Female</span>
+                <div className="w-8 h-8 rounded-xl bg-pink-100/90 border border-pink-200/70 flex items-center justify-center shadow-2xs">
+                  <HenPigeonIcon className="w-5 h-5 text-pink-700" />
+                </div>
               </div>
               <div className="text-2xl sm:text-3xl font-black text-pink-800">
                 {stats.activeFemales}
@@ -316,9 +353,11 @@ export default function DashboardPage() {
           {/* Babies / Squabs */}
           <Card className="bg-white border-slate-200/80 hover:border-emerald-300 transition-all shadow-xs">
             <CardContent className="p-4 sm:p-5">
-              <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
+              <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
                 <span className="font-bold text-slate-700">Babies (Squabs)</span>
-                <SquabIcon className="w-4 h-4 text-emerald-700" />
+                <div className="w-8 h-8 rounded-xl bg-emerald-100/90 border border-emerald-200/70 flex items-center justify-center shadow-2xs">
+                  <SquabIcon className="w-5 h-5 text-emerald-700" />
+                </div>
               </div>
               <div className="text-2xl sm:text-3xl font-black text-emerald-800">
                 {stats.activeBabies}
@@ -330,20 +369,24 @@ export default function DashboardPage() {
           </Card>
 
           {/* Available for Sale */}
-          <Card className="bg-white border-slate-200/80 hover:border-blue-300 transition-all shadow-xs col-span-2 sm:col-span-1">
-            <CardContent className="p-4 sm:p-5">
-              <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
-                <span className="font-bold text-slate-700">Available Sale</span>
-                <DollarSign className="w-4 h-4 text-blue-700" />
-              </div>
-              <div className="text-2xl sm:text-3xl font-black text-blue-800">
-                {stats.availableForSale}
-              </div>
-              <span className="text-[11px] text-slate-500 mt-1 block font-medium">
-                Ready for enthusiasts
-              </span>
-            </CardContent>
-          </Card>
+          <Link href="/pigeons?status=FOR_SALE" className="col-span-2 sm:col-span-1 block">
+            <Card className="bg-white border-slate-200/80 hover:border-emerald-400 hover:shadow-sm transition-all shadow-xs h-full cursor-pointer">
+              <CardContent className="p-4 sm:p-5">
+                <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
+                  <span className="font-bold text-slate-700">Available Sale</span>
+                  <div className="w-8 h-8 rounded-xl bg-emerald-100/90 border border-emerald-200/70 flex items-center justify-center shadow-2xs">
+                    <TakaIcon className="w-5 h-5 text-emerald-700" />
+                  </div>
+                </div>
+                <div className="text-2xl sm:text-3xl font-black text-emerald-800">
+                  {stats.availableForSale}
+                </div>
+                <span className="text-[11px] text-slate-500 mt-1 block font-medium">
+                  Ready for enthusiasts & buyers
+                </span>
+              </CardContent>
+            </Card>
+          </Link>
         </div>
       </div>
 
@@ -352,7 +395,7 @@ export default function DashboardPage() {
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
-              <DollarSign className="w-4 h-4 text-emerald-600" />
+              <TakaIcon className="w-4 h-4 text-emerald-600" />
               <span>Monthly Financial Overview ({currentMonthSummary.monthLabel})</span>
             </h3>
           </div>
@@ -566,7 +609,7 @@ export default function DashboardPage() {
         <Card className="border-slate-200/80 shadow-xs">
           <CardHeader className="bg-slate-50/50">
             <CardTitle className="text-sm font-bold text-slate-800 flex items-center gap-2">
-              <DollarSign className="w-4 h-4 text-blue-600" />
+              <TakaIcon className="w-4 h-4 text-blue-600" />
               <span>Preserved Sale Records</span>
             </CardTitle>
             <Link

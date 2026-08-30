@@ -1,7 +1,7 @@
 [
   {
     "id": "fly_001",
-    "pigeonId": "2025-01",
+    "pigeonId": "2025-01-G",
     "date": "2025-05-15",
     "eventName": "Summer Endurance Loft Flight",
     "flightDurationMinutes": 320,
@@ -12,7 +12,7 @@
   },
   {
     "id": "fly_002",
-    "pigeonId": "2025-05",
+    "pigeonId": "2025-05-R",
     "date": "2025-08-20",
     "eventName": "150km Club Velocity Trial",
     "flightDurationMinutes": 118,
@@ -23,7 +23,7 @@
   },
   {
     "id": "fly_003",
-    "pigeonId": "2026-01",
+    "pigeonId": "2026-01-G",
     "date": "2026-04-10",
     "eventName": "Spring High-Flying Competition Trial",
     "flightDurationMinutes": 285,
@@ -34,7 +34,7 @@
   },
   {
     "id": "fly_004",
-    "pigeonId": "2026-03",
+    "pigeonId": "2026-03-R",
     "date": "2026-05-02",
     "eventName": "80km Straight Toss Training",
     "flightDurationMinutes": 62,
@@ -45,7 +45,7 @@
   },
   {
     "id": "fly_005",
-    "pigeonId": "2026-09",
+    "pigeonId": "2026-09-G",
     "date": "2026-06-15",
     "eventName": "Young Bird Sky Test",
     "flightDurationMinutes": 210,
@@ -56,7 +56,7 @@
   },
   {
     "id": "fly_006",
-    "pigeonId": "2026-11",
+    "pigeonId": "2026-11-R",
     "date": "2026-07-04",
     "eventName": "50km Young Racer Training Toss",
     "flightDurationMinutes": 41,
