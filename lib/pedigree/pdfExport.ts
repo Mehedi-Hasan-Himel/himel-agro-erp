@@ -3,7 +3,8 @@ import { toPng } from "html-to-image";
 
 export async function exportPedigreeToPdf(
   elementId: string,
-  filename: string = "Himel-Agro-Pedigree-Certificate.pdf"
+  filename: string = "Himel-Agro-Pedigree-Certificate.pdf",
+  orientation: "landscape" | "portrait" = "landscape"
 ): Promise<void> {
   const element = document.getElementById(elementId);
   if (!element) {
@@ -21,7 +22,7 @@ export async function exportPedigreeToPdf(
     });
 
     const pdf = new jsPDF({
-      orientation: "landscape",
+      orientation,
       unit: "mm",
       format: "a4",
     });

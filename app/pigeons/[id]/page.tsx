@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, use } from "react";
+import React, { useState, useEffect, use, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Pigeon } from "@/types/pigeon";
@@ -42,6 +42,10 @@ import { DeathModal } from "@/components/pigeons/DeathModal";
 import { DeletePigeonModal } from "@/components/pigeons/DeletePigeonModal";
 import { PairFormModal } from "@/components/breeding/PairFormModal";
 import { PigeonGallery } from "@/components/pigeons/PigeonGallery";
+import { PigeonVideoGallery } from "@/components/pigeons/PigeonVideoGallery";
+import { PigeonFamilyRelationships } from "@/components/pigeons/PigeonFamilyRelationships";
+import { PigeonInfoPDFModal } from "@/components/pedigree/PigeonInfoPDFModal";
+import { calculateFamilyRelationships } from "@/lib/calculations/relationshipCalculator";
 import { SquabIcon, CockPigeonIcon, HenPigeonIcon, TakaIcon } from "@/components/ui/icons";
 
 import {
@@ -63,6 +67,8 @@ import {
   Egg,
   Tag,
   Trash2,
+  Users,
+  Video,
 } from "lucide-react";
 
 export default function PigeonProfilePage({
@@ -95,10 +101,15 @@ export default function PigeonProfilePage({
 
   // Modals
   const [isPdfModalOpen, setIsPdfModalOpen] = useState(false);
+  const [isInfoPdfModalOpen, setIsInfoPdfModalOpen] = useState(false);
   const [isSaleModalOpen, setIsSaleModalOpen] = useState(false);
   const [isDeathModalOpen, setIsDeathModalOpen] = useState(false);
   const [isPairModalOpen, setIsPairModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+  const familySummary = useMemo(() => {
+    return pigeon ? calculateFamilyRelationships(pigeon, allPigeons) : null;
+  }, [pigeon, allPigeons]);
 
   const loadPigeonData = async () => {
     try {
@@ -208,10 +219,16 @@ export default function PigeonProfilePage({
     );
   }
 
-  const age = calculateAge(pigeon.hatchDate);
+  const age = calculateAge(pigeon.birthDate || pigeon.hatchDate);
 
   const tabsConfig = [
     { id: "overview", label: "Overview", icon: Feather },
+    {
+      id: "family",
+      label: "Family & Relationships",
+      icon: Users,
+      count: familySummary ? familySummary.totalRelationsCount : undefined,
+    },
     {
       id: "breeding",
       label: "Breeding & Pairs",
@@ -273,22 +290,30 @@ export default function PigeonProfilePage({
               </div>
             )}
             <div className="space-y-3">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="text-xs font-mono font-bold bg-slate-900 text-emerald-400 px-3.5 py-1.5 rounded-xl border border-slate-800 shadow-xs">
-                  {formatRingNumber(pigeon)}
+              {/* Dynamic Unique ID */}
+              <div className="flex flex-wrap items-center gap-2.5">
+                <span className="text-xl sm:text-2xl font-mono font-black tracking-tight text-slate-900 bg-slate-100 px-3.5 py-1 rounded-xl border border-slate-300 shadow-2xs">
+                  {pigeon.id}
                 </span>
                 <StatusBadge status={pigeon.status} size="md" />
                 <SexBadge sex={pigeon.sex} />
               </div>
 
+              {/* Under ID: Reformed Ring Badge (bg-color: green, text: white) */}
+              <div>
+                <span className="inline-block text-xs font-mono font-bold bg-emerald-600 text-white px-3.5 py-1.5 rounded-xl shadow-xs border border-emerald-700">
+                  {formatRingNumber(pigeon)}
+                </span>
+              </div>
+
               <div>
                 <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-                  {pigeon.breedSubtype || pigeon.breed}
+                  {pigeon.breedSubtype || (pigeon.breed === "Giribaz / Local" ? "Giribaz" : pigeon.breed)}
                 </h1>
                 <p className="text-xs sm:text-sm text-slate-500 flex items-center gap-2 mt-1">
-                  <span>Breed: {pigeon.breed}</span>
+                  <span>Breed: {pigeon.breed === "Giribaz / Local" ? "Giribaz" : pigeon.breed}</span>
                   <span>•</span>
-                  <span>Hatch Date: {formatDate(pigeon.hatchDate)} (Age: {age})</span>
+                  <span>Hatch Date: {formatDate(pigeon.birthDate || pigeon.hatchDate)} (Age: {age})</span>
                 </p>
               </div>
             </div>
@@ -331,6 +356,15 @@ export default function PigeonProfilePage({
                 </Button>
               </>
             )}
+
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setIsInfoPdfModalOpen(true)}
+              className="gap-1.5 text-xs text-emerald-800 border-emerald-300 hover:bg-emerald-50 bg-emerald-50/40"
+            >
+              <Download className="w-3.5 h-3.5" /> Pigeon Info PDF
+            </Button>
 
             <Button
               size="sm"
@@ -593,12 +627,26 @@ export default function PigeonProfilePage({
             </div>
           </div>
 
+          {/* Family & Relationships System */}
+          <PigeonFamilyRelationships pigeon={pigeon} allPigeons={allPigeons} />
+
           {/* Individual Photo Gallery Card with Live Image Submit Form */}
           <PigeonGallery
             pigeon={pigeon}
             onPigeonUpdated={(updated) => setPigeon(updated)}
           />
+
+          {/* Dedicated Video Gallery Card with Live Video Submit Form */}
+          <PigeonVideoGallery
+            pigeon={pigeon}
+            onPigeonUpdated={(updated) => setPigeon(updated)}
+          />
         </div>
+      )}
+
+      {/* Dedicated Tab: Family & Relationships */}
+      {activeTab === "family" && (
+        <PigeonFamilyRelationships pigeon={pigeon} allPigeons={allPigeons} />
       )}
 
       {/* Tab 2: Breeding & Pairs */}
@@ -991,12 +1039,27 @@ export default function PigeonProfilePage({
         </Card>
       )}
 
-      {/* PDF Modal */}
+      {/* Pedigree Certificate PDF Modal */}
       {isPdfModalOpen && pedigreeTree && (
         <PedigreePDFModal
           tree={pedigreeTree}
           isOpen={isPdfModalOpen}
           onClose={() => setIsPdfModalOpen(false)}
+        />
+      )}
+
+      {/* Pigeon Info Comprehensive PDF Modal */}
+      {isInfoPdfModalOpen && pigeon && (
+        <PigeonInfoPDFModal
+          pigeon={pigeon}
+          father={father}
+          mother={mother}
+          familySummary={familySummary}
+          hatchingStats={hatchingStats}
+          flyingRecords={flyingRecords}
+          healthRecords={healthRecords}
+          isOpen={isInfoPdfModalOpen}
+          onClose={() => setIsInfoPdfModalOpen(false)}
         />
       )}
 

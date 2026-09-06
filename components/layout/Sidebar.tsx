@@ -75,10 +75,9 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
       {/* Brand Header */}
       <div className="p-4 border-b border-slate-800 flex items-center justify-between">
         <Link href="/dashboard" className="flex items-center gap-3 group">
-          {/* Radiant Green Light Logo Container with Live Loft Pulse Effect */}
+          {/* Brand Logo Container */}
           <div className="relative w-11 h-11 shrink-0 flex items-center justify-center">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 pointer-events-none"></span>
-            <div className="relative w-full h-full rounded-full flex items-center justify-center bg-emerald-950/90 ring-2 ring-emerald-400 ring-offset-2 ring-offset-slate-900 shadow-lg shadow-emerald-500/50 group-hover:scale-105 transition-all overflow-hidden">
+            <div className="relative w-full h-full rounded-full flex items-center justify-center bg-emerald-950/90 ring-2 ring-emerald-500/80 ring-offset-2 ring-offset-slate-900 shadow-md shadow-emerald-500/20 group-hover:scale-105 transition-all overflow-hidden">
               <Image
                 src={SITE_CONFIG.logoUrl}
                 alt={`${SITE_CONFIG.farmName} Logo`}
@@ -87,6 +86,7 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
                 className="w-full h-full object-cover"
                 unoptimized
                 priority
+                suppressHydrationWarning
               />
             </div>
           </div>

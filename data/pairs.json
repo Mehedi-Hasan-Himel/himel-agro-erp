@@ -1,1 +1,36 @@
-[]
+[
+  {
+    "id": "pair_main_01",
+    "maleId": "2025-01-G",
+    "femaleId": "2025-02-G",
+    "cageNumber": "Breeding Pen A-1",
+    "startDate": "2026-01-10",
+    "endDate": "2026-05-30",
+    "status": "SEPARATED",
+    "notes": "Original Main Foundation Pair. Produced 2026-01-G & twin/full siblings.",
+    "createdAt": "2026-01-10T08:00:00.000Z",
+    "updatedAt": "2026-05-30T10:00:00.000Z"
+  },
+  {
+    "id": "pair_01",
+    "maleId": "2025-03-G",
+    "femaleId": "2025-02-G",
+    "cageNumber": "Breeding Pen B-2",
+    "startDate": "2026-06-01",
+    "status": "ACTIVE",
+    "notes": "Pair 1 (Main Female F001 + Other Male M002). Produces maternal half-siblings.",
+    "createdAt": "2026-06-01T08:00:00.000Z",
+    "updatedAt": "2026-06-01T08:00:00.000Z"
+  },
+  {
+    "id": "pair_02",
+    "maleId": "2025-01-G",
+    "femaleId": "2025-04-G",
+    "cageNumber": "Breeding Pen C-3",
+    "startDate": "2026-06-15",
+    "status": "ACTIVE",
+    "notes": "Pair 2 (Main Male M001 + Other Female F002). Produces paternal half-siblings.",
+    "createdAt": "2026-06-15T08:00:00.000Z",
+    "updatedAt": "2026-06-15T08:00:00.000Z"
+  }
+]

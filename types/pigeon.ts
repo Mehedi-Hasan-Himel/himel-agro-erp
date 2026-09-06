@@ -21,9 +21,13 @@ export interface Pigeon {
 
   photoUrl?: string;
   photos?: string[];
+  videos?: string[];
 
   fatherId?: string | null;
   motherId?: string | null;
+  birthDate?: string; // Authoritative birth date (defaults to hatchDate)
+  clutchId?: string; // Clutch / egg batch identifier
+  pairId?: string; // Breeding pair identifier that produced this pigeon
 
   source: PigeonSource;
 

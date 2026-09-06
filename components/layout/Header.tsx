@@ -62,6 +62,7 @@ export function Header({ onMenuToggle }: HeaderProps) {
               height={160}
               className="w-full h-full object-cover"
               unoptimized
+              suppressHydrationWarning
             />
           </div>
           <div className="min-w-0">

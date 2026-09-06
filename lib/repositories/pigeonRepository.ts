@@ -59,11 +59,15 @@ export interface CreatePigeonInput {
   farmName?: string;
   contactNumber?: string;
   hatchDate: string;
+  birthDate?: string;
+  clutchId?: string;
+  pairId?: string;
   sex: PigeonSex;
   breed: string;
   breedSubtype?: string;
   photoUrl?: string;
   photos?: string[];
+  videos?: string[];
   fatherId?: string | null;
   motherId?: string | null;
   source: PigeonSource;
@@ -134,11 +138,15 @@ export async function createPigeon(input: CreatePigeonInput): Promise<Pigeon> {
     farmName,
     contactNumber,
     hatchDate: input.hatchDate,
+    birthDate: input.birthDate || input.hatchDate,
+    clutchId: input.clutchId,
+    pairId: input.pairId,
     sex: input.sex,
     breed: input.breed,
     breedSubtype: input.breedSubtype || "",
     photoUrl: input.photoUrl || "",
     photos: input.photos || (input.photoUrl ? [input.photoUrl] : []),
+    videos: input.videos || [],
     fatherId: input.fatherId || null,
     motherId: input.motherId || null,
     source: input.source,

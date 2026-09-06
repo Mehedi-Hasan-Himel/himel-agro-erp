@@ -7,7 +7,7 @@
 
 export const SITE_CONFIG = {
   // Brand & Farm Identity
-  farmName: "Himel's Pet House",
+  farmName: "Himel Agro",
   shortName: "Himel Agro",
   loftSubtitle: "Himel Agro Pigeon Farm & Performance Genetics",
   ownerName: "Himel",

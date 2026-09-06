@@ -9,7 +9,7 @@ import { getPigeons } from "@/lib/repositories/pigeonRepository";
 import { getPairs } from "@/lib/repositories/breedingRepository";
 import { DATA_CHANGE_EVENT } from "@/lib/repositories/storageAdapter";
 import { PigeonTable } from "@/components/pigeons/PigeonTable";
-import { PigeonCard } from "@/components/pigeons/PigeonCard";
+import { PigeonGrid } from "@/components/pigeons/PigeonGrid";
 import { PlusCircle, LayoutGrid, List } from "lucide-react";
 
 function PigeonsListContent() {
@@ -116,11 +116,12 @@ function PigeonsListContent() {
           onRefresh={loadData}
         />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {pigeons.map((pigeon) => (
-            <PigeonCard key={pigeon.id} pigeon={pigeon} />
-          ))}
-        </div>
+        <PigeonGrid
+          pigeons={pigeons}
+          pairs={pairs}
+          initialStatusFilter={initialStatus}
+          onRefresh={loadData}
+        />
       )}
     </div>
   );

@@ -79,6 +79,13 @@ export function PigeonForm({
   const [motherId, setMotherId] = useState<string>(
     initialPigeon?.motherId || defaultMotherId || ""
   );
+  const [clutchId, setClutchId] = useState<string>(
+    initialPigeon?.clutchId || ""
+  );
+  const [videos, setVideos] = useState<string[]>(
+    initialPigeon?.videos || []
+  );
+  const [videoInput, setVideoInput] = useState<string>("");
 
   const [source, setSource] = useState<PigeonSource>(
     initialPigeon?.source || "BORN_HIMEL_AGRO"
@@ -200,11 +207,14 @@ export function PigeonForm({
           farmName,
           contactNumber,
           hatchDate,
+          birthDate: hatchDate,
+          clutchId: clutchId.trim() || undefined,
           sex,
           breed,
           breedSubtype,
           photoUrl: photoUrl || (finalPhotos.length > 0 ? finalPhotos[0] : ""),
           photos: finalPhotos,
+          videos,
           fatherId: fatherId || null,
           motherId: motherId || null,
           source,
@@ -230,11 +240,14 @@ export function PigeonForm({
           farmName,
           contactNumber,
           hatchDate,
+          birthDate: hatchDate,
+          clutchId: clutchId.trim() || undefined,
           sex,
           breed,
           breedSubtype,
           photoUrl: photoUrl || (finalPhotos.length > 0 ? finalPhotos[0] : ""),
           photos: finalPhotos,
+          videos,
           fatherId: fatherId || null,
           motherId: motherId || null,
           source,
@@ -487,6 +500,17 @@ export function PigeonForm({
                 </option>
               ))}
             </Select>
+
+            {/* Clutch / Batch ID */}
+            <div className="sm:col-span-2">
+              <Input
+                label="Egg Batch / Clutch ID (Optional)"
+                placeholder="e.g. 2026-C01"
+                value={clutchId}
+                onChange={(e) => setClutchId(e.target.value)}
+                helperText="Same clutch ID identifies twin clutch-mates hatched from the same nest"
+              />
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -567,10 +591,10 @@ export function PigeonForm({
             />
             <div className="text-xs">
               <span className="font-bold text-slate-800 block">
-                List this pigeon as "Available for Sale"
+                List this pigeon as &quot;Available for Sale&quot;
               </span>
               <span className="text-slate-500">
-                Bird will appear in the "Available Sale" dashboard count and sales directory.
+                Bird will appear in the &quot;Available Sale&quot; dashboard count and sales directory.
               </span>
             </div>
           </label>
@@ -748,6 +772,67 @@ export function PigeonForm({
                     </div>
                   );
                 })}
+              </div>
+            )}
+          </div>
+
+          {/* Video Gallery Links */}
+          <div className="pt-3 border-t border-slate-100 space-y-3">
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+                Video Links & Loft Clips ({videos.length})
+              </label>
+              <p className="text-xs text-slate-500">
+                Add YouTube, Facebook, or direct MP4 video links for flight records, shows, and training.
+              </p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+              <div className="flex-1">
+                <Input
+                  placeholder="Paste YouTube or Video URL (e.g. https://youtu.be/...)"
+                  value={videoInput}
+                  onChange={(e) => setVideoInput(e.target.value)}
+                  className="bg-white text-xs"
+                />
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  const url = videoInput.trim();
+                  if (!url) return;
+                  if (videos.includes(url)) return;
+                  setVideos([...videos, url]);
+                  setVideoInput("");
+                }}
+                className="gap-1.5 shrink-0 text-xs font-bold"
+              >
+                + Add Video Link
+              </Button>
+            </div>
+
+            {videos.length > 0 && (
+              <div className="space-y-1.5 pt-1">
+                {videos.map((vid, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-center justify-between p-2 rounded-xl bg-slate-50 border border-slate-200 text-xs"
+                  >
+                    <span className="font-mono text-[11px] truncate max-w-md text-slate-700">
+                      {vid}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setVideos(videos.filter((_, i) => i !== idx))}
+                      className="p-1 text-rose-600 hover:text-rose-800"
+                      title="Remove Video"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ))}
               </div>
             )}
           </div>

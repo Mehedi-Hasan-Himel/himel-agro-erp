@@ -5,10 +5,11 @@ import { fallbackStore } from "@/lib/fallbackStore";
 
 function normalizePigeon(p: any) {
   if (!p) return p;
-  const breedInitial = (p.breed || "Giribaz").trim().charAt(0).toUpperCase() || "G";
+  const breed = p.breed === "Giribaz / Local" ? "Giribaz" : (p.breed || "Giribaz");
+  const breedInitial = breed.trim().charAt(0).toUpperCase() || "G";
   const serialStr = String(p.ringSerial || 1).padStart(2, "0");
   const canonicalId = `${p.ringYear || 2026}-${serialStr}-${breedInitial}`;
-  return { ...p, id: canonicalId, _id: canonicalId };
+  return { ...p, breed, id: canonicalId, _id: canonicalId };
 }
 
 export async function GET(

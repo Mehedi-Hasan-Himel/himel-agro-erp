@@ -8,7 +8,7 @@ export interface RingIdentifiable {
 }
 
 /**
- * Full format: 2026 | Himel Agro | 01 | 01560059954
+ * Full format: 2026 | 01 | Himel Agro | 01560059954
  */
 export function formatRingNumber(pigeon?: RingIdentifiable | null): string {
   if (!pigeon) return "Unknown";
@@ -17,7 +17,7 @@ export function formatRingNumber(pigeon?: RingIdentifiable | null): string {
   const serial = String(pigeon.ringSerial || 0).padStart(2, "0");
   const contact = pigeon.contactNumber || SITE_CONFIG.contactNumber;
 
-  return `${year} | ${farm} | ${serial} | ${contact}`;
+  return `${year} | ${serial} | ${farm} | ${contact}`;
 }
 
 /**
