@@ -65,7 +65,10 @@ export default function BreedingPairsPage() {
               Breeding Pairs Management
             </h1>
             <span className="text-xs font-bold text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full">
-              {pairs.length} Total Pairs
+              {pairs.filter((p) => p.status === "ACTIVE").length} Active Pairs
+            </span>
+            <span className="text-xs font-medium text-slate-500 bg-slate-100 px-2.5 py-0.5 rounded-full">
+              {pairs.length} Total
             </span>
           </div>
           <p className="text-xs text-slate-500 mt-0.5">

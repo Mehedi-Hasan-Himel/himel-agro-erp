@@ -13,12 +13,15 @@ import {
   getPigeonById,
   getPigeonChildren,
   getPigeons,
+  getActivePigeonSerialMap,
 } from "@/lib/repositories/pigeonRepository";
 import {
+  getPairs,
   getPairsForPigeon,
   getActivePairForPigeon,
   getBreedingRoundsForPigeon,
   getPigeonHatchingStats,
+  getActivePairSerialMap,
 } from "@/lib/repositories/breedingRepository";
 import { getFlyingRecords } from "@/lib/repositories/flyingRepository";
 import { getHealthRecords } from "@/lib/repositories/healthRepository";
@@ -41,6 +44,7 @@ import { SaleModal } from "@/components/pigeons/SaleModal";
 import { DeathModal } from "@/components/pigeons/DeathModal";
 import { DeletePigeonModal } from "@/components/pigeons/DeletePigeonModal";
 import { PairFormModal } from "@/components/breeding/PairFormModal";
+import { BreedingRoundModal } from "@/components/breeding/BreedingRoundModal";
 import { PigeonGallery } from "@/components/pigeons/PigeonGallery";
 import { PigeonVideoGallery } from "@/components/pigeons/PigeonVideoGallery";
 import { PigeonFamilyRelationships } from "@/components/pigeons/PigeonFamilyRelationships";
@@ -85,6 +89,7 @@ export default function PigeonProfilePage({
   const [mother, setMother] = useState<Pigeon | null>(null);
   const [childrenList, setChildrenList] = useState<Pigeon[]>([]);
   const [pairs, setPairs] = useState<Pair[]>([]);
+  const [activeSerialMap, setActiveSerialMap] = useState<Map<string, string>>(new Map());
   const [activePair, setActivePair] = useState<Pair | null>(null);
   const [currentPartner, setCurrentPartner] = useState<Pigeon | null>(null);
   const [rounds, setRounds] = useState<BreedingRound[]>([]);
@@ -105,11 +110,19 @@ export default function PigeonProfilePage({
   const [isSaleModalOpen, setIsSaleModalOpen] = useState(false);
   const [isDeathModalOpen, setIsDeathModalOpen] = useState(false);
   const [isPairModalOpen, setIsPairModalOpen] = useState(false);
+  const [isRoundModalOpen, setIsRoundModalOpen] = useState(false);
+  const [selectedPairForRound, setSelectedPairForRound] = useState<Pair | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const familySummary = useMemo(() => {
     return pigeon ? calculateFamilyRelationships(pigeon, allPigeons) : null;
   }, [pigeon, allPigeons]);
+
+  const activePigeonSerialMap = useMemo(() => {
+    return getActivePigeonSerialMap(allPigeons);
+  }, [allPigeons]);
+
+  const activePigeonSerial = pigeon ? activePigeonSerialMap.get(pigeon.id) : undefined;
 
   const loadPigeonData = async () => {
     try {
@@ -130,6 +143,7 @@ export default function PigeonProfilePage({
 
       const [
         allList,
+        allFarmPairs,
         f,
         m,
         kids,
@@ -142,6 +156,7 @@ export default function PigeonProfilePage({
         tree,
       ] = await Promise.all([
         getPigeons(),
+        getPairs(),
         p.fatherId ? getPigeonById(p.fatherId) : null,
         p.motherId ? getPigeonById(p.motherId) : null,
         getPigeonChildren(p.id),
@@ -155,6 +170,7 @@ export default function PigeonProfilePage({
       ]);
 
       setAllPigeons(allList);
+      setActiveSerialMap(getActivePairSerialMap(allFarmPairs));
       setFather(f);
       setMother(m);
       setChildrenList(kids);
@@ -268,17 +284,24 @@ export default function PigeonProfilePage({
         >
           <ArrowLeft className="w-4 h-4" /> Back to Pigeon Directory
         </Link>
-        <span className="text-xs font-mono font-bold text-slate-400">
-          Internal ID: {pigeon.id}
-        </span>
+        <div className="flex items-center gap-2 text-xs font-mono">
+          {pigeon.status === "ACTIVE" && activePigeonSerial && (
+            <span className="font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-md shadow-2xs">
+              Active #{activePigeonSerial}
+            </span>
+          )}
+          <span className="text-slate-400 font-medium">ID: {pigeon.id}</span>
+        </div>
       </div>
 
       {/* Top Identity Digital Card */}
-      <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-8 overflow-hidden relative">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-          <div className="flex items-start gap-4 sm:gap-6">
-            {pigeon.photoUrl && (
-              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden bg-slate-100 border-2 border-slate-200 shadow-sm shrink-0">
+      <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-7 relative">
+        <div className="flex flex-col xl:flex-row xl:items-start justify-between gap-6">
+          {/* Left: Avatar + Identification Details */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 sm:gap-6 flex-1 min-w-0">
+            {/* Pigeon Photo */}
+            {pigeon.photoUrl ? (
+              <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl overflow-hidden bg-slate-100 border-2 border-slate-200 shadow-xs shrink-0">
                 <img
                   src={pigeon.photoUrl}
                   alt={pigeon.id}
@@ -288,42 +311,82 @@ export default function PigeonProfilePage({
                   }}
                 />
               </div>
+            ) : (
+              <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-emerald-50 border-2 border-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
+                <Feather className="w-10 h-10 stroke-1" />
+              </div>
             )}
-            <div className="space-y-3">
-              {/* Dynamic Unique ID */}
-              <div className="flex flex-wrap items-center gap-2.5">
-                <span className="text-xl sm:text-2xl font-mono font-black tracking-tight text-slate-900 bg-slate-100 px-3.5 py-1 rounded-xl border border-slate-300 shadow-2xs">
+
+            {/* Info Stack */}
+            <div className="space-y-2.5 min-w-0 flex-1">
+              {/* Row 1: Active Serial (if active) + ID Badge + Status + Sex */}
+              <div className="flex flex-wrap items-center gap-2">
+                {pigeon.status === "ACTIVE" && activePigeonSerial && (
+                  <span
+                    title={`Active Pigeon #${activePigeonSerial}`}
+                    className="text-sm sm:text-base font-mono font-black text-white bg-emerald-600 px-2.5 py-0.5 rounded-lg shadow-2xs border border-emerald-700 leading-normal shrink-0"
+                  >
+                    #{activePigeonSerial}
+                  </span>
+                )}
+                <span className="text-sm sm:text-base font-mono font-bold tracking-tight text-slate-900 bg-slate-100 px-2.5 py-0.5 rounded-lg border border-slate-200 shadow-2xs leading-normal">
                   {pigeon.id}
                 </span>
                 <StatusBadge status={pigeon.status} size="md" />
                 <SexBadge sex={pigeon.sex} />
               </div>
 
-              {/* Under ID: Reformed Ring Badge (bg-color: green, text: white) */}
-              <div>
-                <span className="inline-block text-xs font-mono font-bold bg-emerald-600 text-white px-3.5 py-1.5 rounded-xl shadow-xs border border-emerald-700">
-                  {formatRingNumber(pigeon)}
+              {/* Row 2: Official Ring Badge */}
+              <div className="flex flex-wrap items-center gap-2">
+                <span
+                  className="inline-flex items-center gap-1.5 text-xs font-mono font-semibold bg-emerald-600 text-white px-2.5 py-1 rounded-lg shadow-2xs border border-emerald-700 max-w-full truncate"
+                  title={formatRingNumber(pigeon)}
+                >
+                  <Tag className="w-3 h-3 text-emerald-200 shrink-0" />
+                  <span className="truncate">{formatRingNumber(pigeon)}</span>
                 </span>
               </div>
 
+              {/* Row 3: Pigeon Name / Subtype Heading (H1) */}
               <div>
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight leading-snug">
                   {pigeon.breedSubtype || (pigeon.breed === "Giribaz / Local" ? "Giribaz" : pigeon.breed)}
                 </h1>
-                <p className="text-xs sm:text-sm text-slate-500 flex items-center gap-2 mt-1">
-                  <span>Breed: {pigeon.breed === "Giribaz / Local" ? "Giribaz" : pigeon.breed}</span>
-                  <span>•</span>
-                  <span>Hatch Date: {formatDate(pigeon.birthDate || pigeon.hatchDate)} (Age: {age})</span>
-                </p>
+              </div>
+
+              {/* Row 4: Breed & Hatch Date / Age Metadata */}
+              <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-slate-600 font-medium">
+                {pigeon.breedSubtype && (
+                  <>
+                    <span>
+                      Breed:{" "}
+                      <strong className="font-semibold text-slate-800">
+                        {pigeon.breed === "Giribaz / Local" ? "Giribaz" : pigeon.breed}
+                      </strong>
+                    </span>
+                    <span className="text-slate-300">•</span>
+                  </>
+                )}
+                <span className="inline-flex items-center gap-1">
+                  <Calendar className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                  Hatch Date:{" "}
+                  <strong className="font-semibold text-slate-700">
+                    {formatDate(pigeon.birthDate || pigeon.hatchDate)}
+                  </strong>
+                </span>
+                <span className="text-slate-300">•</span>
+                <span>
+                  Age: <strong className="font-semibold text-slate-700">{age}</strong>
+                </span>
               </div>
             </div>
           </div>
 
-          {/* Quick Action Buttons */}
-          <div className="flex flex-wrap items-center gap-2">
+          {/* Right: Quick Action Buttons */}
+          <div className="flex flex-wrap items-center xl:justify-end gap-2 shrink-0 xl:max-w-md pt-1">
             <Link
               href={`/pigeons/${pigeon.id}/edit`}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs transition-colors shadow-2xs"
             >
               <Edit className="w-3.5 h-3.5" /> Edit Pigeon
             </Link>
@@ -426,6 +489,13 @@ export default function PigeonProfilePage({
                             {father.breedSubtype || father.breed} ({father.ringYear})
                           </span>
                         </div>
+                      ) : pigeon.fatherDetails ? (
+                        <div className="space-y-0.5">
+                          <span className="text-[11px] font-semibold text-sky-950 block">Foundation / Ancestor:</span>
+                          <p className="text-xs text-slate-700 leading-relaxed font-medium bg-white/80 p-2 rounded-lg border border-sky-200/60">
+                            {pigeon.fatherDetails}
+                          </p>
+                        </div>
                       ) : (
                         <span className="text-xs text-slate-400 italic">
                           Unknown / Unregistered Sire
@@ -451,6 +521,13 @@ export default function PigeonProfilePage({
                             {mother.breedSubtype || mother.breed} ({mother.ringYear})
                           </span>
                         </div>
+                      ) : pigeon.motherDetails ? (
+                        <div className="space-y-0.5">
+                          <span className="text-[11px] font-semibold text-pink-950 block">Foundation / Ancestor:</span>
+                          <p className="text-xs text-slate-700 leading-relaxed font-medium bg-white/80 p-2 rounded-lg border border-pink-200/60">
+                            {pigeon.motherDetails}
+                          </p>
+                        </div>
                       ) : (
                         <span className="text-xs text-slate-400 italic">
                           Unknown / Unregistered Dam
@@ -460,41 +537,64 @@ export default function PigeonProfilePage({
                   </div>
 
                   {/* Current Pair Partner */}
-                  <div className="p-4 bg-emerald-50/40 rounded-2xl border border-emerald-100 flex items-center justify-between">
-                    <div>
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-800 block">
-                        Current Active Pair & Partner
+                  <div className="p-4 bg-emerald-50/40 rounded-2xl border border-emerald-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="space-y-1">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-800 flex items-center gap-1.5">
+                        <Heart className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
+                        <span>Current Active Pair & Partner</span>
                       </span>
                       {activePair && currentPartner ? (
-                        <div className="mt-1">
-                          <Link
-                            href={`/pigeons/${currentPartner.id}`}
-                            className="font-mono font-bold text-sm text-emerald-900 hover:underline"
-                          >
-                            {formatRingNumber(currentPartner)}
-                          </Link>
-                          <span className="text-xs text-slate-500 block">
-                            Paired on {formatDate(activePair.startDate)} (
-                            {activePair.cageNumber || "Active Breeding Cage"})
+                        <div>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <Link
+                              href={`/pigeons/${currentPartner.id}`}
+                              className="font-mono font-bold text-sm text-emerald-900 hover:underline"
+                            >
+                              {formatRingNumber(currentPartner)}
+                            </Link>
+                            <span className="text-xs text-slate-600">
+                              {currentPartner.breedSubtype || currentPartner.breed} ({currentPartner.ringYear})
+                            </span>
+                          </div>
+                          <span className="text-xs text-slate-500 block mt-0.5">
+                            Paired on {formatDate(activePair.startDate)} • {activePair.cageNumber ? `Cage: ${activePair.cageNumber}` : "Active Breeding Cage"}
                           </span>
                         </div>
                       ) : (
-                        <span className="text-xs text-slate-500 italic mt-1 block">
+                        <span className="text-xs text-slate-500 italic block">
                           Not currently paired with any partner.
                         </span>
                       )}
                     </div>
 
-                    {pigeon.status === "ACTIVE" && !activePair && (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => setIsPairModalOpen(true)}
-                        className="text-xs text-emerald-700 border-emerald-200 hover:bg-emerald-100"
-                      >
-                        + Create Pair
-                      </Button>
-                    )}
+                    <div className="shrink-0">
+                      {pigeon.status === "ACTIVE" && !activePair && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setIsPairModalOpen(true)}
+                          className="text-xs text-emerald-700 border-emerald-200 hover:bg-emerald-100 gap-1.5"
+                        >
+                          <GitFork className="w-3.5 h-3.5" /> + Create Pair
+                        </Button>
+                      )}
+
+                      {pigeon.status === "ACTIVE" && activePair && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            setSelectedPairForRound(activePair);
+                            setIsRoundModalOpen(true);
+                          }}
+                          className="text-xs text-emerald-800 bg-white border-emerald-300 hover:bg-emerald-100/80 shadow-2xs gap-1.5"
+                          title="Record Egg Laying Date or Hatching Round"
+                        >
+                          <Egg className="w-3.5 h-3.5 text-amber-500" />
+                          + Add Round / Eggs
+                        </Button>
+                      )}
+                    </div>
                   </div>
 
                   {/* Acquisition Details */}
@@ -503,7 +603,7 @@ export default function PigeonProfilePage({
                       <span className="text-slate-500">Pigeon Origin:</span>
                       <span className="font-semibold text-slate-800">
                         {pigeon.source === "BORN_HIMEL_AGRO"
-                          ? "Born at Himel Agro"
+                          ? "Born at Himel's Pet House"
                           : "Purchased / Acquired"}
                       </span>
                     </div>
@@ -571,8 +671,16 @@ export default function PigeonProfilePage({
                 <CardHeader>
                   <CardTitle>Physical Notes & Description</CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <p className="text-xs text-slate-600 leading-relaxed">
+                <CardContent className="space-y-2.5">
+                  {pigeon.colorPattern && (
+                    <div className="flex flex-wrap items-center justify-between gap-2 p-2.5 bg-slate-50 rounded-xl border border-slate-200/80 text-xs">
+                      <span className="text-slate-600 font-semibold">Feather Color / Pattern:</span>
+                      <span className="font-bold text-slate-900 bg-white px-2.5 py-1 rounded-lg border border-slate-200 shadow-2xs">
+                        {pigeon.colorPattern}
+                      </span>
+                    </div>
+                  )}
+                  <p className="text-xs text-slate-600 leading-relaxed whitespace-pre-line">
                     {pigeon.notes || "No additional physical notes recorded."}
                   </p>
                 </CardContent>
@@ -694,6 +802,14 @@ export default function PigeonProfilePage({
                     >
                       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200/60 pb-3">
                         <div className="flex items-center gap-2">
+                          {pr.status === "ACTIVE" && (
+                            <span
+                              title={`Active Pair #${activeSerialMap.get(pr.id) || "--"}`}
+                              className="inline-flex items-center justify-center min-w-[28px] px-1.5 py-0.5 rounded-md bg-emerald-600 text-white font-mono text-xs font-black shadow-2xs shrink-0"
+                            >
+                              #{activeSerialMap.get(pr.id) || "--"}
+                            </span>
+                          )}
                           <span
                             className={`w-2 h-2 rounded-full ${
                               pr.status === "ACTIVE"
@@ -713,6 +829,11 @@ export default function PigeonProfilePage({
                           >
                             {pr.status}
                           </span>
+                          {pr.cageNumber && (
+                            <span className="text-[10px] font-semibold bg-slate-200/70 text-slate-700 px-2 py-0.5 rounded-full">
+                              Cage: {pr.cageNumber}
+                            </span>
+                          )}
                         </div>
                         <span className="text-xs text-slate-500">
                           {formatDate(pr.startDate)} –{" "}
@@ -720,40 +841,65 @@ export default function PigeonProfilePage({
                         </span>
                       </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-                        <div>
-                          <span className="text-slate-400 text-[10px] uppercase font-semibold block">
-                            Partner Pigeon
-                          </span>
-                          {partner ? (
-                            <Link
-                              href={`/pigeons/${partner.id}`}
-                              className="font-mono font-bold text-emerald-700 hover:underline"
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 pt-1">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 text-xs flex-1">
+                          <div>
+                            <span className="text-slate-400 text-[10px] uppercase font-semibold block">
+                              Partner Pigeon
+                            </span>
+                            {partner ? (
+                              <Link
+                                href={`/pigeons/${partner.id}`}
+                                className="font-mono font-bold text-emerald-700 hover:underline block"
+                              >
+                                {formatCompactRing(partner)}
+                              </Link>
+                            ) : (
+                              <span className="text-slate-400">{partnerId}</span>
+                            )}
+                            {partner && (
+                              <span className="text-[11px] text-slate-500 block">
+                                {partner.breedSubtype || partner.breed}
+                              </span>
+                            )}
+                          </div>
+                          <div>
+                            <span className="text-slate-400 text-[10px] uppercase font-semibold block">
+                              Breeding Output
+                            </span>
+                            <span className="font-bold text-slate-800 block">
+                              {pairRounds.length} rounds • {pairEggs} eggs
+                            </span>
+                            <span className="text-[11px] text-slate-500 block">
+                              {pairHatched} live squabs hatched
+                            </span>
+                          </div>
+                          <div>
+                            <span className="text-slate-400 text-[10px] uppercase font-semibold block">
+                              Pair Hatch Rate
+                            </span>
+                            <span className="inline-flex items-center px-2 py-0.5 mt-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">
+                              {pairHatchRate}% Success
+                            </span>
+                          </div>
+                        </div>
+
+                        {pr.status === "ACTIVE" && (
+                          <div className="shrink-0 w-full sm:w-auto">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => {
+                                setSelectedPairForRound(pr);
+                                setIsRoundModalOpen(true);
+                              }}
+                              className="w-full sm:w-auto text-xs py-1.5 px-3 text-emerald-800 bg-white border-emerald-300 hover:bg-emerald-50 gap-1.5 shadow-2xs justify-center"
+                              title="Record Egg Laying Date or Hatching Round"
                             >
-                              {formatCompactRing(partner)} (
-                              {partner.breedSubtype || partner.breed})
-                            </Link>
-                          ) : (
-                            <span className="text-slate-400">{partnerId}</span>
-                          )}
-                        </div>
-                        <div>
-                          <span className="text-slate-400 text-[10px] uppercase font-semibold block">
-                            Breeding Output
-                          </span>
-                          <span className="font-bold text-slate-800">
-                            {pairRounds.length} rounds • {pairEggs} eggs •{" "}
-                            {pairHatched} babies
-                          </span>
-                        </div>
-                        <div>
-                          <span className="text-slate-400 text-[10px] uppercase font-semibold block">
-                            Pair Hatch Rate
-                          </span>
-                          <span className="font-bold text-emerald-700">
-                            {pairHatchRate}%
-                          </span>
-                        </div>
+                              <Egg className="w-3.5 h-3.5 text-amber-500" /> + Add Round
+                            </Button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   );
@@ -973,7 +1119,7 @@ export default function PigeonProfilePage({
 
             {pigeon.source === "BORN_HIMEL_AGRO" && pigeon.status !== "SOLD" && (
               <p className="text-xs text-slate-400 text-center py-6">
-                Born at Himel Agro loft. No external purchase or sale transaction.
+                Born at Himel&apos;s Pet House loft. No external purchase or sale transaction.
               </p>
             )}
           </CardContent>
@@ -1098,6 +1244,20 @@ export default function PigeonProfilePage({
           onSuccess={() => loadPigeonData()}
           defaultMaleId={pigeon.sex === "MALE" ? pigeon.id : ""}
           defaultFemaleId={pigeon.sex === "FEMALE" ? pigeon.id : ""}
+        />
+      )}
+
+      {/* Breeding Round Modal */}
+      {isRoundModalOpen && selectedPairForRound && (
+        <BreedingRoundModal
+          pair={selectedPairForRound}
+          activeSerial={activeSerialMap.get(selectedPairForRound.id)}
+          isOpen={isRoundModalOpen}
+          onClose={() => {
+            setIsRoundModalOpen(false);
+            setSelectedPairForRound(null);
+          }}
+          onSuccess={() => loadPigeonData()}
         />
       )}
 

@@ -1,7 +1,7 @@
 export type PairStatus = "ACTIVE" | "ENDED";
 
 export interface Pair {
-  id: string; // e.g. "pair_2026_01"
+  id: string; // e.g. "2025-01-GCM_2025-02-GCF" (male + female id)
 
   maleId: string;
   femaleId: string;

@@ -35,6 +35,8 @@ export interface Transaction {
 
   notes?: string;
 
+  customer?: string;
+
   createdAt?: string;
 }
 

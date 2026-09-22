@@ -31,6 +31,7 @@ import {
 
 export interface PigeonCardProps {
   pigeon: Pigeon;
+  activeSerial?: string;
   allPigeons?: Pigeon[];
   pairs?: Pair[];
   fatherRing?: string;
@@ -39,6 +40,7 @@ export interface PigeonCardProps {
 
 export function PigeonCard({
   pigeon,
+  activeSerial,
   allPigeons = [],
   pairs = [],
   fatherRing,
@@ -107,6 +109,15 @@ export function PigeonCard({
         {/* Top Badges Bar (Floating) */}
         <div className="absolute top-2.5 inset-x-2.5 flex items-center justify-between gap-1.5 z-10">
           <div className="flex items-center gap-1.5">
+            {/* Dynamic Active Serial Badge */}
+            {pigeon.status === "ACTIVE" && activeSerial && (
+              <span
+                title={`Active Pigeon #${activeSerial}`}
+                className="font-mono font-black text-xs text-white bg-emerald-600 px-2 py-1 rounded-xl shadow-xs border border-emerald-400/40 shrink-0"
+              >
+                #{activeSerial}
+              </span>
+            )}
             {/* Dynamic Unique ID */}
             <span className="font-mono font-black text-xs tracking-tight text-white bg-slate-900/80 backdrop-blur-md px-2.5 py-1 rounded-xl border border-white/20 shadow-xs">
               {pigeon.id}
@@ -184,7 +195,7 @@ export function PigeonCard({
               {pigeon.ringSerial.toString().padStart(2, "0")}
             </span>
             <span className="text-emerald-300 text-[10px]">|</span>
-            <span>{pigeon.farmName || "Himel Agro"}</span>
+            <span>{pigeon.farmName || "Himel's Pet House"}</span>
             <span className="text-emerald-300 text-[10px]">|</span>
             <span className="tracking-tighter">{pigeon.contactNumber || "01560059954"}</span>
           </div>
@@ -210,17 +221,17 @@ export function PigeonCard({
             </div>
           </div>
 
-          {/* Clutch / Origin */}
+          {/* Color / Pattern */}
           <div className="p-2.5 rounded-2xl bg-slate-50 border border-slate-200/80 flex flex-col justify-between">
             <span className="text-[10px] uppercase font-bold text-slate-400 flex items-center gap-1">
-              <Layers className="w-3 h-3 text-slate-400 shrink-0" /> Clutch / Line
+              <Layers className="w-3 h-3 text-slate-400 shrink-0" /> Color / Pattern
             </span>
             <div className="mt-1">
-              <span className="font-mono font-bold text-slate-800 block text-xs truncate">
-                {pigeon.clutchId || "Batch N/A"}
+              <span className="font-bold text-slate-800 block text-xs truncate" title={pigeon.colorPattern || pigeon.breedSubtype || "Standard"}>
+                {pigeon.colorPattern || pigeon.breedSubtype || "Standard"}
               </span>
               <span className="text-[10px] text-slate-500 font-medium truncate block mt-0.5">
-                {pigeon.source === "BORN_HIMEL_AGRO" ? "Himel Agro Bred" : "Purchased"}
+                {pigeon.source === "BORN_HIMEL_AGRO" ? "Himel's Pet House Bred" : "Purchased"}
               </span>
             </div>
           </div>
@@ -264,6 +275,10 @@ export function PigeonCard({
                 >
                   {fatherRing || pigeon.fatherId}
                 </Link>
+              ) : pigeon.fatherDetails ? (
+                <span className="text-sky-900 text-[10px] font-medium block truncate" title={pigeon.fatherDetails}>
+                  {pigeon.fatherDetails}
+                </span>
               ) : (
                 <span className="text-slate-400 italic text-[10px] block">Unregistered</span>
               )}
@@ -292,6 +307,10 @@ export function PigeonCard({
                 >
                   {motherRing || pigeon.motherId}
                 </Link>
+              ) : pigeon.motherDetails ? (
+                <span className="text-pink-900 text-[10px] font-medium block truncate" title={pigeon.motherDetails}>
+                  {pigeon.motherDetails}
+                </span>
               ) : (
                 <span className="text-slate-400 italic text-[10px] block">Unregistered</span>
               )}

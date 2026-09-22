@@ -4,8 +4,12 @@ import React, { useState } from "react";
 import { Pair, BreedingRound } from "@/types/breeding";
 import { Pigeon } from "@/types/pigeon";
 import { formatDate } from "@/lib/formatters/dateFormatter";
-import { calculateHatchingStats } from "@/lib/repositories/breedingRepository";
-import { endPair } from "@/lib/repositories/breedingRepository";
+import {
+  calculateHatchingStats,
+  endPair,
+  getActivePairSerialMap,
+} from "@/lib/repositories/breedingRepository";
+import { getActivePigeonSerialMap } from "@/lib/repositories/pigeonRepository";
 import { RingBadge } from "../pigeons/RingBadge";
 import { Button } from "../ui/Button";
 import { Plus, XCircle, Egg } from "lucide-react";
@@ -28,6 +32,16 @@ export function PairTable({
   const [filter, setFilter] = useState<"ALL" | "ACTIVE" | "ENDED">("ACTIVE");
   const [selectedPairForRound, setSelectedPairForRound] = useState<Pair | null>(
     null
+  );
+
+  const activeSerialMap = React.useMemo(
+    () => getActivePairSerialMap(pairs),
+    [pairs]
+  );
+
+  const activePigeonSerialMap = React.useMemo(
+    () => getActivePigeonSerialMap(pigeons),
+    [pigeons]
   );
 
   const pigeonMap = new Map<string, Pigeon>();
@@ -90,7 +104,7 @@ export function PairTable({
           <table className="w-full text-left text-xs border-collapse">
             <thead>
               <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-semibold uppercase tracking-wider">
-                <th className="py-3 px-4">Pair ID / Cage</th>
+                <th className="py-3 px-4"># / Pair ID</th>
                 <th className="py-3 px-4">
                   <span className="inline-flex items-center gap-1.5">
                     <CockPigeonIcon className="w-3.5 h-3.5 text-sky-700" />
@@ -130,28 +144,51 @@ export function PairTable({
                       className="hover:bg-slate-50/80 transition-colors"
                     >
                       <td className="py-3.5 px-4 font-mono font-bold text-slate-900">
-                        <div className="flex items-center gap-1.5">
-                          <span
-                            className={`w-2 h-2 rounded-full ${
-                              pair.status === "ACTIVE"
-                                ? "bg-emerald-500"
-                                : "bg-slate-400"
-                            }`}
-                          />
-                          <span>{pair.id}</span>
-                        </div>
-                        {pair.cageNumber && (
-                          <div className="text-[11px] font-sans font-normal text-slate-500">
-                            {pair.cageNumber}
+                        <div className="flex items-center gap-2">
+                          {pair.status === "ACTIVE" ? (
+                            <span
+                              title={`Active Pair #${activeSerialMap.get(pair.id) || "--"}`}
+                              className="inline-flex items-center justify-center min-w-[28px] px-1.5 py-0.5 rounded-md bg-emerald-600 text-white font-mono text-xs font-black shadow-2xs shrink-0"
+                            >
+                              #{activeSerialMap.get(pair.id) || "--"}
+                            </span>
+                          ) : (
+                            <span
+                              title="Historical / Ended Pair"
+                              className="inline-flex items-center justify-center min-w-[28px] px-1.5 py-0.5 rounded-md bg-slate-100 text-slate-400 font-mono text-xs font-semibold border border-slate-200/80 shrink-0"
+                            >
+                              --
+                            </span>
+                          )}
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-1.5">
+                              <span
+                                className={`w-2 h-2 rounded-full shrink-0 ${
+                                  pair.status === "ACTIVE"
+                                    ? "bg-emerald-500"
+                                    : "bg-slate-400"
+                                }`}
+                              />
+                              <span className="truncate">{pair.id}</span>
+                            </div>
+                            {pair.cageNumber && (
+                              <div className="text-[11px] font-sans font-normal text-slate-500 pl-3.5">
+                                {pair.cageNumber}
+                              </div>
+                            )}
                           </div>
-                        )}
+                        </div>
                       </td>
 
                       {/* Male */}
                       <td className="py-3.5 px-4">
                         {male ? (
                           <div>
-                            <RingBadge pigeon={male} size="sm" />
+                            <RingBadge
+                              pigeon={male}
+                              activeSerial={male ? activePigeonSerialMap.get(male.id) : undefined}
+                              size="sm"
+                            />
                             <div className="text-[11px] text-slate-500 mt-0.5">
                               {male.breedSubtype || male.breed}
                             </div>
@@ -165,7 +202,11 @@ export function PairTable({
                       <td className="py-3.5 px-4">
                         {female ? (
                           <div>
-                            <RingBadge pigeon={female} size="sm" />
+                            <RingBadge
+                              pigeon={female}
+                              activeSerial={female ? activePigeonSerialMap.get(female.id) : undefined}
+                              size="sm"
+                            />
                             <div className="text-[11px] text-slate-500 mt-0.5">
                               {female.breedSubtype || female.breed}
                             </div>
@@ -259,6 +300,7 @@ export function PairTable({
       {selectedPairForRound && (
         <BreedingRoundModal
           pair={selectedPairForRound}
+          activeSerial={activeSerialMap.get(selectedPairForRound.id)}
           isOpen={!!selectedPairForRound}
           onClose={() => setSelectedPairForRound(null)}
           onSuccess={() => {

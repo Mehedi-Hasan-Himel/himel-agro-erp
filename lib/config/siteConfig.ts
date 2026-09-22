@@ -7,9 +7,9 @@
 
 export const SITE_CONFIG = {
   // Brand & Farm Identity
-  farmName: "Himel Agro",
-  shortName: "Himel Agro",
-  loftSubtitle: "Himel Agro Pigeon Farm & Performance Genetics",
+  farmName: "Himel's Pet House",
+  shortName: "Himel's Pet House",
+  loftSubtitle: "Himel's Pet House — Pigeon Farm & Performance Genetics",
   ownerName: "Himel",
   establishedYear: 2024,
   location: "Dhaka, Bangladesh",

@@ -137,7 +137,7 @@ export function PrintablePigeonInfo({
           <div>
             <span className="text-[10px] text-slate-400 uppercase font-semibold block">Loft Origin</span>
             <span className="font-bold text-slate-100">
-              {pigeon.source === "BORN_HIMEL_AGRO" ? "Born at Himel Agro" : "Acquired / Purchased"}
+              {pigeon.source === "BORN_HIMEL_AGRO" ? "Born at Himel's Pet House" : "Acquired / Purchased"}
             </span>
           </div>
         </div>
@@ -278,7 +278,7 @@ export function PrintablePigeonInfo({
             {SITE_CONFIG.farmName} Loft Certification
           </p>
           <p className="text-[10px] text-slate-500">
-            Certified biological pedigree and official record maintained in Himel Agro ERP system.
+            Certified biological pedigree and official record maintained in Himel&apos;s Pet House ERP system.
           </p>
           <p className="text-[10px] text-slate-400 mt-1 font-mono">
             Location: {SITE_CONFIG.location} • WhatsApp: {SITE_CONFIG.whatsappNumber}
@@ -290,7 +290,7 @@ export function PrintablePigeonInfo({
           <span className="text-[10px] uppercase font-bold text-slate-600 block">
             Authorized Loft Master
           </span>
-          <span className="text-[9px] text-slate-400 font-medium">Himel Agro Pedigree Seal</span>
+          <span className="text-[9px] text-slate-400 font-medium">Himel&apos;s Pet House Pedigree Seal</span>
         </div>
       </div>
     </div>

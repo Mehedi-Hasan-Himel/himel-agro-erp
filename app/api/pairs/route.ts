@@ -24,7 +24,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const id = body._id || body.id;
+    const id = body._id || body.id || (body.maleId && body.femaleId ? `${String(body.maleId).trim()}_${String(body.femaleId).trim()}` : undefined);
 
     if (!id) {
       return NextResponse.json({ error: "Pair ID (_id) is required" }, { status: 400 });

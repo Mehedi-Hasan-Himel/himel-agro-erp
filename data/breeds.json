@@ -4,21 +4,28 @@
       "name": "Giribaz",
       "subtypes": [
         "Standard Giribaz",
-        "Khaki",
+        "Chuina (Kajkora)",
+        "Chuina",
+        "Sobuj Gola",
+        "Chila",
+        "Khoyra Gola",
+        "Khoyragola",
+        "Mosal Dom (Moyna Jhak)",
+        "Mosal Dom",
         "Mosaldom",
         "Lal Chila",
         "Kalo Chila",
         "Pankhi",
-        "Chuina",
-        "Khoyragola",
-        "Chila",
-        "Deshi"
+        "Khaki",
+        "Deshi",
+        "Ring Lost"
       ]
     },
     {
       "name": "Racer",
       "subtypes": [
         "Blue Bar Racer",
+        "Blue Bar / Sobji Racer",
         "Maxi Racer",
         "Mili Racer",
         "Chequer Racer",

@@ -5,11 +5,55 @@ import { notifyDataChanged, fetchWithCache } from "./storageAdapter";
 export function generatePigeonId(
   ringYear: number,
   ringSerial: number,
-  breed?: string
+  breed?: string,
+  breedSubtype?: string,
+  sex?: PigeonSex | string
 ): string {
-  const serialStr = String(ringSerial).padStart(2, "0");
-  const breedChar = (breed || "Giribaz").trim().charAt(0).toUpperCase() || "G";
-  return `${ringYear}-${serialStr}-${breedChar}`;
+  const year = ringYear || new Date().getFullYear();
+  const serialStr = String(ringSerial || 1).padStart(2, "0");
+  const breedChar = (breed === "Giribaz / Local" ? "Giribaz" : (breed || "Giribaz"))
+    .trim()
+    .charAt(0)
+    .toUpperCase() || "G";
+  const subtypeChar = (breedSubtype || "Standard").trim().charAt(0).toUpperCase() || "S";
+  const sUpper = String(sex || "").toUpperCase();
+  const genderChar =
+    sUpper === "MALE" || sUpper === "M"
+      ? "M"
+      : sUpper === "FEMALE" || sUpper === "F"
+      ? "F"
+      : "U";
+  return `${year}-${serialStr}-${breedChar}${subtypeChar}${genderChar}`;
+}
+
+/**
+ * Calculates dynamic 1-based serial numbers (01, 02, 03...) for all active pigeons.
+ * Dynamically re-indexes based on the current active pigeons count and ring/age timeline.
+ * Non-active pigeons (SOLD, DEAD, LOST) are excluded so the serial strictly tracks active flock count.
+ */
+export function getActivePigeonSerialMap(pigeons: Pigeon[]): Map<string, string> {
+  const map = new Map<string, string>();
+  const active = pigeons
+    .filter((p) => p.status === "ACTIVE")
+    .sort((a, b) => {
+      if (a.ringYear !== b.ringYear) {
+        return a.ringYear - b.ringYear;
+      }
+      if (a.ringSerial !== b.ringSerial) {
+        return a.ringSerial - b.ringSerial;
+      }
+      const dateA = new Date(a.hatchDate || a.createdAt || 0).getTime();
+      const dateB = new Date(b.hatchDate || b.createdAt || 0).getTime();
+      if (dateA !== dateB) return dateA - dateB;
+      return a.id.localeCompare(b.id);
+    });
+
+  active.forEach((p, index) => {
+    const serial = String(index + 1).padStart(2, "0");
+    map.set(p.id, serial);
+  });
+
+  return map;
 }
 
 export async function getPigeons(): Promise<Pigeon[]> {
@@ -32,7 +76,7 @@ export async function getPigeonById(id: string): Promise<Pigeon | null> {
 export async function getPigeonByRing(
   ringYear: number,
   ringSerial: number,
-  farmName = "Himel Agro"
+  farmName = SITE_CONFIG.farmName
 ): Promise<Pigeon | null> {
   const pigeons = await getPigeons();
   return (
@@ -128,7 +172,15 @@ export async function createPigeon(input: CreatePigeonInput): Promise<Pigeon> {
     }
   }
 
-  const id = input.id || generatePigeonId(input.ringYear, input.ringSerial, input.breed);
+  const id =
+    input.id ||
+    generatePigeonId(
+      input.ringYear,
+      input.ringSerial,
+      input.breed,
+      input.breedSubtype,
+      input.sex
+    );
   const now = new Date().toISOString();
 
   const newPigeon: Pigeon = {

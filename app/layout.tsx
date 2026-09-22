@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Himel Agro — Pigeon Farm Management ERP",
+  title: "Himel's Pet House — Pigeon Farm Management ERP",
   description:
     "Comprehensive Pigeon Farm Management ERP for genealogy, pedigree, breeding performance, feed stock, health schedules, and farm finances.",
 };

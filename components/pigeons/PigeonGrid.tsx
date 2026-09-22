@@ -4,6 +4,7 @@ import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import { Pigeon } from "@/types/pigeon";
 import { Pair } from "@/types/breeding";
+import { getActivePigeonSerialMap } from "@/lib/repositories/pigeonRepository";
 import { PigeonCard } from "./PigeonCard";
 import { SearchInput } from "../ui/SearchInput";
 import { formatCompactRing } from "@/lib/formatters/ringFormatter";
@@ -49,6 +50,10 @@ export function PigeonGrid({
     return Array.from(new Set(pigeons.map((p) => p.breed))).sort();
   }, [pigeons]);
 
+  const activePigeonSerialMap = useMemo(() => {
+    return getActivePigeonSerialMap(pigeons);
+  }, [pigeons]);
+
   // Filter & Search
   const filteredPigeons = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -60,18 +65,26 @@ export function PigeonGrid({
         const ringCompact = formatCompactRing(p).toLowerCase();
         const ringFull = `${p.ringYear} ${p.ringSerial} ${p.farmName} ${p.contactNumber}`.toLowerCase();
         const id = p.id.toLowerCase();
+        const official = (p.officialRingNumber || "").toLowerCase();
         const breed = (p.breed || "").toLowerCase();
         const subtype = (p.breedSubtype || "").toLowerCase();
+        const color = (p.colorPattern || "").toLowerCase();
         const notes = (p.notes || "").toLowerCase();
+        const father = (p.fatherDetails || "").toLowerCase();
+        const mother = (p.motherDetails || "").toLowerCase();
         const clutch = (p.clutchId || "").toLowerCase();
 
         const matches =
           id.includes(q) ||
+          official.includes(q) ||
           ringCompact.includes(q) ||
           ringFull.includes(q) ||
           breed.includes(q) ||
           subtype.includes(q) ||
+          color.includes(q) ||
           notes.includes(q) ||
+          father.includes(q) ||
+          mother.includes(q) ||
           clutch.includes(q);
 
         if (!matches) return false;
@@ -240,7 +253,7 @@ export function PigeonGrid({
           {/* Result Count, Clear Filters & Sort Dropdown */}
           <div className="flex items-center gap-3 ml-auto">
             <span className="text-slate-500 font-medium hidden md:inline">
-              Showing <strong className="text-slate-900">{filteredPigeons.length}</strong> of {pigeons.length} pigeons
+              Showing <strong className="text-slate-900">{filteredPigeons.length}</strong> of {pigeons.length} pigeons ({pigeons.filter((p) => p.status === "ACTIVE").length} Active)
             </span>
 
             {hasActiveFilters && (
@@ -278,6 +291,7 @@ export function PigeonGrid({
             <PigeonCard
               key={pigeon.id}
               pigeon={pigeon}
+              activeSerial={activePigeonSerialMap.get(pigeon.id)}
               allPigeons={pigeons}
               pairs={pairs}
             />

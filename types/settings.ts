@@ -11,4 +11,8 @@ export interface FarmSettings {
   googleMapUrl?: string;
   logoUrl?: string;
   notes?: string;
+  googleSheetsUrl?: string;
+  googleSheetsAutoSync?: boolean;
+  googleSheetsIntervalMinutes?: number;
+  lastGoogleSheetSync?: string;
 }

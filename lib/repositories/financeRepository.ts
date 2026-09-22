@@ -7,12 +7,12 @@ import { notifyDataChanged, fetchWithCache } from "./storageAdapter";
 
 export async function getTransactions(filter?: {
   type?: TransactionType | "ALL";
-  month?: string; // YYYY-MM
+  month?: string; // YYYY-MM or ALL
   category?: string;
 }): Promise<Transaction[]> {
   const params = new URLSearchParams();
   if (filter?.type && filter.type !== "ALL") params.set("type", filter.type);
-  if (filter?.month) params.set("month", filter.month);
+  if (filter?.month && filter.month !== "ALL") params.set("month", filter.month);
   if (filter?.category && filter.category !== "ALL")
     params.set("category", filter.category);
 
@@ -123,7 +123,10 @@ export async function getMonthlySummaries(): Promise<MonthlyFinancialSummary[]> 
   const summaries: MonthlyFinancialSummary[] = [];
 
   map.forEach((val, monthKey) => {
-    const monthLabel = `${MONTH_NAMES[val.month - 1]} ${val.year}`;
+    const monthLabel =
+      val.year === 2025
+        ? "2019–2025 Historical Setup"
+        : `${MONTH_NAMES[val.month - 1]} ${val.year}`;
     summaries.push({
       year: val.year,
       month: val.month,
@@ -137,12 +140,51 @@ export async function getMonthlySummaries(): Promise<MonthlyFinancialSummary[]> 
   });
 
   // Sort by monthKey descending
-  return summaries.sort((a, b) => b.monthKey.localeCompare(a.monthKey));
+  summaries.sort((a, b) => b.monthKey.localeCompare(a.monthKey));
+
+  // Cumulative all-time summary placed first for immediate full-ledger overview
+  const totalIncome = summaries.reduce((sum, s) => sum + s.totalIncome, 0);
+  const totalExpense = summaries.reduce((sum, s) => sum + s.totalExpense, 0);
+  const totalCount = summaries.reduce((sum, s) => sum + s.transactionCount, 0);
+
+  summaries.unshift({
+    year: 2026,
+    month: 0,
+    monthKey: "ALL",
+    monthLabel: "All Time / Full Ledger (Sheet Total)",
+    totalIncome,
+    totalExpense,
+    profitLoss: totalIncome - totalExpense,
+    transactionCount: totalCount,
+  });
+
+  return summaries;
 }
 
 export async function getFinancialSummaryForMonth(
   monthKey: string
 ): Promise<MonthlyFinancialSummary> {
+  if (monthKey === "ALL") {
+    const txns = await getTransactions();
+    const totalIncome = txns
+      .filter((t) => t.type === "INCOME")
+      .reduce((sum, t) => sum + (t.amount || 0), 0);
+    const totalExpense = txns
+      .filter((t) => t.type === "EXPENSE")
+      .reduce((sum, t) => sum + (t.amount || 0), 0);
+
+    return {
+      year: 2026,
+      month: 0,
+      monthKey: "ALL",
+      monthLabel: "All Time (Cumulative)",
+      totalIncome,
+      totalExpense,
+      profitLoss: totalIncome - totalExpense,
+      transactionCount: txns.length,
+    };
+  }
+
   const [yearStr, monthStr] = monthKey.split("-");
   const year = parseInt(yearStr, 10);
   const month = parseInt(monthStr, 10);
@@ -155,11 +197,16 @@ export async function getFinancialSummaryForMonth(
     .filter((t) => t.type === "EXPENSE")
     .reduce((sum, t) => sum + (t.amount || 0), 0);
 
+  const monthLabel =
+    year === 2025
+      ? "2019–2025 Historical Setup"
+      : `${MONTH_NAMES[month - 1] || "Month"} ${year}`;
+
   return {
     year,
     month,
     monthKey,
-    monthLabel: `${MONTH_NAMES[month - 1] || "Month"} ${year}`,
+    monthLabel,
     totalIncome,
     totalExpense,
     profitLoss: totalIncome - totalExpense,

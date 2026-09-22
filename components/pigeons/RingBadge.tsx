@@ -10,6 +10,7 @@ function cn(...inputs: (string | undefined | null | false)[]) {
 
 export interface RingBadgeProps {
   pigeon?: (RingIdentifiable & { id?: string }) | null;
+  activeSerial?: string;
   full?: boolean;
   clickable?: boolean;
   className?: string;
@@ -18,6 +19,7 @@ export interface RingBadgeProps {
 
 export function RingBadge({
   pigeon,
+  activeSerial,
   full = false,
   clickable = true,
   className,
@@ -50,6 +52,11 @@ export function RingBadge({
         className
       )}
     >
+      {activeSerial && (
+        <span className="font-mono text-[10px] bg-emerald-600 text-white px-1.5 py-0.2 rounded font-black shadow-2xs shrink-0">
+          #{activeSerial}
+        </span>
+      )}
       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
       <span>{text}</span>
     </span>

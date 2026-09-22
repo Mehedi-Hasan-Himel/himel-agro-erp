@@ -8,7 +8,15 @@ function normalizePigeon(p: any) {
   const breed = p.breed === "Giribaz / Local" ? "Giribaz" : (p.breed || "Giribaz");
   const breedInitial = breed.trim().charAt(0).toUpperCase() || "G";
   const serialStr = String(p.ringSerial || 1).padStart(2, "0");
-  const canonicalId = `${p.ringYear || 2026}-${serialStr}-${breedInitial}`;
+  const subtypeInitial = (p.breedSubtype || "Standard").trim().charAt(0).toUpperCase() || "S";
+  const sUpper = String(p.sex || "").toUpperCase();
+  const genderInitial =
+    sUpper === "MALE" || sUpper === "M"
+      ? "M"
+      : sUpper === "FEMALE" || sUpper === "F"
+      ? "F"
+      : "U";
+  const canonicalId = `${p.ringYear || 2026}-${serialStr}-${breedInitial}${subtypeInitial}${genderInitial}`;
   return { ...p, breed, id: canonicalId, _id: canonicalId };
 }
 
@@ -25,10 +33,21 @@ export async function GET(
       if (!pigeon) {
         pigeon = await PigeonModel.findOne({
           $or: [
-            { _id: new RegExp(`^${cleanId}(-[a-z])?$`, "i") },
-            { id: new RegExp(`^${cleanId}(-[a-z])?$`, "i") },
+            { _id: new RegExp(`^${cleanId}(-[a-z]+)?$`, "i") },
+            { id: new RegExp(`^${cleanId}(-[a-z]+)?$`, "i") },
           ],
         }).lean();
+      }
+
+      if (!pigeon) {
+        const parts = cleanId.split("-");
+        if (parts.length >= 2) {
+          const y = parseInt(parts[0], 10);
+          const s = parseInt(parts[1], 10);
+          if (!isNaN(y) && !isNaN(s)) {
+            pigeon = await PigeonModel.findOne({ ringYear: y, ringSerial: s }).lean();
+          }
+        }
       }
 
       if (!pigeon) {
@@ -38,13 +57,37 @@ export async function GET(
     }
 
     const pigeons = fallbackStore.get().pigeons;
-    let found = pigeons.find((p: any) => (p._id || p.id)?.toLowerCase() === cleanId);
-    if (!found) {
-      found = pigeons.find(
-        (p: any) =>
-          (p._id || p.id)?.toLowerCase().startsWith(cleanId + "-") ||
-          cleanId.startsWith((p._id || p.id)?.toLowerCase() + "-")
+    let found = pigeons.find((p: any) => {
+      const norm = normalizePigeon(p);
+      return (
+        (norm._id || norm.id)?.toLowerCase() === cleanId ||
+        (p._id || p.id)?.toLowerCase() === cleanId
       );
+    });
+
+    if (!found) {
+      found = pigeons.find((p: any) => {
+        const norm = normalizePigeon(p);
+        const nId = (norm._id || norm.id)?.toLowerCase() || "";
+        const pId = (p._id || p.id)?.toLowerCase() || "";
+        return (
+          nId.startsWith(cleanId) ||
+          cleanId.startsWith(nId) ||
+          pId.startsWith(cleanId) ||
+          cleanId.startsWith(pId)
+        );
+      });
+    }
+
+    if (!found) {
+      const parts = cleanId.split("-");
+      if (parts.length >= 2) {
+        const y = parseInt(parts[0], 10);
+        const s = parseInt(parts[1], 10);
+        if (!isNaN(y) && !isNaN(s)) {
+          found = pigeons.find((p: any) => p.ringYear === y && p.ringSerial === s);
+        }
+      }
     }
 
     if (!found) {
@@ -77,10 +120,21 @@ export async function PUT(
       if (!existingDoc) {
         existingDoc = await PigeonModel.findOne({
           $or: [
-            { _id: new RegExp(`^${cleanId}(-[a-z])?$`, "i") },
-            { id: new RegExp(`^${cleanId}(-[a-z])?$`, "i") },
+            { _id: new RegExp(`^${cleanId}(-[a-z]+)?$`, "i") },
+            { id: new RegExp(`^${cleanId}(-[a-z]+)?$`, "i") },
           ],
         }).lean();
+      }
+
+      if (!existingDoc) {
+        const parts = cleanId.split("-");
+        if (parts.length >= 2) {
+          const y = parseInt(parts[0], 10);
+          const s = parseInt(parts[1], 10);
+          if (!isNaN(y) && !isNaN(s)) {
+            existingDoc = await PigeonModel.findOne({ ringYear: y, ringSerial: s }).lean();
+          }
+        }
       }
 
       if (!existingDoc) {
@@ -107,13 +161,37 @@ export async function PUT(
 
     const store = fallbackStore.get();
     const pigeons = store.pigeons;
-    let idx = pigeons.findIndex((p: any) => (p._id || p.id)?.toLowerCase() === cleanId);
-    if (idx === -1) {
-      idx = pigeons.findIndex(
-        (p: any) =>
-          (p._id || p.id)?.toLowerCase().startsWith(cleanId + "-") ||
-          cleanId.startsWith((p._id || p.id)?.toLowerCase() + "-")
+    let idx = pigeons.findIndex((p: any) => {
+      const norm = normalizePigeon(p);
+      return (
+        (norm._id || norm.id)?.toLowerCase() === cleanId ||
+        (p._id || p.id)?.toLowerCase() === cleanId
       );
+    });
+
+    if (idx === -1) {
+      idx = pigeons.findIndex((p: any) => {
+        const norm = normalizePigeon(p);
+        const nId = (norm._id || norm.id)?.toLowerCase() || "";
+        const pId = (p._id || p.id)?.toLowerCase() || "";
+        return (
+          nId.startsWith(cleanId) ||
+          cleanId.startsWith(nId) ||
+          pId.startsWith(cleanId) ||
+          cleanId.startsWith(pId)
+        );
+      });
+    }
+
+    if (idx === -1) {
+      const parts = cleanId.split("-");
+      if (parts.length >= 2) {
+        const y = parseInt(parts[0], 10);
+        const s = parseInt(parts[1], 10);
+        if (!isNaN(y) && !isNaN(s)) {
+          idx = pigeons.findIndex((p: any) => p.ringYear === y && p.ringSerial === s);
+        }
+      }
     }
 
     if (idx === -1) {
@@ -142,10 +220,21 @@ export async function DELETE(
       if (!deleted) {
         deleted = await PigeonModel.findOneAndDelete({
           $or: [
-            { _id: new RegExp(`^${cleanId}(-[a-z])?$`, "i") },
-            { id: new RegExp(`^${cleanId}(-[a-z])?$`, "i") },
+            { _id: new RegExp(`^${cleanId}(-[a-z]+)?$`, "i") },
+            { id: new RegExp(`^${cleanId}(-[a-z]+)?$`, "i") },
           ],
         }).lean();
+      }
+
+      if (!deleted) {
+        const parts = cleanId.split("-");
+        if (parts.length >= 2) {
+          const y = parseInt(parts[0], 10);
+          const s = parseInt(parts[1], 10);
+          if (!isNaN(y) && !isNaN(s)) {
+            deleted = await PigeonModel.findOneAndDelete({ ringYear: y, ringSerial: s }).lean();
+          }
+        }
       }
 
       if (!deleted) {
@@ -156,14 +245,37 @@ export async function DELETE(
 
     const store = fallbackStore.get();
     let idx = store.pigeons.findIndex(
-      (p: any) => String(p._id || p.id || "").toLowerCase() === cleanId
+      (p: any) => {
+        const norm = normalizePigeon(p);
+        return (
+          (norm._id || norm.id)?.toLowerCase() === cleanId ||
+          (p._id || p.id)?.toLowerCase() === cleanId
+        );
+      }
     );
     if (idx === -1) {
-      idx = store.pigeons.findIndex(
-        (p: any) =>
-          String(p._id || p.id || "").toLowerCase().startsWith(cleanId + "-") ||
-          cleanId.startsWith(String(p._id || p.id || "").toLowerCase() + "-")
-      );
+      idx = store.pigeons.findIndex((p: any) => {
+        const norm = normalizePigeon(p);
+        const nId = (norm._id || norm.id)?.toLowerCase() || "";
+        const pId = (p._id || p.id)?.toLowerCase() || "";
+        return (
+          nId.startsWith(cleanId) ||
+          cleanId.startsWith(nId) ||
+          pId.startsWith(cleanId) ||
+          cleanId.startsWith(pId)
+        );
+      });
+    }
+
+    if (idx === -1) {
+      const parts = cleanId.split("-");
+      if (parts.length >= 2) {
+        const y = parseInt(parts[0], 10);
+        const s = parseInt(parts[1], 10);
+        if (!isNaN(y) && !isNaN(s)) {
+          idx = store.pigeons.findIndex((p: any) => p.ringYear === y && p.ringSerial === s);
+        }
+      }
     }
 
     if (idx === -1) {

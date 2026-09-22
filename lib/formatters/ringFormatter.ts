@@ -8,7 +8,7 @@ export interface RingIdentifiable {
 }
 
 /**
- * Full format: 2026 | 01 | Himel Agro | 01560059954
+ * Full format: 2026 | 01 | Himel's Pet House | 01560059954
  */
 export function formatRingNumber(pigeon?: RingIdentifiable | null): string {
   if (!pigeon) return "Unknown";
@@ -23,13 +23,31 @@ export function formatRingNumber(pigeon?: RingIdentifiable | null): string {
 /**
  * Compact badge & Unique ID format: 2026-09
  */
-export function formatCompactRing(pigeon?: (RingIdentifiable & { id?: string; breed?: string }) | null): string {
+export function formatCompactRing(
+  pigeon?: (RingIdentifiable & {
+    id?: string;
+    breed?: string;
+    breedSubtype?: string;
+    sex?: string;
+  }) | null
+): string {
   if (!pigeon) return "Unknown";
   if (pigeon.id) {
     return pigeon.id;
   }
   const year = pigeon.ringYear || "----";
   const serial = String(pigeon.ringSerial || 0).padStart(2, "0");
-  const breedChar = (pigeon.breed || "Giribaz").trim().charAt(0).toUpperCase() || "G";
-  return `${year}-${serial}-${breedChar}`;
+  const breedChar = (pigeon.breed === "Giribaz / Local" ? "Giribaz" : (pigeon.breed || "Giribaz"))
+    .trim()
+    .charAt(0)
+    .toUpperCase() || "G";
+  const subtypeChar = (pigeon.breedSubtype || "Standard").trim().charAt(0).toUpperCase() || "S";
+  const sUpper = String(pigeon.sex || "").toUpperCase();
+  const genderChar =
+    sUpper === "MALE" || sUpper === "M"
+      ? "M"
+      : sUpper === "FEMALE" || sUpper === "F"
+      ? "F"
+      : "U";
+  return `${year}-${serial}-${breedChar}${subtypeChar}${genderChar}`;
 }

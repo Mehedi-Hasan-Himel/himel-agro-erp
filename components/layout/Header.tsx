@@ -12,7 +12,9 @@ import {
   ExternalLink,
   Phone,
   MessageCircle,
+  FileSpreadsheet,
 } from "lucide-react";
+import { useGoogleSheetSync } from "@/lib/hooks/useGoogleSheetSync";
 
 export interface HeaderProps {
   onMenuToggle: () => void;
@@ -27,6 +29,12 @@ function getGreeting(hour: number): string {
 export function Header({ onMenuToggle }: HeaderProps) {
   const [greeting, setGreeting] = useState<string>("Welcome");
   const [currentDateStr, setCurrentDateStr] = useState<string>("");
+
+  const { isSyncing, syncNow } = useGoogleSheetSync({
+    autoSyncOnMount: true,
+    revalidateOnFocus: true,
+    pollIntervalMs: 30000,
+  });
 
   useEffect(() => {
     const now = new Date();
@@ -87,6 +95,27 @@ export function Header({ onMenuToggle }: HeaderProps) {
       </div>
 
       <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+        {/* Google Sheet Live Sync Badge */}
+        <button
+          onClick={() => syncNow()}
+          disabled={isSyncing}
+          className="inline-flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-900 font-semibold text-xs border border-emerald-300 transition-colors shadow-2xs shrink-0 cursor-pointer"
+          title={isSyncing ? "Syncing with Google Sheet..." : "Live connected to Google Sheet (Click to force sync)"}
+        >
+          <span className="relative flex h-2 w-2 shrink-0">
+            <span
+              className={`absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 ${
+                isSyncing ? "animate-ping" : ""
+              }`}
+            ></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+          </span>
+          <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
+          <span className="hidden xl:inline text-[11px] font-bold">
+            {isSyncing ? "Syncing..." : "Sheet Live"}
+          </span>
+        </button>
+
         {/* Direct Call */}
         <a
           href={SITE_CONFIG.telUrl}

@@ -17,6 +17,7 @@ export function TransactionTable({ transactions }: TransactionTableProps) {
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState<TransactionType | "ALL">("ALL");
   const [categoryFilter, setCategoryFilter] = useState("ALL");
+  const [monthFilter, setMonthFilter] = useState("ALL");
 
   const categories = Array.from(
     new Set(transactions.map((t) => t.category))
@@ -25,18 +26,24 @@ export function TransactionTable({ transactions }: TransactionTableProps) {
   const filtered = transactions.filter((t) => {
     if (typeFilter !== "ALL" && t.type !== typeFilter) return false;
     if (categoryFilter !== "ALL" && t.category !== categoryFilter) return false;
+    if (monthFilter !== "ALL" && !String(t.date || "").startsWith(monthFilter))
+      return false;
 
     if (search.trim()) {
       const q = search.toLowerCase();
       const desc = (t.description || "").toLowerCase();
       const cat = (t.category || "").toLowerCase();
       const notes = (t.notes || "").toLowerCase();
+      const customer = (t.customer || "").toLowerCase();
       const pigeonId = (t.pigeonId || "").toLowerCase();
+      const date = (t.date || "").toLowerCase();
       if (
         !desc.includes(q) &&
         !cat.includes(q) &&
         !notes.includes(q) &&
-        !pigeonId.includes(q)
+        !customer.includes(q) &&
+        !pigeonId.includes(q) &&
+        !date.includes(q)
       ) {
         return false;
       }
@@ -49,13 +56,29 @@ export function TransactionTable({ transactions }: TransactionTableProps) {
     <div className="space-y-4">
       {/* Search & Filter Bar */}
       <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-3">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           <div>
             <SearchInput
               value={search}
               onChange={setSearch}
-              placeholder="Search description, supplier, notes..."
+              placeholder="Search description, customer, notes..."
             />
+          </div>
+
+          <div>
+            <select
+              value={monthFilter}
+              onChange={(e) => setMonthFilter(e.target.value)}
+              className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 focus:border-emerald-500 focus:outline-none"
+            >
+              <option value="ALL">All Periods (2019–2026)</option>
+              <option value="2026-09">September 2026</option>
+              <option value="2026-08">August 2026</option>
+              <option value="2026-07">July 2026</option>
+              <option value="2026-06">June 2026</option>
+              <option value="2026-05">May 2026</option>
+              <option value="2025-12">2019–2025 Historical Setup</option>
+            </select>
           </div>
 
           <div>
@@ -154,7 +177,12 @@ export function TransactionTable({ transactions }: TransactionTableProps) {
                         <div className="font-medium text-slate-800">
                           {txn.description || "General Transaction"}
                         </div>
-                        <div className="flex items-center gap-2 mt-0.5 text-[11px] text-slate-500">
+                        <div className="flex flex-wrap items-center gap-2 mt-0.5 text-[11px] text-slate-500">
+                          {txn.customer && (
+                            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+                              {txn.type === "INCOME" ? "Client:" : "Vendor:"} {txn.customer}
+                            </span>
+                          )}
                           {txn.pigeonId && (
                             <Link
                               href={`/pigeons/${txn.pigeonId}`}

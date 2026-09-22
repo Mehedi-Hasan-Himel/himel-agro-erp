@@ -15,6 +15,7 @@ import {
   resetToSeedData,
   exportAllData,
   importAllData,
+  notifyDataChanged,
 } from "@/lib/repositories/storageAdapter";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -32,7 +33,16 @@ import {
   MapPin,
   ExternalLink,
   Globe,
+  FileSpreadsheet,
+  Copy,
+  Check,
+  DollarSign,
 } from "lucide-react";
+import {
+  DEFAULT_PIGEONS_SHEET_URL,
+  DEFAULT_FINANCE_SHEET_URL,
+  DualSheetSyncResult,
+} from "@/types/googleSheets";
 
 export default function SettingsPage() {
   const [settings, setSettings] = useState<FarmSettings | null>(null);
@@ -45,14 +55,77 @@ export default function SettingsPage() {
   const [resetSuccess, setResetSuccess] = useState(false);
   const [importStatus, setImportStatus] = useState<string | null>(null);
 
+  // Dual Google Sheets Live Sync State
+  const [pigeonsSheetUrl, setPigeonsSheetUrl] = useState(DEFAULT_PIGEONS_SHEET_URL);
+  const [financeSheetUrl, setFinanceSheetUrl] = useState(DEFAULT_FINANCE_SHEET_URL);
+  const [isSyncingSheet, setIsSyncingSheet] = useState(false);
+  const [dualSyncResult, setDualSyncResult] = useState<DualSheetSyncResult | null>(null);
+  const [copiedWebhook, setCopiedWebhook] = useState(false);
+
   useEffect(() => {
     async function load() {
       const [s, b] = await Promise.all([getSettings(), getBreeds()]);
       setSettings(s);
       setBreeds(b);
+      if (s?.googleSheetsUrl) {
+        setPigeonsSheetUrl(s.googleSheetsUrl);
+      }
     }
     load();
   }, []);
+
+  const handleSyncAllSheets = async () => {
+    setIsSyncingSheet(true);
+    try {
+      const res = await fetch("/api/sync/google-sheets", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pigeonsSheetUrl, financeSheetUrl }),
+      });
+      const data: DualSheetSyncResult = await res.json();
+      setDualSyncResult(data);
+      if (data.success) {
+        notifyDataChanged();
+        if (settings) {
+          updateSettings({ ...settings, googleSheetsUrl: pigeonsSheetUrl });
+        }
+      }
+    } catch (err) {
+      console.error("Sheet sync failed:", err);
+    } finally {
+      setIsSyncingSheet(false);
+    }
+  };
+
+  const handleSyncSpecificSheet = async (type: "PIGEONS" | "FINANCE") => {
+    setIsSyncingSheet(true);
+    try {
+      const res = await fetch("/api/sync/google-sheets", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type,
+          sheetUrl: type === "PIGEONS" ? pigeonsSheetUrl : financeSheetUrl,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        notifyDataChanged();
+        // Update partial dualSyncResult
+        setDualSyncResult((prev) => ({
+          success: true,
+          message: data.message,
+          timestamp: new Date().toISOString(),
+          pigeons: type === "PIGEONS" ? data : prev?.pigeons || ({} as any),
+          finance: type === "FINANCE" ? data : prev?.finance || ({} as any),
+        }));
+      }
+    } catch (err) {
+      console.error(`${type} sheet sync failed:`, err);
+    } finally {
+      setIsSyncingSheet(false);
+    }
+  };
 
   const handleSaveSettings = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -340,10 +413,210 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
 
-      {/* 2. Breed Categories & Subtypes */}
+      {/* 2. Google Sheets Live Integration & Automatic Sync */}
+      <Card className="border-emerald-200 bg-gradient-to-b from-white to-emerald-50/20 shadow-xs">
+        <CardHeader>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <FileSpreadsheet className="w-5 h-5 text-emerald-600" />
+              <CardTitle>2. Google Sheets Live Integration (Dual Sheets)</CardTitle>
+            </div>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200 self-start sm:self-auto">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              2 Live Sheets Connected
+            </span>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-5">
+          <p className="text-xs text-slate-600 leading-relaxed">
+            Synchronize your <strong>Pigeon Flock Registry</strong> and <strong>Farm Finances & Accounts</strong> directly
+            from your 2 live Google Spreadsheets. Whenever you make edits in either spreadsheet, the app will update
+            automatically in the background or immediately when clicking <strong>Sync Both Sheets Now</strong>.
+          </p>
+
+          {/* Sync Result Banner */}
+          {dualSyncResult && (
+            <div
+              className={`p-4 rounded-xl border text-xs flex flex-col gap-2 ${
+                dualSyncResult.success
+                  ? "bg-emerald-50 border-emerald-200 text-emerald-900"
+                  : "bg-rose-50 border-rose-200 text-rose-900"
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                {dualSyncResult.success ? (
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                ) : (
+                  <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                )}
+                <p className="font-bold text-sm">{dualSyncResult.message}</p>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 border-t border-emerald-200/60 text-[11px]">
+                {dualSyncResult.pigeons && (
+                  <div className="p-2 bg-white/70 rounded-lg border border-emerald-100">
+                    <span className="font-bold text-emerald-800">🕊️ Pigeons Registry:</span>{" "}
+                    {dualSyncResult.pigeons.totalRows} rows ({dualSyncResult.pigeons.addedCount} added, {dualSyncResult.pigeons.updatedCount} updated, {dualSyncResult.pigeons.unchangedCount} unchanged)
+                  </div>
+                )}
+                {dualSyncResult.finance && (
+                  <div className="p-2 bg-white/70 rounded-lg border border-emerald-100">
+                    <span className="font-bold text-emerald-800">💰 Financial Ledger:</span>{" "}
+                    {dualSyncResult.finance.totalRows} transactions (Income: ৳{(dualSyncResult.finance.totalIncome || 0).toLocaleString()}, Expense: ৳{(dualSyncResult.finance.totalExpense || 0).toLocaleString()})
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Sheet 1: Pigeon Flock Registry */}
+          <div className="p-4 bg-white rounded-xl border border-slate-200 space-y-2.5 shadow-2xs">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                <span>🕊️</span> 1. Pigeon Flock Registry Sheet
+              </span>
+              <span className="text-[10px] uppercase font-bold text-slate-400">Ring & Flock Master</span>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-2.5 items-end">
+              <div className="flex-1 w-full">
+                <Input
+                  label="Pigeon Flock Spreadsheet URL"
+                  value={pigeonsSheetUrl}
+                  onChange={(e) => setPigeonsSheetUrl(e.target.value)}
+                  placeholder="https://docs.google.com/spreadsheets/d/.../edit"
+                />
+              </div>
+              <div className="flex items-center gap-2 w-full sm:w-auto shrink-0 pb-0.5">
+                <a
+                  href={pigeonsSheetUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-2xs transition-all flex-1 sm:flex-initial"
+                >
+                  <ExternalLink className="w-3.5 h-3.5 text-slate-500" />
+                  <span>Open</span>
+                </a>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="md"
+                  onClick={() => handleSyncSpecificSheet("PIGEONS")}
+                  isLoading={isSyncingSheet}
+                  className="gap-1.5 flex-1 sm:flex-initial text-xs"
+                >
+                  <RefreshCw className={`w-3 h-3 ${isSyncingSheet ? "animate-spin" : ""}`} />
+                  <span>Sync Pigeons</span>
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Sheet 2: Farm Finances & Accounts */}
+          <div className="p-4 bg-white rounded-xl border border-slate-200 space-y-2.5 shadow-2xs">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                <span>💰</span> 2. Farm Finances & Accounts Sheet
+              </span>
+              <span className="text-[10px] uppercase font-bold text-slate-400">Income, Expense & Feed</span>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-2.5 items-end">
+              <div className="flex-1 w-full">
+                <Input
+                  label="Finance & Accounts Spreadsheet URL"
+                  value={financeSheetUrl}
+                  onChange={(e) => setFinanceSheetUrl(e.target.value)}
+                  placeholder="https://docs.google.com/spreadsheets/d/.../edit"
+                />
+              </div>
+              <div className="flex items-center gap-2 w-full sm:w-auto shrink-0 pb-0.5">
+                <a
+                  href={financeSheetUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-2xs transition-all flex-1 sm:flex-initial"
+                >
+                  <ExternalLink className="w-3.5 h-3.5 text-slate-500" />
+                  <span>Open</span>
+                </a>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="md"
+                  onClick={() => handleSyncSpecificSheet("FINANCE")}
+                  isLoading={isSyncingSheet}
+                  className="gap-1.5 flex-1 sm:flex-initial text-xs text-emerald-800 border-emerald-200"
+                >
+                  <RefreshCw className={`w-3 h-3 ${isSyncingSheet ? "animate-spin" : ""}`} />
+                  <span>Sync Finance</span>
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Master Sync Both Sheets Button */}
+          <div className="pt-1 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <p className="text-[11px] text-slate-500">
+              Auto-sync runs automatically on app load, tab focus, and every 30 seconds.
+            </p>
+            <Button
+              type="button"
+              variant="primary"
+              size="md"
+              onClick={handleSyncAllSheets}
+              isLoading={isSyncingSheet}
+              className="w-full sm:w-auto gap-2 px-5 py-2.5 text-xs font-bold"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${isSyncingSheet ? "animate-spin" : ""}`} />
+              <span>Sync Both Sheets Now</span>
+            </Button>
+          </div>
+
+          {/* Google Apps Script Webhook Guide for Instant Push */}
+          <div className="p-4 bg-slate-900 rounded-xl text-slate-100 space-y-3 text-xs">
+            <div className="flex items-center justify-between">
+              <span className="font-bold text-emerald-400 flex items-center gap-1.5">
+                <span>⚡</span> Instant Push on Sheet Edit (Google Apps Script Webhook)
+              </span>
+              <button
+                type="button"
+                onClick={() => {
+                  const code = `function onEdit(e) {\n  var erpUrl = "http://localhost:3000/api/sync/google-sheets";\n  var options = {\n    method: "post",\n    contentType: "application/json",\n    payload: JSON.stringify({ source: "google_sheets_trigger" }),\n    muteHttpExceptions: true\n  };\n  try {\n    UrlFetchApp.fetch(erpUrl, options);\n  } catch (err) {\n    Logger.log("Sync error: " + err);\n  }\n}`;
+                  navigator.clipboard.writeText(code);
+                  setCopiedWebhook(true);
+                  setTimeout(() => setCopiedWebhook(false), 3000);
+                }}
+                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-[11px] font-semibold text-emerald-400 border border-slate-700 transition-colors cursor-pointer"
+              >
+                {copiedWebhook ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                <span>{copiedWebhook ? "Copied!" : "Copy Script"}</span>
+              </button>
+            </div>
+            <p className="text-slate-300 text-[11px] leading-relaxed">
+              To have the app update <strong>immediately</strong> whenever you edit a cell in either sheet: in your Google Sheet, open <strong>Extensions &gt; Apps Script</strong>, paste the script below, and save:
+            </p>
+            <pre className="p-2.5 rounded-lg bg-slate-950 border border-slate-800 text-[11px] font-mono text-emerald-300 overflow-x-auto">
+{`function onEdit(e) {
+  var erpUrl = "http://localhost:3000/api/sync/google-sheets";
+  var options = {
+    method: "post",
+    contentType: "application/json",
+    payload: JSON.stringify({ source: "google_sheets_trigger" }),
+    muteHttpExceptions: true
+  };
+  try {
+    UrlFetchApp.fetch(erpUrl, options);
+  } catch (err) {
+    Logger.log("Sync error: " + err);
+  }
+}`}
+            </pre>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* 3. Breed Categories & Subtypes */}
       <Card>
         <CardHeader>
-          <CardTitle>2. Breed Lineages & Subtypes</CardTitle>
+          <CardTitle>3. Breed Lineages & Subtypes</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-4">

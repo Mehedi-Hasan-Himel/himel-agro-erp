@@ -2,7 +2,8 @@
 
 import React, { useState } from "react";
 import { Pigeon } from "@/types/pigeon";
-import { createPair } from "@/lib/repositories/breedingRepository";
+import { createPair, generatePairId } from "@/lib/repositories/breedingRepository";
+import { getActivePigeonSerialMap } from "@/lib/repositories/pigeonRepository";
 import { formatCompactRing } from "@/lib/formatters/ringFormatter";
 import { Modal } from "../ui/Modal";
 import { Select } from "../ui/Select";
@@ -36,6 +37,11 @@ export function PairFormModal({
   const [notes, setNotes] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const activePigeonSerialMap = React.useMemo(
+    () => getActivePigeonSerialMap(pigeons),
+    [pigeons]
+  );
 
   const malePigeons = pigeons.filter(
     (p) => p.sex === "MALE" && p.status === "ACTIVE"
@@ -102,7 +108,7 @@ export function PairFormModal({
           <option value="">-- Choose Active Male --</option>
           {malePigeons.map((m) => (
             <option key={m.id} value={m.id}>
-              {formatCompactRing(m)} — {m.breedSubtype || m.breed} ({m.ringYear})
+              {activePigeonSerialMap.get(m.id) ? `[#${activePigeonSerialMap.get(m.id)}] ` : ""}{formatCompactRing(m)} — {m.breedSubtype || m.breed} ({m.ringYear})
             </option>
           ))}
         </Select>
@@ -116,10 +122,19 @@ export function PairFormModal({
           <option value="">-- Choose Active Female --</option>
           {femalePigeons.map((f) => (
             <option key={f.id} value={f.id}>
-              {formatCompactRing(f)} — {f.breedSubtype || f.breed} ({f.ringYear})
+              {activePigeonSerialMap.get(f.id) ? `[#${activePigeonSerialMap.get(f.id)}] ` : ""}{formatCompactRing(f)} — {f.breedSubtype || f.breed} ({f.ringYear})
             </option>
           ))}
         </Select>
+
+        {maleId && femaleId && (
+          <div className="p-3 bg-emerald-50/70 border border-emerald-200 rounded-xl text-xs flex items-center justify-between">
+            <span className="font-semibold text-emerald-800">Generated Pair ID:</span>
+            <span className="font-mono font-bold text-emerald-950 bg-white px-2.5 py-1 rounded-lg border border-emerald-200 shadow-2xs">
+              {generatePairId(maleId, femaleId)}
+            </span>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Input

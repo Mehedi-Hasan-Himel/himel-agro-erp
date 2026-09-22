@@ -5,16 +5,21 @@ export interface IPigeon {
   id?: string;
   ringYear: number;
   ringSerial: number;
+  officialRingNumber?: string;
   farmName: string;
   contactNumber: string;
   hatchDate: string;
   sex: "MALE" | "FEMALE" | "UNKNOWN";
   breed: string;
   breedSubtype?: string;
+  colorPattern?: string;
   photoUrl?: string;
   photos?: string[];
   fatherId?: string | null;
   motherId?: string | null;
+  fatherDetails?: string;
+  motherDetails?: string;
+  potentialGrade?: string;
   source: "BORN_HIMEL_AGRO" | "PURCHASED";
   purchaseDate?: string;
   purchasePrice?: number;
@@ -41,16 +46,21 @@ const PigeonSchema = new Schema<IPigeon>(
     _id: { type: String, required: true },
     ringYear: { type: Number, required: true },
     ringSerial: { type: Number, required: true },
-    farmName: { type: String, required: true, default: "Himel Agro" },
-    contactNumber: { type: String, required: true, default: "01969038472" },
+    officialRingNumber: { type: String, default: "" },
+    farmName: { type: String, required: true, default: "Himel's Pet House" },
+    contactNumber: { type: String, required: true, default: "01560059954" },
     hatchDate: { type: String, required: true },
     sex: { type: String, enum: ["MALE", "FEMALE", "UNKNOWN"], required: true },
     breed: { type: String, required: true },
     breedSubtype: { type: String, default: "" },
+    colorPattern: { type: String, default: "" },
     photoUrl: { type: String, default: "" },
     photos: { type: [String], default: [] },
     fatherId: { type: String, default: null },
     motherId: { type: String, default: null },
+    fatherDetails: { type: String, default: "" },
+    motherDetails: { type: String, default: "" },
+    potentialGrade: { type: String, default: "" },
     source: { type: String, enum: ["BORN_HIMEL_AGRO", "PURCHASED"], required: true },
     purchaseDate: { type: String },
     purchasePrice: { type: Number },

@@ -13,14 +13,15 @@ import { MonthlyProfitLossCard } from "@/components/finance/MonthlyProfitLossCar
 import { TransactionTable } from "@/components/finance/TransactionTable";
 import { TransactionModal } from "@/components/finance/TransactionModal";
 import { Button } from "@/components/ui/Button";
-import { PlusCircle, TrendingUp, TrendingDown, Tag } from "lucide-react";
+import { PlusCircle, TrendingUp, TrendingDown, Tag, RefreshCw, FileSpreadsheet, CheckCircle2 } from "lucide-react";
+import { useGoogleSheetSync } from "@/lib/hooks/useGoogleSheetSync";
 
 export default function FinanceManagementPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [monthlySummaries, setMonthlySummaries] = useState<
     MonthlyFinancialSummary[]
   >([]);
-  const [selectedMonthKey, setSelectedMonthKey] = useState<string>("2026-08");
+  const [selectedMonthKey, setSelectedMonthKey] = useState<string>("ALL");
   const [activeMonthSummary, setActiveMonthSummary] =
     useState<MonthlyFinancialSummary | null>(null);
   const [isTxnModalOpen, setIsTxnModalOpen] = useState(false);
@@ -28,6 +29,20 @@ export default function FinanceManagementPage() {
     "EXPENSE"
   );
   const [isLoading, setIsLoading] = useState(true);
+  const [syncNotice, setSyncNotice] = useState<string | null>(null);
+
+  const { isSyncing, syncNow } = useGoogleSheetSync();
+
+  const handleSyncClick = async () => {
+    const res = await syncNow();
+    if (res?.success) {
+      setSyncNotice("Synced financial records and pigeons from Google Sheets!");
+      setTimeout(() => setSyncNotice(null), 4000);
+    } else if (res?.message) {
+      setSyncNotice(`Sync notice: ${res.message}`);
+      setTimeout(() => setSyncNotice(null), 5000);
+    }
+  };
 
   const loadData = async (monthKey?: string) => {
     try {
@@ -38,8 +53,7 @@ export default function FinanceManagementPage() {
       setTransactions(allTxns);
       setMonthlySummaries(allMonths);
 
-      const targetMonth =
-        monthKey || (allMonths.length > 0 ? allMonths[0].monthKey : "2026-08");
+      const targetMonth = monthKey || "ALL";
       setSelectedMonthKey(targetMonth);
 
       const summary = await getFinancialSummaryForMonth(targetMonth);
@@ -95,6 +109,20 @@ export default function FinanceManagementPage() {
         </div>
 
         <div className="flex items-center gap-2.5">
+          <button
+            onClick={handleSyncClick}
+            disabled={isSyncing}
+            className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border transition-all cursor-pointer shadow-2xs ${
+              isSyncing
+                ? "bg-emerald-50 text-emerald-700 border-emerald-300 opacity-80"
+                : "bg-white text-emerald-800 border-emerald-200 hover:bg-emerald-50 active:bg-emerald-100"
+            }`}
+            title="Synchronize latest transactions from Google Sheet"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 text-emerald-600 ${isSyncing ? "animate-spin" : ""}`} />
+            <span>{isSyncing ? "Syncing..." : "Sync Sheet"}</span>
+          </button>
+
           <Button
             variant="outline"
             size="sm"
@@ -113,6 +141,21 @@ export default function FinanceManagementPage() {
           </Button>
         </div>
       </div>
+
+      {syncNotice && (
+        <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-emerald-800 text-xs flex items-center justify-between gap-2 shadow-2xs">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span className="font-medium">{syncNotice}</span>
+          </div>
+          <button
+            onClick={() => setSyncNotice(null)}
+            className="text-emerald-700 hover:text-emerald-900 font-bold px-1 text-xs cursor-pointer"
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
       {/* Monthly KPI Overview Card */}
       {activeMonthSummary && (

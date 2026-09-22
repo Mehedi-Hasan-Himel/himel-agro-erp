@@ -8,7 +8,15 @@ function normalizePigeon(p: any) {
   const breed = p.breed === "Giribaz / Local" ? "Giribaz" : (p.breed || "Giribaz");
   const breedInitial = breed.trim().charAt(0).toUpperCase() || "G";
   const serialStr = String(p.ringSerial || 1).padStart(2, "0");
-  const canonicalId = `${p.ringYear || 2026}-${serialStr}-${breedInitial}`;
+  const subtypeInitial = (p.breedSubtype || "Standard").trim().charAt(0).toUpperCase() || "S";
+  const sUpper = String(p.sex || "").toUpperCase();
+  const genderInitial =
+    sUpper === "MALE" || sUpper === "M"
+      ? "M"
+      : sUpper === "FEMALE" || sUpper === "F"
+      ? "F"
+      : "U";
+  const canonicalId = `${p.ringYear || 2026}-${serialStr}-${breedInitial}${subtypeInitial}${genderInitial}`;
   return { ...p, breed, id: canonicalId, _id: canonicalId };
 }
 

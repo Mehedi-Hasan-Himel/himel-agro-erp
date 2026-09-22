@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { SITE_CONFIG } from "@/lib/config/siteConfig";
@@ -11,7 +11,11 @@ import { MedicineSchedule } from "@/types/health";
 import { MonthlyFinancialSummary, Transaction } from "@/types/finance";
 
 import { getPigeons } from "@/lib/repositories/pigeonRepository";
-import { getPairs, getBreedingRounds } from "@/lib/repositories/breedingRepository";
+import {
+  getPairs,
+  getBreedingRounds,
+  getActivePairSerialMap,
+} from "@/lib/repositories/breedingRepository";
 import { getFeedStockSummaries } from "@/lib/repositories/feedRepository";
 import { getDueMedicineSchedules } from "@/lib/repositories/healthRepository";
 import { getMonthlySummaries, getTransactions } from "@/lib/repositories/financeRepository";
@@ -141,20 +145,38 @@ export default function DashboardPage() {
     };
   }, []);
 
-  // Latest month financial summary (August 2026)
+  // Latest month financial summary for current active month (e.g. September 2026)
   const currentMonthSummary =
-    monthlySummaries.length > 0
-      ? monthlySummaries[0]
-      : {
-          year: 2026,
-          month: 8,
-          monthKey: "2026-08",
-          monthLabel: "August 2026",
-          totalIncome: 0,
-          totalExpense: 0,
-          profitLoss: 0,
-          transactionCount: 0,
-        };
+    monthlySummaries.find((m) => m.monthKey !== "ALL") || {
+      year: 2026,
+      month: 9,
+      monthKey: "2026-09",
+      monthLabel: "September 2026",
+      totalIncome: 0,
+      totalExpense: 0,
+      profitLoss: 0,
+      transactionCount: 0,
+    };
+
+  // Cumulative all-time financial summary across all records (2019–Present)
+  const totalFinancialSummary =
+    monthlySummaries.find((m) => m.monthKey === "ALL") || {
+      year: 2026,
+      month: 0,
+      monthKey: "ALL",
+      monthLabel: "All Time (Cumulative)",
+      totalIncome: monthlySummaries.reduce((sum, m) => sum + (m.monthKey !== "ALL" ? m.totalIncome : 0), 0),
+      totalExpense: monthlySummaries.reduce((sum, m) => sum + (m.monthKey !== "ALL" ? m.totalExpense : 0), 0),
+      profitLoss: monthlySummaries.reduce((sum, m) => sum + (m.monthKey !== "ALL" ? m.profitLoss : 0), 0),
+      transactionCount: monthlySummaries.reduce((sum, m) => sum + (m.monthKey !== "ALL" ? m.transactionCount : 0), 0),
+    };
+
+  const historicalExpense =
+    monthlySummaries.find((m) => m.monthKey === "2025-12")?.totalExpense || 100000;
+  const operationalExpense2026 =
+    Math.max(0, totalFinancialSummary.totalExpense - historicalExpense);
+  const operationalNet2026 =
+    totalFinancialSummary.totalIncome - operationalExpense2026;
 
   // Low feed stock items
   const lowFeedItems = feedSummaries.filter(
@@ -166,6 +188,7 @@ export default function DashboardPage() {
 
   // Recent rounds
   const recentBreedingRounds = rounds.slice(0, 3);
+  const activeSerialMap = useMemo(() => getActivePairSerialMap(pairs), [pairs]);
 
   if (isLoading || !stats) {
     return (
@@ -390,18 +413,26 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Financial Overview Cards */}
+      {/* 1. Monthly Financial Overview Section (Current Active Month) */}
       <div className="bg-white rounded-2xl border border-slate-200 shadow-xs p-5 space-y-4">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
-              <TakaIcon className="w-4 h-4 text-emerald-600" />
-              <span>Monthly Financial Overview ({currentMonthSummary.monthLabel})</span>
-            </h3>
+            <div className="flex items-center gap-2">
+              <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                <TakaIcon className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>Monthly Financial Overview ({currentMonthSummary.monthLabel})</span>
+              </h3>
+              <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 rounded-full">
+                Active Month
+              </span>
+            </div>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Operating income, expenses, and net performance for current month • {currentMonthSummary.transactionCount} transactions recorded
+            </p>
           </div>
           <Link
             href="/finance"
-            className="text-xs font-semibold text-emerald-700 hover:underline flex items-center gap-1"
+            className="text-xs font-semibold text-emerald-700 hover:underline flex items-center gap-1 shrink-0"
           >
             Financial Ledger <ArrowRight className="w-3.5 h-3.5" />
           </Link>
@@ -409,7 +440,7 @@ export default function DashboardPage() {
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
           {/* Monthly Income */}
-          <div className="p-4 rounded-xl bg-emerald-50/50 border border-emerald-100 flex items-center justify-between">
+          <div className="p-4 rounded-xl bg-emerald-50/50 border border-emerald-100 flex items-center justify-between shadow-2xs">
             <div>
               <span className="text-[11px] font-semibold text-slate-600 uppercase block">
                 Monthly Income
@@ -418,16 +449,16 @@ export default function DashboardPage() {
                 {formatCurrency(currentMonthSummary.totalIncome)}
               </span>
               <span className="text-[10px] text-slate-500 block mt-0.5">
-                From pigeon sales
+                From bird sales & services
               </span>
             </div>
-            <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
               <ArrowUpRight className="w-5 h-5" />
             </div>
           </div>
 
           {/* Monthly Expense */}
-          <div className="p-4 rounded-xl bg-rose-50/50 border border-rose-100 flex items-center justify-between">
+          <div className="p-4 rounded-xl bg-rose-50/50 border border-rose-100 flex items-center justify-between shadow-2xs">
             <div>
               <span className="text-[11px] font-semibold text-slate-600 uppercase block">
                 Monthly Expense
@@ -436,17 +467,17 @@ export default function DashboardPage() {
                 {formatCurrency(currentMonthSummary.totalExpense)}
               </span>
               <span className="text-[10px] text-slate-500 block mt-0.5">
-                Feed, medicine, ring tags
+                Feed, medicine, flock care
               </span>
             </div>
-            <div className="w-10 h-10 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center shrink-0">
               <ArrowDownRight className="w-5 h-5" />
             </div>
           </div>
 
           {/* Monthly Profit / Loss */}
           <div
-            className={`p-4 rounded-xl border flex items-center justify-between ${
+            className={`p-4 rounded-xl border flex items-center justify-between shadow-2xs ${
               currentMonthSummary.profitLoss >= 0
                 ? "bg-emerald-50 border-emerald-200"
                 : "bg-rose-50 border-rose-200"
@@ -472,7 +503,7 @@ export default function DashboardPage() {
               </span>
             </div>
             <div
-              className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+              className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
                 currentMonthSummary.profitLoss >= 0
                   ? "bg-emerald-200 text-emerald-800"
                   : "bg-rose-200 text-rose-800"
@@ -484,6 +515,130 @@ export default function DashboardPage() {
                 <TrendingDown className="w-5 h-5" />
               )}
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 2. Total Financial Overview Section (Cumulative All-Time) */}
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-xs p-5 space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <div className="flex items-center gap-2">
+              <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                <TakaIcon className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>Total Financial Overview (Cumulative All-Time)</span>
+              </h3>
+              <span className="text-[10px] font-bold text-indigo-700 bg-indigo-50 border border-indigo-200/80 px-2 py-0.5 rounded-full">
+                2019 – Present
+              </span>
+            </div>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Cumulative farm ledger including initial setup & multi-year operations • {totalFinancialSummary.transactionCount} total records
+            </p>
+          </div>
+          <Link
+            href="/finance"
+            className="text-xs font-semibold text-emerald-700 hover:underline flex items-center gap-1 shrink-0"
+          >
+            Full Financial Ledger <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+          {/* Total Cumulative Income */}
+          <div className="p-4 rounded-xl bg-emerald-50/50 border border-emerald-100 flex items-center justify-between shadow-2xs">
+            <div>
+              <span className="text-[11px] font-semibold text-slate-600 uppercase block">
+                Total Cumulative Income
+              </span>
+              <span className="text-xl sm:text-2xl font-black text-emerald-700">
+                {formatCurrency(totalFinancialSummary.totalIncome)}
+              </span>
+              <span className="text-[10px] text-slate-500 block mt-0.5">
+                All bird sales & farm earnings
+              </span>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+              <ArrowUpRight className="w-5 h-5" />
+            </div>
+          </div>
+
+          {/* Total Cumulative Expenses */}
+          <div className="p-4 rounded-xl bg-rose-50/50 border border-rose-100 flex items-center justify-between shadow-2xs">
+            <div>
+              <span className="text-[11px] font-semibold text-slate-600 uppercase block">
+                Total Farm Expenses
+              </span>
+              <span className="text-xl sm:text-2xl font-black text-rose-700">
+                {formatCurrency(totalFinancialSummary.totalExpense)}
+              </span>
+              <span className="text-[10px] text-slate-500 block mt-0.5">
+                Setup ({formatCurrency(historicalExpense)}) + 2026 Ops ({formatCurrency(operationalExpense2026)})
+              </span>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center shrink-0">
+              <ArrowDownRight className="w-5 h-5" />
+            </div>
+          </div>
+
+          {/* Cumulative Net Position */}
+          <div
+            className={`p-4 rounded-xl border flex items-center justify-between shadow-2xs ${
+              totalFinancialSummary.profitLoss >= 0
+                ? "bg-emerald-50 border-emerald-200"
+                : "bg-rose-50 border-rose-200"
+            }`}
+          >
+            <div>
+              <span className="text-[11px] font-bold uppercase block text-slate-700">
+                {totalFinancialSummary.profitLoss >= 0
+                  ? "Total Net Profit"
+                  : "Cumulative Net Position"}
+              </span>
+              <span
+                className={`text-xl sm:text-2xl font-black ${
+                  totalFinancialSummary.profitLoss >= 0
+                    ? "text-emerald-700"
+                    : "text-rose-700"
+                }`}
+              >
+                {formatCurrency(totalFinancialSummary.profitLoss)}
+              </span>
+              <span className="text-[10px] text-slate-600 block mt-0.5">
+                Total Balance = Income - All Expenses
+              </span>
+            </div>
+            <div
+              className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
+                totalFinancialSummary.profitLoss >= 0
+                  ? "bg-emerald-200 text-emerald-800"
+                  : "bg-rose-200 text-rose-800"
+              }`}
+            >
+              {totalFinancialSummary.profitLoss >= 0 ? (
+                <TrendingUp className="w-5 h-5" />
+              ) : (
+                <TrendingDown className="w-5 h-5" />
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Breakdown Sub-strip */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-2 border-t border-slate-100 text-xs">
+          <div className="p-2.5 rounded-xl bg-slate-50/80 border border-slate-100 flex items-center justify-between">
+            <span className="text-slate-500 font-medium">Historical Setup (2019–2025):</span>
+            <span className="font-mono font-bold text-slate-700">{formatCurrency(historicalExpense)}</span>
+          </div>
+          <div className="p-2.5 rounded-xl bg-slate-50/80 border border-slate-100 flex items-center justify-between">
+            <span className="text-slate-500 font-medium">2026 Operational Expenses:</span>
+            <span className="font-mono font-bold text-rose-600">{formatCurrency(operationalExpense2026)}</span>
+          </div>
+          <div className="p-2.5 rounded-xl bg-slate-50/80 border border-slate-100 flex items-center justify-between">
+            <span className="text-slate-500 font-medium">2026 Operating Net (Sales - Ops):</span>
+            <span className={`font-mono font-bold ${operationalNet2026 >= 0 ? "text-emerald-600" : "text-rose-600"}`}>
+              {formatCurrency(operationalNet2026)}
+            </span>
           </div>
         </div>
       </div>
@@ -582,9 +737,15 @@ export default function DashboardPage() {
                 className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between text-xs"
               >
                 <div>
-                  <span className="font-mono font-bold text-slate-900 block">
-                    {rnd.pairId} — Round #{rnd.roundNumber}
-                  </span>
+                  <div className="flex items-center gap-1.5 font-mono font-bold text-slate-900">
+                    {activeSerialMap.get(rnd.pairId) && (
+                      <span className="font-mono text-[10px] bg-emerald-600 text-white px-1.5 py-0.2 rounded font-black shadow-2xs">
+                        #{activeSerialMap.get(rnd.pairId)}
+                      </span>
+                    )}
+                    <span>{rnd.pairId}</span>
+                    <span className="text-slate-400 font-normal font-sans text-xs">— Round #{rnd.roundNumber}</span>
+                  </div>
                   <span className="text-[11px] text-slate-500">
                     Laid: {formatDate(rnd.date)} • Hatched:{" "}
                     {formatDate(rnd.hatchDate)}

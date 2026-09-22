@@ -11,6 +11,7 @@ export interface ITransaction {
   pigeonId?: string;
   feedPurchaseId?: string;
   notes?: string;
+  customer?: string;
   createdAt?: string;
 }
 
@@ -25,6 +26,7 @@ const TransactionSchema = new Schema<ITransaction>(
     pigeonId: { type: String },
     feedPurchaseId: { type: String },
     notes: { type: String },
+    customer: { type: String },
     createdAt: { type: String },
   },
   {

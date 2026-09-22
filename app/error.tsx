@@ -12,7 +12,7 @@ export default function Error({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error("Himel Agro App Error:", error);
+    console.error("Himel's Pet House App Error:", error);
   }, [error]);
 
   return (

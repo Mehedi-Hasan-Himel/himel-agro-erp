@@ -5,7 +5,12 @@ import { useRouter } from "next/navigation";
 import { Pigeon, PigeonSex, PigeonSource, PigeonStatus } from "@/types/pigeon";
 import { BreedConfig } from "@/types/breed";
 import { SITE_CONFIG } from "@/lib/config/siteConfig";
-import { getPigeons, createPigeon, updatePigeon } from "@/lib/repositories/pigeonRepository";
+import {
+  getPigeons,
+  createPigeon,
+  updatePigeon,
+  generatePigeonId,
+} from "@/lib/repositories/pigeonRepository";
 import { getBreeds } from "@/lib/repositories/settingsRepository";
 import { formatCompactRing } from "@/lib/formatters/ringFormatter";
 import { Button } from "../ui/Button";
@@ -177,9 +182,14 @@ export function PigeonForm({
   );
   const availableSubtypes = activeCategory ? activeCategory.subtypes : [];
 
-  // Dynamic Unique ID: Hatching Year + Ring Number + Breed Category first letter
-  const breedChar = (breed || "Giribaz").trim().charAt(0).toUpperCase() || "G";
-  const dynamicUniqueId = `${ringYear}-${String(ringSerial).padStart(2, "0")}-${breedChar}`;
+  // Dynamic Unique ID: year + ring number + breed (Giribaz, Racer) + Breed Sub-type + gender (e.g. 2026-01-GCF)
+  const dynamicUniqueId = generatePigeonId(
+    ringYear,
+    ringSerial,
+    breed,
+    breedSubtype,
+    sex
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -528,7 +538,7 @@ export function PigeonForm({
               onChange={(e) => setSource(e.target.value as PigeonSource)}
               required
             >
-              <option value="BORN_HIMEL_AGRO">Born at Himel Agro</option>
+              <option value="BORN_HIMEL_AGRO">Born at Himel's Pet House</option>
               <option value="PURCHASED">Purchased / Outside Bloodline</option>
             </Select>
 

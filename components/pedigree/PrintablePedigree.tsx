@@ -145,7 +145,7 @@ export function PrintablePedigree({ tree, id = "pedigree-certificate" }: Printab
             </span>
             <span className="font-bold text-white text-sm">
               {subject.source === "BORN_HIMEL_AGRO"
-                ? "Born at Himel Agro"
+                ? "Born at Himel's Pet House"
                 : "Purchased"}
             </span>
             {subject.seller && (
@@ -303,7 +303,7 @@ export function PrintablePedigree({ tree, id = "pedigree-certificate" }: Printab
         </h4>
         <p className="text-slate-600 text-xs leading-relaxed">
           {subject.notes ||
-            "Full active member of Himel Agro loft stock. Preserved for bloodline purity, breeding performance, and athletic flight evaluation."}
+            "Full active member of Himel's Pet House loft stock. Preserved for bloodline purity, breeding performance, and athletic flight evaluation."}
         </p>
       </div>
 

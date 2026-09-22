@@ -1,5 +1,5 @@
 /**
- * Himel Agro ERP - Central Theme & Design System Tokens
+ * Himel's Pet House ERP - Central Theme & Design System Tokens
  * Maintain international standard color contrast and unified branding.
  * Change color values here or in globals.css to update the whole application theme.
  */

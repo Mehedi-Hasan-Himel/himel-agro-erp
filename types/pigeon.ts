@@ -9,6 +9,7 @@ export interface Pigeon {
 
   ringYear: number;
   ringSerial: number;
+  officialRingNumber?: string;
   farmName: string;
   contactNumber: string;
 
@@ -18,6 +19,7 @@ export interface Pigeon {
 
   breed: string;
   breedSubtype?: string;
+  colorPattern?: string;
 
   photoUrl?: string;
   photos?: string[];
@@ -25,6 +27,9 @@ export interface Pigeon {
 
   fatherId?: string | null;
   motherId?: string | null;
+  fatherDetails?: string;
+  motherDetails?: string;
+  potentialGrade?: string;
   birthDate?: string; // Authoritative birth date (defaults to hatchDate)
   clutchId?: string; // Clutch / egg batch identifier
   pairId?: string; // Breeding pair identifier that produced this pigeon

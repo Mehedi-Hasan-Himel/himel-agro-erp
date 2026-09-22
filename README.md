@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🕊️ Himel Agro ERP
+# 🕊️ Himel's Pet House ERP
 ### Enterprise Pigeon Farm & Loft Management System
 
 [![Next.js](https://img.shields.io/badge/Next.js-16.3-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
@@ -19,7 +19,7 @@
 
 ## 📌 Overview
 
-**Himel Agro ERP** is built to address the unique challenges of professional pigeon breeders and racing fanciers. From managing high-flyer lines (such as *Giribaz*) to maintaining tamper-proof genealogy and commercial sale records, Himel Agro ERP digitizes entire loft operations with modern web performance, responsive UI design, and automated PDF pedigree certificates.
+**Himel's Pet House ERP** is built to address the unique challenges of professional pigeon breeders and racing fanciers. From managing high-flyer lines (such as *Giribaz*) to maintaining tamper-proof genealogy and commercial sale records, Himel's Pet House ERP digitizes entire loft operations with modern web performance, responsive UI design, and automated PDF pedigree certificates.
 
 ---
 
@@ -27,7 +27,7 @@
 
 ### 1. 🕊️ Pigeon Flock Registry & Organic Grid
 - **Dynamic Unique ID**: Prominent identifiers for every bird (e.g., `2026-01-G`).
-- **Reformed Physical Ring Format**: Green ring badge displaying `YYYY | SS | Farm | Contact` (e.g., `2026 | 01 | Himel Agro | 01560059954`).
+- **Reformed Physical Ring Format**: Green ring badge displaying `YYYY | SS | Farm | Contact` (e.g., `2026 | 01 | Himel's Pet House | 01560059954`).
 - **Responsive Organic Grid View**:
   - 16:10 visual hero media banner with smooth hover zoom.
   - Quick floating badges for sex, status, active breeding pair, and asking price (`৳`).
@@ -119,7 +119,7 @@ himel-agro-erp/
 
 ## 🏷️ Ring Number Specification
 
-Himel Agro ERP enforces an authoritative, standardized physical ring numbering system:
+Himel's Pet House ERP enforces an authoritative, standardized physical ring numbering system:
 
 $$\text{Format:} \quad \mathbf{YYYY \mid SS \mid Farm \mid Contact}$$
 
@@ -127,11 +127,11 @@ $$\text{Format:} \quad \mathbf{YYYY \mid SS \mid Farm \mid Contact}$$
 | :--- | :--- | :--- |
 | **YYYY** | Hatch / Registration Year | `2026` |
 | **SS** | 2-Digit Ring Serial | `01` |
-| **Farm** | Certified Farm Name | `Himel Agro` |
+| **Farm** | Certified Farm Name | `Himel's Pet House` |
 | **Contact** | Official Loft Phone | `01560059954` |
 
 **Rendered Example:**
-$$\colorbox{#059669}{\color{white}\texttt{\textbf{ 2026 | 01 | Himel Agro | 01560059954 }}}$$
+$$\colorbox{#059669}{\color{white}\texttt{\textbf{ 2026 | 01 | Himel's Pet House | 01560059954 }}}$$
 
 ---
 
@@ -197,7 +197,7 @@ $$\colorbox{#059669}{\color{white}\texttt{\textbf{ 2026 | 01 | Himel Agro | 0156
 
 ## 📍 Loft Contact
 
-- **Farm Name**: **Himel Agro**
+- **Farm Name**: **Himel's Pet House**
 - **Loft Master**: **Mehedi Hasan Himel**
 - **Phone / Loft Line**: `+880 1560059954`
 - **WhatsApp**: [Chat on WhatsApp (+8801560059954)](https://wa.me/8801560059954)
@@ -207,5 +207,5 @@ $$\colorbox{#059669}{\color{white}\texttt{\textbf{ 2026 | 01 | Himel Agro | 0156
 ---
 
 <div align="center">
-  <p>© 2026 Himel Agro. All rights reserved.</p>
+  <p>© 2026 Himel's Pet House. All rights reserved.</p>
 </div>

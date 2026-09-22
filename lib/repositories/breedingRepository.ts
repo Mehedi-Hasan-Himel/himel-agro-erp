@@ -31,12 +31,39 @@ export async function getActivePairForPigeon(pigeonId: string): Promise<Pair | n
 }
 
 export interface CreatePairInput {
+  id?: string;
   maleId: string;
   femaleId: string;
   startDate: string;
   endDate?: string | null;
   cageNumber?: string;
   notes?: string;
+}
+
+export function generatePairId(maleId: string, femaleId: string): string {
+  return `${maleId.trim()}_${femaleId.trim()}`;
+}
+
+/**
+ * Calculates dynamic 1-based serial numbers (01, 02, 03...) for all active pairs.
+ * Dynamically re-indexes based on the current active pairs count and timeline.
+ */
+export function getActivePairSerialMap(pairs: Pair[]): Map<string, string> {
+  const map = new Map<string, string>();
+  const active = pairs
+    .filter((p) => p.status === "ACTIVE")
+    .sort((a, b) => {
+      const dateA = new Date(a.startDate || a.createdAt || 0).getTime();
+      const dateB = new Date(b.startDate || b.createdAt || 0).getTime();
+      return dateA - dateB;
+    });
+
+  active.forEach((p, index) => {
+    const serial = String(index + 1).padStart(2, "0");
+    map.set(p.id, serial);
+  });
+
+  return map;
 }
 
 export async function createPair(input: CreatePairInput): Promise<Pair> {
@@ -55,7 +82,38 @@ export async function createPair(input: CreatePairInput): Promise<Pair> {
   if (female.sex !== "FEMALE") throw new Error(`Pigeon ${female.id} is not FEMALE.`);
 
   const pairs = await getPairs();
-  const id = `pair_${new Date().getFullYear()}_${String(pairs.length + 1).padStart(2, "0")}`;
+  const id = input.id || generatePairId(input.maleId, input.femaleId);
+
+  // Check if either pigeon is currently active in another pair
+  const activeMalePair = pairs.find(
+    (p) => p.status === "ACTIVE" && p.maleId === input.maleId && p.id !== id
+  );
+  if (activeMalePair) {
+    throw new Error(
+      `Male pigeon (${input.maleId}) is currently active in pair "${activeMalePair.id}". Please end that pair first.`
+    );
+  }
+  const activeFemalePair = pairs.find(
+    (p) => p.status === "ACTIVE" && p.femaleId === input.femaleId && p.id !== id
+  );
+  if (activeFemalePair) {
+    throw new Error(
+      `Female pigeon (${input.femaleId}) is currently active in pair "${activeFemalePair.id}". Please end that pair first.`
+    );
+  }
+
+  // If pair with this exact ID already exists, reactivate or update it
+  const existingPair = pairs.find((p) => p.id === id);
+  if (existingPair) {
+    return updatePair(id, {
+      status: "ACTIVE",
+      startDate: input.startDate,
+      endDate: null,
+      cageNumber: input.cageNumber || existingPair.cageNumber,
+      notes: input.notes || existingPair.notes,
+    });
+  }
+
   const now = new Date().toISOString();
 
   const newPair: Pair = {
