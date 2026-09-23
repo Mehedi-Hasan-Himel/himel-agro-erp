@@ -29,6 +29,8 @@ import { Button } from "@/components/ui/Button";
 import { RingBadge } from "@/components/pigeons/RingBadge";
 import { StatusBadge } from "@/components/pigeons/StatusBadge";
 import { MedicineDueCard } from "@/components/health/MedicineDueCard";
+import { LiveFlockRegistryWidget } from "@/components/dashboard/LiveFlockRegistryWidget";
+import { DashboardSkeleton } from "@/components/ui/Skeleton";
 
 import {
   Feather,
@@ -46,6 +48,7 @@ import {
   ShieldCheck,
   MapPin,
   ExternalLink,
+  Award,
 } from "lucide-react";
 import {
   SquabIcon,
@@ -191,11 +194,7 @@ export default function DashboardPage() {
   const activeSerialMap = useMemo(() => getActivePairSerialMap(pairs), [pairs]);
 
   if (isLoading || !stats) {
-    return (
-      <div className="flex items-center justify-center py-24 text-slate-400">
-        Loading dashboard...
-      </div>
-    );
+    return <DashboardSkeleton />;
   }
 
   return (
@@ -227,7 +226,7 @@ export default function DashboardPage() {
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
                   </span>
-                  <span className="truncate">Live Loft • {stats.totalActive} Active Birds</span>
+                  <span className="truncate">Live Loft • {stats.keptBirds} Kept Birds</span>
                 </div>
                 <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white tracking-tight leading-tight break-words">
                   {SITE_CONFIG.farmName}
@@ -242,9 +241,8 @@ export default function DashboardPage() {
 
             {/* Description */}
             <p className="text-emerald-100/80 text-xs sm:text-sm leading-relaxed break-words mt-1 max-w-2xl">
-              Managing <strong>{stats.totalActive} Active Pigeons</strong> across{" "}
-              {Object.keys(stats.breedDistribution).length} breed lines with complete
-              genealogy and performance tracking.
+              Managing <strong>{stats.keptBirds} Kept Pigeons</strong> ({stats.racersCount} Racers,{" "}
+              {stats.giribazCount} Giribaz) across 15 allocated ring bands with full Google Sheet live sync and genealogy tracking.
             </p>
 
             {/* Quick Action Buttons */}
@@ -305,9 +303,14 @@ export default function DashboardPage() {
       {/* Pigeon KPI Cards Grid */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700">
-            Flock Population & Inventory (Live)
-          </h2>
+          <div className="flex items-center gap-2">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700">
+              Loft Metrics & Flock Summary (Google Sheet)
+            </h2>
+            <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 rounded-full">
+              Live Registry
+            </span>
+          </div>
           <Link
             href="/pigeons"
             className="text-xs font-bold text-emerald-800 hover:text-emerald-900 hover:underline flex items-center gap-1"
@@ -316,50 +319,66 @@ export default function DashboardPage() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
-          {/* Total Pigeons */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+          {/* 1. Kept Birds */}
           <Card className="bg-white border-slate-200/80 hover:border-emerald-300 transition-all shadow-xs">
             <CardContent className="p-4 sm:p-5">
               <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
-                <span className="font-bold text-slate-700">Total Active</span>
-                <div className="flex items-center gap-1 p-1 rounded-xl bg-gradient-to-r from-sky-50 via-emerald-50 to-pink-50 border border-slate-200/60 shadow-2xs">
-                  <CockPigeonIcon className="w-4 h-4 text-sky-700" />
-                  <SquabIcon className="w-3.5 h-3.5 text-emerald-700" />
-                  <HenPigeonIcon className="w-4 h-4 text-pink-700" />
+                <span className="font-bold text-slate-700">Kept Birds</span>
+                <div className="w-8 h-8 rounded-xl bg-emerald-100/90 border border-emerald-200/70 flex items-center justify-center shadow-2xs">
+                  <FlockPigeonIcon className="w-5 h-5 text-emerald-700" />
                 </div>
               </div>
               <div className="text-2xl sm:text-3xl font-black text-slate-900">
-                {stats.totalActive}
+                {stats.keptBirds}
               </div>
               <span className="text-[11px] text-slate-500 mt-1 block font-medium">
-                {stats.totalHistorical} total recorded in ERP
+                Active in loft • {stats.totalHistorical} rings
               </span>
             </CardContent>
           </Card>
 
-          {/* Active Males */}
+          {/* 2. Racers */}
           <Card className="bg-white border-slate-200/80 hover:border-sky-300 transition-all shadow-xs">
             <CardContent className="p-4 sm:p-5">
               <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
-                <span className="font-bold text-slate-700">Male</span>
+                <span className="font-bold text-slate-700">Racers</span>
                 <div className="w-8 h-8 rounded-xl bg-sky-100/90 border border-sky-200/70 flex items-center justify-center shadow-2xs">
-                  <CockPigeonIcon className="w-5 h-5 text-sky-700" />
+                  <Award className="w-4 h-4 text-sky-700" />
                 </div>
               </div>
               <div className="text-2xl sm:text-3xl font-black text-sky-800">
-                {stats.activeMales}
+                {stats.racersCount}
               </div>
               <span className="text-[11px] text-slate-500 mt-1 block font-medium">
-                Breeding & racing cocks
+                Racing Homer lines
               </span>
             </CardContent>
           </Card>
 
-          {/* Active Females */}
+          {/* 3. Giribaz */}
+          <Card className="bg-white border-slate-200/80 hover:border-teal-300 transition-all shadow-xs">
+            <CardContent className="p-4 sm:p-5">
+              <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
+                <span className="font-bold text-slate-700">Giribaz</span>
+                <div className="w-8 h-8 rounded-xl bg-teal-100/90 border border-teal-200/70 flex items-center justify-center shadow-2xs">
+                  <Feather className="w-4 h-4 text-teal-700" />
+                </div>
+              </div>
+              <div className="text-2xl sm:text-3xl font-black text-teal-800">
+                {stats.giribazCount}
+              </div>
+              <span className="text-[11px] text-slate-500 mt-1 block font-medium">
+                Highflyers & tumblers
+              </span>
+            </CardContent>
+          </Card>
+
+          {/* 4. Active Females */}
           <Card className="bg-white border-slate-200/80 hover:border-pink-300 transition-all shadow-xs">
             <CardContent className="p-4 sm:p-5">
               <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
-                <span className="font-bold text-slate-700">Female</span>
+                <span className="font-bold text-slate-700">Hens</span>
                 <div className="w-8 h-8 rounded-xl bg-pink-100/90 border border-pink-200/70 flex items-center justify-center shadow-2xs">
                   <HenPigeonIcon className="w-5 h-5 text-pink-700" />
                 </div>
@@ -373,45 +392,50 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
 
-          {/* Babies / Squabs */}
-          <Card className="bg-white border-slate-200/80 hover:border-emerald-300 transition-all shadow-xs">
+          {/* 5. Active Males */}
+          <Card className="bg-white border-slate-200/80 hover:border-sky-300 transition-all shadow-xs">
             <CardContent className="p-4 sm:p-5">
               <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
-                <span className="font-bold text-slate-700">Babies (Squabs)</span>
-                <div className="w-8 h-8 rounded-xl bg-emerald-100/90 border border-emerald-200/70 flex items-center justify-center shadow-2xs">
-                  <SquabIcon className="w-5 h-5 text-emerald-700" />
+                <span className="font-bold text-slate-700">Cocks</span>
+                <div className="w-8 h-8 rounded-xl bg-sky-100/90 border border-sky-200/70 flex items-center justify-center shadow-2xs">
+                  <CockPigeonIcon className="w-5 h-5 text-sky-700" />
                 </div>
               </div>
-              <div className="text-2xl sm:text-3xl font-black text-emerald-800">
-                {stats.activeBabies}
+              <div className="text-2xl sm:text-3xl font-black text-sky-800">
+                {stats.activeMales}
               </div>
               <span className="text-[11px] text-slate-500 mt-1 block font-medium">
-                Nursery & young squabs
+                Breeding & racing cocks
               </span>
             </CardContent>
           </Card>
 
-          {/* Available for Sale */}
-          <Link href="/pigeons?status=FOR_SALE" className="col-span-2 sm:col-span-1 block">
-            <Card className="bg-white border-slate-200/80 hover:border-emerald-400 hover:shadow-sm transition-all shadow-xs h-full cursor-pointer">
-              <CardContent className="p-4 sm:p-5">
-                <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
-                  <span className="font-bold text-slate-700">Available Sale</span>
-                  <div className="w-8 h-8 rounded-xl bg-emerald-100/90 border border-emerald-200/70 flex items-center justify-center shadow-2xs">
-                    <TakaIcon className="w-5 h-5 text-emerald-700" />
-                  </div>
+          {/* 6. Lost Rings */}
+          <Card className="bg-white border-slate-200/80 hover:border-amber-300 transition-all shadow-xs">
+            <CardContent className="p-4 sm:p-5">
+              <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
+                <span className="font-bold text-slate-700">Lost Rings</span>
+                <div className="w-8 h-8 rounded-xl bg-amber-100/90 border border-amber-200/70 flex items-center justify-center shadow-2xs">
+                  <AlertTriangle className="w-4 h-4 text-amber-700" />
                 </div>
-                <div className="text-2xl sm:text-3xl font-black text-emerald-800">
-                  {stats.availableForSale}
-                </div>
-                <span className="text-[11px] text-slate-500 mt-1 block font-medium">
-                  Ready for enthusiasts & buyers
-                </span>
-              </CardContent>
-            </Card>
-          </Link>
+              </div>
+              <div className="text-2xl sm:text-3xl font-black text-amber-800">
+                {stats.lostCount}
+              </div>
+              <span className="text-[11px] text-slate-500 mt-1 block font-medium">
+                Rings 04 & 14 allocated
+              </span>
+            </CardContent>
+          </Card>
         </div>
       </div>
+
+      {/* Centerpiece: Live Google Sheet Flock Registry & Loft Roster Widget */}
+      <LiveFlockRegistryWidget
+        pigeons={pigeons}
+        onRefresh={loadDashboardData}
+        isLoading={isLoading}
+      />
 
       {/* 1. Monthly Financial Overview Section (Current Active Month) */}
       <div className="bg-white rounded-2xl border border-slate-200 shadow-xs p-5 space-y-4">

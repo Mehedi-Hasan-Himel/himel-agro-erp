@@ -33,7 +33,7 @@ export function Header({ onMenuToggle }: HeaderProps) {
   const { isSyncing, syncNow } = useGoogleSheetSync({
     autoSyncOnMount: true,
     revalidateOnFocus: true,
-    pollIntervalMs: 30000,
+    pollIntervalMs: 5000,
   });
 
   useEffect(() => {

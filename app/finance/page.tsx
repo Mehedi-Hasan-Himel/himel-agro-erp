@@ -15,6 +15,7 @@ import { TransactionModal } from "@/components/finance/TransactionModal";
 import { Button } from "@/components/ui/Button";
 import { PlusCircle, TrendingUp, TrendingDown, Tag, RefreshCw, FileSpreadsheet, CheckCircle2 } from "lucide-react";
 import { useGoogleSheetSync } from "@/lib/hooks/useGoogleSheetSync";
+import { FinanceSkeleton } from "@/components/ui/Skeleton";
 
 export default function FinanceManagementPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -88,6 +89,10 @@ export default function FinanceManagementPage() {
     setDefaultTxnType(type);
     setIsTxnModalOpen(true);
   };
+
+  if (isLoading) {
+    return <FinanceSkeleton />;
+  }
 
   return (
     <div className="space-y-6">

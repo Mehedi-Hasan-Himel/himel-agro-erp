@@ -7,14 +7,14 @@ import { notifyDataChanged } from "@/lib/repositories/storageAdapter";
 interface UseGoogleSheetSyncOptions {
   autoSyncOnMount?: boolean;
   revalidateOnFocus?: boolean;
-  pollIntervalMs?: number; // default 30000 (30 seconds)
+  pollIntervalMs?: number; // default 5000 (5 seconds)
 }
 
 export function useGoogleSheetSync(options: UseGoogleSheetSyncOptions = {}) {
   const {
     autoSyncOnMount = true,
     revalidateOnFocus = true,
-    pollIntervalMs = 30000,
+    pollIntervalMs = 5000,
   } = options;
 
   const [isSyncing, setIsSyncing] = useState(false);
@@ -28,9 +28,9 @@ export function useGoogleSheetSync(options: UseGoogleSheetSyncOptions = {}) {
       // Prevent concurrent sync executions
       if (isSyncingRef.current) return null;
 
-      // Throttle rapid repeated automatic calls (minimum 10 seconds between automatic syncs)
+      // Throttle rapid repeated automatic calls (minimum 2 seconds between automatic syncs)
       const now = Date.now();
-      if (silent && now - lastSyncTimeRef.current < 10000) {
+      if (silent && now - lastSyncTimeRef.current < 2000) {
         return null;
       }
 

@@ -20,7 +20,7 @@
     "fatherDetails": "Full White, Chuithal, White Eye, White Eye Ring",
     "motherDetails": "Full White, Chuithal, White Eye, Red Eye Ring",
     "potentialGrade": "",
-    "updatedAt": "2026-09-22T16:40:20.783Z"
+    "updatedAt": "2026-09-23T16:22:35.301Z"
   },
   {
     "id": "2026-02-GCU",
@@ -43,7 +43,7 @@
     "fatherDetails": "Full White, Chuithal, White Eye, White Eye Ring",
     "motherDetails": "Full White, Chuithal, White Eye, Red Eye Ring",
     "potentialGrade": "",
-    "updatedAt": "2026-09-22T16:40:20.783Z"
+    "updatedAt": "2026-09-23T16:22:35.301Z"
   },
   {
     "id": "2026-03-RBU",
@@ -66,7 +66,7 @@
     "fatherDetails": "2014 Ring Tag, Blue Bar - Collect From Dhaka",
     "motherDetails": "2024 Ring Tag, Blue Bar - Collect From Dhaka",
     "potentialGrade": "",
-    "updatedAt": "2026-09-22T16:40:20.783Z"
+    "updatedAt": "2026-09-23T16:22:35.301Z"
   },
   {
     "id": "2026-04-GRU",
@@ -89,7 +89,7 @@
     "fatherDetails": "",
     "motherDetails": "",
     "potentialGrade": "",
-    "updatedAt": "2026-09-22T16:40:20.783Z"
+    "updatedAt": "2026-09-23T16:22:35.301Z"
   },
   {
     "id": "2026-05-GSM",
@@ -112,7 +112,7 @@
     "motherDetails": "mother 1 hour fly time",
     "fatherDetails": "",
     "potentialGrade": "",
-    "updatedAt": "2026-09-22T16:40:20.783Z"
+    "updatedAt": "2026-09-23T16:22:35.301Z"
   },
   {
     "id": "2026-06-RMU",
@@ -135,7 +135,7 @@
     "fatherDetails": "Collect from Sherpur, Pied Maxi Racer",
     "motherDetails": "Collect from Sherpur, Full Fresh Maxi Racer",
     "potentialGrade": "",
-    "updatedAt": "2026-09-22T16:40:20.783Z"
+    "updatedAt": "2026-09-23T16:22:35.301Z"
   },
   {
     "id": "2026-07-GCU",
@@ -158,7 +158,7 @@
     "fatherDetails": "Light Redish Color Chila",
     "motherDetails": "Fly Time 30 Minutes+ Redish Color Chila",
     "potentialGrade": "",
-    "updatedAt": "2026-09-22T16:40:20.783Z"
+    "updatedAt": "2026-09-23T16:22:35.301Z"
   },
   {
     "id": "2026-08-GKU",
@@ -181,7 +181,7 @@
     "fatherDetails": "Red Eye Ring, Khoyra Gola, Collect From Dhaka",
     "motherDetails": "Khoyra Gola, Collect From Lazim Emtiaz Gazipur (Lost)",
     "potentialGrade": "",
-    "updatedAt": "2026-09-22T16:40:20.783Z"
+    "updatedAt": "2026-09-23T16:22:35.301Z"
   },
   {
     "id": "2026-09-RMU",
@@ -204,7 +204,7 @@
     "fatherDetails": "Collect from Sherpur, Pied Maxi Racer",
     "motherDetails": "Collect from Sherpur, Full Fresh Maxi Racer",
     "potentialGrade": "",
-    "updatedAt": "2026-09-22T16:40:20.783Z"
+    "updatedAt": "2026-09-23T16:22:35.301Z"
   },
   {
     "id": "2026-10-GMU",
@@ -227,7 +227,7 @@
     "fatherDetails": "Musaldom (Mismark)",
     "motherDetails": "Musaldom (Mismark)",
     "potentialGrade": "",
-    "updatedAt": "2026-09-22T16:40:20.783Z"
+    "updatedAt": "2026-09-23T16:22:35.301Z"
   },
   {
     "id": "2026-11-GMU",
@@ -239,7 +239,7 @@
     "hatchDate": "2026-05-01",
     "birthDate": "2026-05-01",
     "clutchId": "2026-C06",
-    "sex": "FEMALE",
+    "sex": "MALE",
     "breed": "Giribaz",
     "breedSubtype": "Musaldom",
     "colorPattern": "Full Black, White Tail",
@@ -250,7 +250,7 @@
     "fatherDetails": "",
     "motherDetails": "",
     "potentialGrade": "",
-    "updatedAt": "2026-09-22T16:40:20.783Z"
+    "updatedAt": "2026-09-23T16:22:35.301Z"
   },
   {
     "id": "2026-12-RBU",
@@ -262,7 +262,7 @@
     "hatchDate": "2026-06-01",
     "birthDate": "2026-06-01",
     "clutchId": "2026-C06",
-    "sex": "FEMALE",
+    "sex": "MALE",
     "breed": "Racer",
     "breedSubtype": "Blue Bar / Sobji Racer",
     "colorPattern": "",
@@ -273,7 +273,7 @@
     "fatherDetails": "2014 Ring Tag, Blue Bar - Collect From Dhaka",
     "motherDetails": "2024 Ring Tag, Blue Bar - Collect From Dhaka",
     "potentialGrade": "",
-    "updatedAt": "2026-09-22T16:40:20.783Z"
+    "updatedAt": "2026-09-23T16:22:35.301Z"
   },
   {
     "id": "2026-13-RBU",
@@ -285,7 +285,7 @@
     "hatchDate": "2026-08-01",
     "birthDate": "2026-08-01",
     "clutchId": "2026-C07",
-    "sex": "FEMALE",
+    "sex": "MALE",
     "breed": "Racer",
     "breedSubtype": "Blue Bar / Sobji Racer",
     "colorPattern": "",
@@ -296,7 +296,7 @@
     "fatherDetails": "2014 Ring Tag, Blue Bar - Collect From Dhaka",
     "motherDetails": "2024 Ring Tag, Blue Bar - Collect From Dhaka",
     "potentialGrade": "",
-    "updatedAt": "2026-09-22T16:40:20.783Z"
+    "updatedAt": "2026-09-23T16:22:35.301Z"
   },
   {
     "id": "2026-14-GRU",
@@ -308,7 +308,7 @@
     "hatchDate": "2026-06-01",
     "birthDate": "2026-06-01",
     "clutchId": "2026-C07",
-    "sex": "UNKNOWN",
+    "sex": "MALE",
     "breed": "Giribaz",
     "breedSubtype": "Ring Lost",
     "colorPattern": "",
@@ -319,29 +319,29 @@
     "fatherDetails": "",
     "motherDetails": "",
     "potentialGrade": "",
-    "updatedAt": "2026-09-22T16:40:20.783Z"
+    "updatedAt": "2026-09-23T16:22:35.301Z"
   },
   {
-    "id": "2026-15-RMU",
+    "_id": "2026-15-RMM",
+    "id": "2026-15-RMM",
     "ringYear": 2026,
     "ringSerial": 15,
     "officialRingNumber": "15--2026",
     "farmName": "Himel's Pet House",
     "contactNumber": "01560059954",
     "hatchDate": "2026-06-01",
-    "birthDate": "2026-06-01",
-    "clutchId": "2026-C08",
-    "sex": "FEMALE",
+    "sex": "MALE",
     "breed": "Racer",
     "breedSubtype": "Maxi Racer",
     "colorPattern": "",
-    "photoUrl": "https://images.unsplash.com/photo-1552728089-57bdde30beb3?w=600&auto=format&fit=crop&q=80",
-    "source": "BORN_HIMEL_AGRO",
-    "status": "ACTIVE",
-    "notes": "",
     "fatherDetails": "Collect from Sherpur, Pied Maxi Racer",
     "motherDetails": "Collect from Sherpur, Full Fresh Maxi Racer",
     "potentialGrade": "",
-    "updatedAt": "2026-09-22T16:40:20.783Z"
+    "source": "BORN_HIMEL_AGRO",
+    "status": "ACTIVE",
+    "notes": "",
+    "photos": [],
+    "createdAt": "2026-09-23T15:55:30.929Z",
+    "updatedAt": "2026-09-23T16:22:35.301Z"
   }
 ]

@@ -456,15 +456,27 @@ export async function syncGoogleSheetToDatabase(
 
     const db = await connectDB();
 
-    // Fetch existing pigeons
-    let existingPigeons: IPigeon[] = [];
+    // Fetch existing pigeons from fallback store and MongoDB
+    const fallbackPigeons = (fallbackStore.get().pigeons || []) as unknown as IPigeon[];
+    let dbPigeons: IPigeon[] = [];
     if (db) {
-      existingPigeons = (await PigeonModel.find({}).lean()) as unknown as IPigeon[];
-    } else {
-      existingPigeons = fallbackStore.get().pigeons as unknown as IPigeon[];
+      dbPigeons = (await PigeonModel.find({}).lean()) as unknown as IPigeon[];
     }
 
-    const updatedPigeonsList: IPigeon[] = [...existingPigeons];
+    // Merge existing pigeons by canonical ring serial or ID
+    const existingMap = new Map<string, IPigeon>();
+    for (const p of fallbackPigeons) {
+      const key = `${p.ringYear || 2026}-${p.ringSerial || 0}`;
+      existingMap.set(key, p);
+    }
+    for (const p of dbPigeons) {
+      const key = `${p.ringYear || 2026}-${p.ringSerial || 0}`;
+      existingMap.set(key, p);
+    }
+    const existingPigeons: IPigeon[] = Array.from(existingMap.values());
+
+    const matchedExistingIndices = new Set<number>();
+    const updatedDocs: IPigeon[] = [];
 
     for (const row of sheetRows) {
       try {
@@ -486,7 +498,8 @@ export async function syncGoogleSheetToDatabase(
             : "";
 
         // Match existing pigeon by (ringYear + ringSerial) or officialRingNumber
-        const existingIdx = updatedPigeonsList.findIndex((p) => {
+        const existingIdx = existingPigeons.findIndex((p, idx) => {
+          if (matchedExistingIndices.has(idx)) return false;
           if (
             p.ringYear === ringInfo.ringYear &&
             p.ringSerial === ringInfo.ringSerial
@@ -504,7 +517,8 @@ export async function syncGoogleSheetToDatabase(
         });
 
         if (existingIdx !== -1) {
-          const existing = updatedPigeonsList[existingIdx];
+          matchedExistingIndices.add(existingIdx);
+          const existing = existingPigeons[existingIdx];
 
           // Check if any field actually changed
           const hasChanged =
@@ -537,7 +551,7 @@ export async function syncGoogleSheetToDatabase(
             updatedAt: timestamp,
           };
 
-          updatedPigeonsList[existingIdx] = updatedDoc;
+          updatedDocs.push(updatedDoc);
 
           if (db) {
             await PigeonModel.findByIdAndUpdate(existing._id, updatedDoc, {
@@ -585,7 +599,7 @@ export async function syncGoogleSheetToDatabase(
             updatedAt: timestamp,
           };
 
-          updatedPigeonsList.unshift(newDoc);
+          updatedDocs.push(newDoc);
 
           if (db) {
             const pigeon = new PigeonModel(newDoc);
@@ -600,8 +614,94 @@ export async function syncGoogleSheetToDatabase(
       }
     }
 
-    // Sort pigeons in exact canonical ring serial order (01--2026 to 15--2026)
-    updatedPigeonsList.sort((a, b) => a.ringSerial - b.ringSerial);
+    // Detect pigeons removed from Google Sheet
+    const GRACE_PERIOD_MS = 15000;
+    const nowMs = Date.now();
+    const pigeonsToDelete: IPigeon[] = [];
+    const keptRecentPigeons: IPigeon[] = [];
+
+    existingPigeons.forEach((p, idx) => {
+      if (matchedExistingIndices.has(idx)) {
+        return; // Matched by sheet row
+      }
+      // If created in the ERP within 15 seconds, keep it in case sheet gviz cache is still propagating
+      const createdAtMs = p.createdAt ? new Date(p.createdAt).getTime() : 0;
+      if (createdAtMs > 0 && nowMs - createdAtMs < GRACE_PERIOD_MS) {
+        keptRecentPigeons.push(p);
+      } else {
+        pigeonsToDelete.push(p);
+      }
+    });
+
+    const deletedCount = pigeonsToDelete.length;
+
+    if (deletedCount > 0) {
+      const idsToDelete = pigeonsToDelete
+        .map((p) => String(p._id || p.id || ""))
+        .filter(Boolean);
+      const ringQueries = pigeonsToDelete.map((p) => ({
+        ringYear: p.ringYear,
+        ringSerial: p.ringSerial,
+      }));
+
+      // Delete from MongoDB
+      if (db) {
+        const deleteConditions: Record<string, unknown>[] = [];
+        if (idsToDelete.length > 0) {
+          deleteConditions.push({ _id: { $in: idsToDelete } });
+          deleteConditions.push({ id: { $in: idsToDelete } });
+        }
+        ringQueries.forEach((q) => deleteConditions.push(q));
+
+        if (deleteConditions.length > 0) {
+          await PigeonModel.deleteMany({ $or: deleteConditions });
+        }
+
+        // End active pairs containing deleted pigeons in MongoDB
+        try {
+          const PairModel = (await import("@/models/Pair")).default;
+          await PairModel.updateMany(
+            {
+              status: "ACTIVE",
+              $or: [
+                { maleId: { $in: idsToDelete } },
+                { femaleId: { $in: idsToDelete } },
+              ],
+            },
+            {
+              $set: {
+                status: "ENDED",
+                endDate: new Date().toISOString().split("T")[0],
+              },
+            }
+          );
+        } catch (pairErr) {
+          console.warn("Could not end active pairs for deleted pigeons in DB:", pairErr);
+        }
+      }
+
+      // End active pairs in fallbackStore
+      const currentStore = fallbackStore.get();
+      if (currentStore.pairs && Array.isArray(currentStore.pairs) && idsToDelete.length > 0) {
+        const idsSet = new Set(idsToDelete.map((id) => id.toLowerCase()));
+        currentStore.pairs = currentStore.pairs.map((pair: any) => {
+          const maleId = String(pair.maleId || "").toLowerCase();
+          const femaleId = String(pair.femaleId || "").toLowerCase();
+          if ((idsSet.has(maleId) || idsSet.has(femaleId)) && pair.status === "ACTIVE") {
+            return {
+              ...pair,
+              status: "ENDED",
+              endDate: new Date().toISOString().split("T")[0],
+            };
+          }
+          return pair;
+        });
+      }
+    }
+
+    // Final list of pigeons: updated docs + kept recent docs
+    const finalPigeonsList: IPigeon[] = [...updatedDocs, ...keptRecentPigeons];
+    finalPigeonsList.sort((a, b) => a.ringSerial - b.ringSerial);
 
     // Persist to data/pigeons.json on disk for consistency across reloads
     try {
@@ -610,7 +710,7 @@ export async function syncGoogleSheetToDatabase(
       const pigeonsFilePath = path.join(process.cwd(), "data", "pigeons.json");
       fs.writeFileSync(
         pigeonsFilePath,
-        JSON.stringify(updatedPigeonsList, null, 2),
+        JSON.stringify(finalPigeonsList, null, 2),
         "utf-8"
       );
     } catch (e) {
@@ -618,19 +718,21 @@ export async function syncGoogleSheetToDatabase(
     }
 
     // Save sync metadata
+    const syncMessage = `Successfully synchronized ${totalRows} pigeons from Google Sheet. (${addedCount} added, ${updatedCount} updated, ${deletedCount} deleted, ${unchangedCount} unchanged)`;
     const syncMeta = {
       sheetUrl,
       pigeonsSheetUrl: sheetUrl,
       lastSyncedAt: timestamp,
       lastSyncStatus: "SUCCESS",
-      lastSyncMessage: `Synced ${totalRows} pigeons (${addedCount} added, ${updatedCount} updated, ${unchangedCount} unchanged)`,
+      lastSyncMessage: syncMessage,
       totalSynced: totalRows,
     };
 
     // Update fallback store memory
     const storeSettings = (fallbackStore.get().settings as Record<string, unknown>) || {};
     fallbackStore.set({
-      pigeons: updatedPigeonsList as unknown as Record<string, unknown>[],
+      pigeons: finalPigeonsList as unknown as Record<string, unknown>[],
+      pairs: fallbackStore.get().pairs,
       settings: { ...storeSettings, ...syncMeta },
     });
 
@@ -644,7 +746,7 @@ export async function syncGoogleSheetToDatabase(
 
     return {
       success: true,
-      message: `Successfully synchronized ${totalRows} pigeons from Google Sheet. (${addedCount} added, ${updatedCount} updated, ${unchangedCount} unchanged)`,
+      message: syncMessage,
       timestamp,
       sheetUrl,
       spreadsheetId,
@@ -652,6 +754,7 @@ export async function syncGoogleSheetToDatabase(
       addedCount,
       updatedCount,
       unchangedCount,
+      deletedCount,
       errors,
     };
   } catch (error) {
@@ -999,7 +1102,11 @@ export async function syncAllGoogleSheets(
 
   const timestamp = new Date().toISOString();
   const success = pigeonsResult.success && financeResult.success;
-  const message = `Synchronized ${pigeonsResult.totalRows} pigeons and ${financeResult.totalRows} transactions from 2 Google Sheets.`;
+  const delMsg =
+    pigeonsResult.deletedCount && pigeonsResult.deletedCount > 0
+      ? ` (${pigeonsResult.deletedCount} pigeons removed)`
+      : "";
+  const message = `Synchronized ${pigeonsResult.totalRows} pigeons${delMsg} and ${financeResult.totalRows} transactions from 2 Google Sheets.`;
 
   // Update fallback store settings metadata
   const storeSettings = (fallbackStore.get().settings as Record<string, unknown>) || {};

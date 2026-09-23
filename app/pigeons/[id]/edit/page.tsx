@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Pigeon } from "@/types/pigeon";
 import { getPigeonById } from "@/lib/repositories/pigeonRepository";
 import { PigeonForm } from "@/components/pigeons/PigeonForm";
+import { FormSkeleton } from "@/components/ui/Skeleton";
 
 export default function EditPigeonPage({
   params,
@@ -36,11 +37,7 @@ export default function EditPigeonPage({
   }, [pigeonId, router]);
 
   if (isLoading) {
-    return (
-      <div className="py-20 text-center text-slate-400">
-        Loading pigeon for editing...
-      </div>
-    );
+    return <FormSkeleton />;
   }
 
   if (!pigeon) {

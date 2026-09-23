@@ -123,6 +123,14 @@ export function PigeonForm({
 
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [webhookConfigured, setWebhookConfigured] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    fetch("/api/sync/google-sheets/push")
+      .then((r) => r.json())
+      .then((data) => setWebhookConfigured(!!data.isConfigured))
+      .catch(() => setWebhookConfigured(false));
+  }, []);
 
   useEffect(() => {
     async function loadData() {
@@ -209,11 +217,14 @@ export function PigeonForm({
         new Set([...photos, photoUrl].filter(Boolean))
       );
 
+      const officialRingNumber = `${String(ringSerial).padStart(2, "0")}--${ringYear}`;
+
       if (isEdit && initialPigeon) {
         await updatePigeon(initialPigeon.id, {
           id: dynamicUniqueId,
           ringYear,
           ringSerial,
+          officialRingNumber,
           farmName,
           contactNumber,
           hatchDate,
@@ -247,6 +258,7 @@ export function PigeonForm({
           id: dynamicUniqueId,
           ringYear,
           ringSerial,
+          officialRingNumber,
           farmName,
           contactNumber,
           hatchDate,
@@ -863,28 +875,56 @@ export function PigeonForm({
       </Card>
 
       {/* Action Footer */}
-      <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() =>
-            router.push(
-              isEdit && initialPigeon ? `/pigeons/${initialPigeon.id}` : "/pigeons"
-            )
-          }
-        >
-          Cancel
-        </Button>
-        <Button
-          type="submit"
-          variant="primary"
-          size="lg"
-          isLoading={isSubmitting}
-          className="gap-2"
-        >
-          <Save className="w-5 h-5" />
-          {isEdit ? "Update Pigeon Record" : "Save and Register Pigeon"}
-        </Button>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-4 border-t border-slate-200">
+        <div className="flex items-center gap-2 text-xs">
+          {webhookConfigured ? (
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+              <span className="font-semibold text-[11px] sm:text-xs">
+                Google Sheet Push Connected: saving will insert row into Google Sheet
+              </span>
+            </div>
+          ) : (
+            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-50 text-amber-900 border border-amber-200">
+              <AlertCircle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+              <span className="text-[11px] sm:text-xs font-medium">
+                Google Sheet Webhook not set — saves to local ERP.{" "}
+                <Link
+                  href="/settings"
+                  className="font-bold underline text-amber-800 hover:text-black ml-1 inline-flex items-center"
+                >
+                  Setup in Settings →
+                </Link>
+              </span>
+            </div>
+          )}
+        </div>
+        <div className="flex items-center justify-end gap-3">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() =>
+              router.push(
+                isEdit && initialPigeon ? `/pigeons/${initialPigeon.id}` : "/pigeons"
+              )
+            }
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            variant="primary"
+            size="lg"
+            isLoading={isSubmitting}
+            className="gap-2"
+          >
+            <Save className="w-5 h-5" />
+            {isEdit ? "Update Pigeon Record" : "Save and Register Pigeon"}
+          </Button>
+        </div>
       </div>
     </form>
   );

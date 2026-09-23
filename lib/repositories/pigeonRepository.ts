@@ -100,6 +100,7 @@ export interface CreatePigeonInput {
   id?: string;
   ringYear: number;
   ringSerial: number;
+  officialRingNumber?: string;
   farmName?: string;
   contactNumber?: string;
   hatchDate: string;
@@ -183,10 +184,15 @@ export async function createPigeon(input: CreatePigeonInput): Promise<Pigeon> {
     );
   const now = new Date().toISOString();
 
+  const officialRingNumber =
+    input.officialRingNumber ||
+    `${String(input.ringSerial).padStart(2, "0")}--${input.ringYear}`;
+
   const newPigeon: Pigeon = {
     id,
     ringYear: input.ringYear,
     ringSerial: input.ringSerial,
+    officialRingNumber,
     farmName,
     contactNumber,
     hatchDate: input.hatchDate,

@@ -12,6 +12,7 @@ import { PedigreeTree } from "@/components/pedigree/PedigreeTree";
 import { PedigreePDFModal } from "@/components/pedigree/PedigreePDFModal";
 import { Button } from "@/components/ui/Button";
 import { ArrowLeft, Download, GitFork, Edit, ShieldCheck } from "lucide-react";
+import { PedigreeTreeSkeleton } from "@/components/ui/Skeleton";
 
 export default function DedicatedPedigreePage({
   params,
@@ -48,12 +49,7 @@ export default function DedicatedPedigreePage({
   }, [pigeonId, router]);
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-24 text-slate-400">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600 mr-3" />
-        <span>Building Genealogical Bloodline Tree...</span>
-      </div>
-    );
+    return <PedigreeTreeSkeleton />;
   }
 
   if (!pigeon || !tree) {

@@ -41,6 +41,7 @@ export interface GoogleSheetsSyncResult {
   addedCount: number;
   updatedCount: number;
   unchangedCount: number;
+  deletedCount?: number;
   errors: string[];
 }
 
@@ -71,6 +72,7 @@ export interface DualSheetSyncResult {
 export interface GoogleSheetsConfig {
   pigeonsSheetUrl: string;
   financeSheetUrl: string;
+  pigeonsWebhookUrl?: string;
   sheetUrl?: string;
   autoSync: boolean;
   intervalMinutes: number;
@@ -78,4 +80,13 @@ export interface GoogleSheetsConfig {
   lastSyncStatus?: "SUCCESS" | "ERROR";
   lastSyncMessage?: string;
   totalSynced?: number;
+}
+
+export interface GoogleSheetPushResult {
+  success: boolean;
+  message: string;
+  timestamp: string;
+  ringNumber?: string;
+  action?: "INSERT" | "UPDATE" | "DELETE" | "SKIPPED";
+  error?: string;
 }

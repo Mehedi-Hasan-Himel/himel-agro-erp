@@ -12,6 +12,7 @@ export interface FarmSettings {
   logoUrl?: string;
   notes?: string;
   googleSheetsUrl?: string;
+  googleSheetsWebhookUrl?: string;
   googleSheetsAutoSync?: boolean;
   googleSheetsIntervalMinutes?: number;
   lastGoogleSheetSync?: string;

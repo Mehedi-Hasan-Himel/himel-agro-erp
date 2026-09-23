@@ -12,6 +12,7 @@ import { PigeonTable } from "@/components/pigeons/PigeonTable";
 import { PigeonGrid } from "@/components/pigeons/PigeonGrid";
 import { PlusCircle, LayoutGrid, List, RefreshCw, FileSpreadsheet, CheckCircle2 } from "lucide-react";
 import { useGoogleSheetSync } from "@/lib/hooks/useGoogleSheetSync";
+import { PigeonRegistrySkeleton } from "@/components/ui/Skeleton";
 
 function PigeonsListContent() {
   const searchParams = useSearchParams();
@@ -28,8 +29,22 @@ function PigeonsListContent() {
   const handleSyncClick = async () => {
     const res = await syncNow();
     if (res?.success) {
-      setSyncNotice(`Synced ${res.totalRows} pigeons from Google Sheet`);
-      setTimeout(() => setSyncNotice(null), 4000);
+      const details: string[] = [];
+      const pData = (res as any).pigeons || res;
+      if (pData.deletedCount && pData.deletedCount > 0) {
+        details.push(`${pData.deletedCount} removed`);
+      }
+      if (pData.addedCount && pData.addedCount > 0) {
+        details.push(`${pData.addedCount} added`);
+      }
+      if (pData.updatedCount && pData.updatedCount > 0) {
+        details.push(`${pData.updatedCount} updated`);
+      }
+      const detailsStr = details.length > 0 ? ` (${details.join(", ")})` : "";
+      setSyncNotice(
+        `Synced ${pData.totalRows ?? res.totalRows ?? ""} pigeons from Google Sheet${detailsStr}`
+      );
+      setTimeout(() => setSyncNotice(null), 5000);
     } else if (res?.message) {
       setSyncNotice(`Sync notice: ${res.message}`);
       setTimeout(() => setSyncNotice(null), 5000);
@@ -154,10 +169,11 @@ function PigeonsListContent() {
       )}
 
       {isLoading ? (
-        <div className="flex items-center justify-center py-20 text-slate-400">
-          <div className="animate-spin rounded-full h-7 w-7 border-b-2 border-emerald-600 mr-3" />
-          <span>Loading pigeon directory...</span>
-        </div>
+        viewMode === "TABLE" ? (
+          <PigeonRegistrySkeleton viewMode="TABLE" />
+        ) : (
+          <PigeonRegistrySkeleton viewMode="GRID" />
+        )
       ) : viewMode === "TABLE" ? (
         <PigeonTable
           pigeons={pigeons}
@@ -179,14 +195,7 @@ function PigeonsListContent() {
 
 export default function PigeonsListPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="flex items-center justify-center py-20 text-slate-400">
-          <div className="animate-spin rounded-full h-7 w-7 border-b-2 border-emerald-600 mr-3" />
-          <span>Loading pigeon directory...</span>
-        </div>
-      }
-    >
+    <Suspense fallback={<PigeonRegistrySkeleton viewMode="TABLE" />}>
       <PigeonsListContent />
     </Suspense>
   );

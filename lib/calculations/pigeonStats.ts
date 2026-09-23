@@ -1,12 +1,15 @@
 import { Pigeon } from "@/types/pigeon";
-import { isBabyPigeon } from "@/lib/formatters/dateFormatter";
 
 export interface FarmPigeonStats {
   totalHistorical: number;
   totalActive: number;
+  keptBirds: number;
+  racersCount: number;
+  giribazCount: number;
   activeMales: number;
   activeFemales: number;
   activeBabies: number;
+  activeYoungNA: number;
   soldCount: number;
   deadCount: number;
   lostCount: number;
@@ -18,11 +21,13 @@ export function calculatePigeonStats(pigeons: Pigeon[]): FarmPigeonStats {
   let totalActive = 0;
   let activeMales = 0;
   let activeFemales = 0;
-  let activeBabies = 0;
+  let activeYoungNA = 0;
   let soldCount = 0;
   let deadCount = 0;
   let lostCount = 0;
   let availableForSale = 0;
+  let racersCount = 0;
+  let giribazCount = 0;
   const breedDistribution: Record<string, number> = {};
 
   pigeons.forEach((p) => {
@@ -38,24 +43,32 @@ export function calculatePigeonStats(pigeons: Pigeon[]): FarmPigeonStats {
       deadCount += 1;
       return;
     }
-    if (p.status === "LOST") {
+    if (
+      p.status === "LOST" ||
+      p.notes?.toLowerCase().includes("ring lost") ||
+      p.breedSubtype?.toLowerCase().includes("ring lost")
+    ) {
       lostCount += 1;
       return;
     }
 
-    // ACTIVE
+    // ACTIVE / KEPT BIRDS IN LOFT
     totalActive += 1;
 
-    const isBaby = isBabyPigeon(p.hatchDate, p.sex);
+    const breedLower = (p.breed || "").toLowerCase();
+    if (breedLower.includes("racer")) {
+      racersCount += 1;
+    } else if (breedLower.includes("giribaz")) {
+      giribazCount += 1;
+    }
 
-    if (isBaby) {
-      activeBabies += 1;
-    } else if (p.sex === "MALE") {
+    const sexUpper = (p.sex || "").toUpperCase();
+    if (sexUpper === "MALE") {
       activeMales += 1;
-    } else if (p.sex === "FEMALE") {
+    } else if (sexUpper === "FEMALE") {
       activeFemales += 1;
     } else {
-      activeBabies += 1;
+      activeYoungNA += 1;
     }
 
     // Available for sale logic: active birds marked as for sale
@@ -72,9 +85,13 @@ export function calculatePigeonStats(pigeons: Pigeon[]): FarmPigeonStats {
   return {
     totalHistorical: pigeons.length,
     totalActive,
+    keptBirds: totalActive,
+    racersCount,
+    giribazCount,
     activeMales,
     activeFemales,
-    activeBabies,
+    activeBabies: activeYoungNA,
+    activeYoungNA,
     soldCount,
     deadCount,
     lostCount,

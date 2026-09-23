@@ -11,6 +11,7 @@ import { PairTable } from "@/components/breeding/PairTable";
 import { PairFormModal } from "@/components/breeding/PairFormModal";
 import { Button } from "@/components/ui/Button";
 import { GitFork, PlusCircle, ArrowLeft } from "lucide-react";
+import { BreedingSkeleton } from "@/components/ui/Skeleton";
 
 export default function BreedingPairsPage() {
   const [pairs, setPairs] = useState<Pair[]>([]);
@@ -48,6 +49,10 @@ export default function BreedingPairsPage() {
       window.removeEventListener(DATA_CHANGE_EVENT, handleDataChange);
     };
   }, []);
+
+  if (isLoading) {
+    return <BreedingSkeleton />;
+  }
 
   return (
     <div className="space-y-6">

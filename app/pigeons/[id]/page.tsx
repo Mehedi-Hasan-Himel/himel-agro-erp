@@ -8,6 +8,7 @@ import { Pair, BreedingRound, HatchingStats } from "@/types/breeding";
 import { FlyingRecord } from "@/types/flying";
 import { HealthRecord } from "@/types/health";
 import { PedigreeNodeData } from "@/types/pedigree";
+import { PigeonProfileSkeleton } from "@/components/ui/Skeleton";
 
 import {
   getPigeonById,
@@ -211,12 +212,7 @@ export default function PigeonProfilePage({
   }, [pigeonId]);
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-24 text-slate-400">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600 mr-3" />
-        <span>Loading Pigeon Identity & Genealogy...</span>
-      </div>
-    );
+    return <PigeonProfileSkeleton />;
   }
 
   if (!pigeon) {

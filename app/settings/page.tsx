@@ -37,12 +37,105 @@ import {
   Copy,
   Check,
   DollarSign,
+  Send,
+  Zap,
+  Save,
 } from "lucide-react";
 import {
   DEFAULT_PIGEONS_SHEET_URL,
   DEFAULT_FINANCE_SHEET_URL,
   DualSheetSyncResult,
 } from "@/types/googleSheets";
+
+const GOOGLE_APPS_SCRIPT_INSERT_CODE = `function doPost(e) {
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName("Flock") || ss.getActiveSheet();
+    var payload = JSON.parse(e.postData.contents);
+
+    // 1. Connection Ping Test
+    if (payload.action === "PING_TEST") {
+      return ContentService.createTextOutput(JSON.stringify({ success: true, message: "Himel Agro ERP Webhook Connected!" }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // 2. Delete Single Pigeon Row
+    if (payload.action === "DELETE_PIGEON" || payload.action === "DELETE") {
+      var targetRing = String(payload.officialRingNumber || payload.ringNumber || "").trim().toLowerCase();
+      var data = sheet.getDataRange().getValues();
+      for (var i = data.length - 1; i >= 1; i--) {
+        if (data[i][0] && String(data[i][0]).trim().toLowerCase() === targetRing) {
+          sheet.deleteRow(i + 1);
+          return ContentService.createTextOutput(JSON.stringify({ success: true, action: "DELETE", message: "Deleted ring " + targetRing }))
+            .setMimeType(ContentService.MimeType.JSON);
+        }
+      }
+      return ContentService.createTextOutput(JSON.stringify({ success: true, action: "DELETE", message: "Ring not found or already deleted" }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // 3. Delete Multiple Pigeons (Bulk)
+    if (payload.action === "DELETE_PIGEONS" || payload.action === "BULK_DELETE") {
+      var targetRings = (payload.officialRingNumbers || payload.ringNumbers || []).map(function(r) {
+        return String(r).trim().toLowerCase();
+      });
+      var data = sheet.getDataRange().getValues();
+      var deletedCount = 0;
+      for (var i = data.length - 1; i >= 1; i--) {
+        if (data[i][0] && targetRings.indexOf(String(data[i][0]).trim().toLowerCase()) !== -1) {
+          sheet.deleteRow(i + 1);
+          deletedCount++;
+        }
+      }
+      return ContentService.createTextOutput(JSON.stringify({ success: true, action: "BULK_DELETE", deletedCount: deletedCount }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // 4. Create or Update Pigeon Row
+    var ringNumber = payload.officialRingNumber || payload.ringNumber || "";
+    var data = sheet.getDataRange().getValues();
+    var foundRow = -1;
+
+    // Check if ring already exists (Col A)
+    for (var i = 1; i < data.length; i++) {
+      if (data[i][0] && String(data[i][0]).trim().toLowerCase() === String(ringNumber).trim().toLowerCase()) {
+        foundRow = i + 1;
+        break;
+      }
+    }
+
+    var rowValues = [
+      ringNumber,
+      payload.category || payload.breedSubtype || "",
+      payload.breed || "Giribaz",
+      payload.hatchDate || "",
+      payload.colorPattern || "",
+      payload.gender || payload.sex || "Young / NA",
+      payload.status || "Kept",
+      payload.notes || "",
+      payload.fatherDetails || payload.father || "",
+      payload.motherDetails || payload.mother || ""
+    ];
+
+    if (foundRow > 0) {
+      sheet.getRange(foundRow, 1, 1, rowValues.length).setValues([rowValues]);
+      return ContentService.createTextOutput(JSON.stringify({ success: true, action: "UPDATE", message: "Updated ring " + ringNumber }))
+        .setMimeType(ContentService.MimeType.JSON);
+    } else {
+      sheet.appendRow(rowValues);
+      return ContentService.createTextOutput(JSON.stringify({ success: true, action: "INSERT", message: "Inserted ring " + ringNumber }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({ success: false, error: err.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function doGet(e) {
+  return ContentService.createTextOutput(JSON.stringify({ success: true, status: "Active" }))
+    .setMimeType(ContentService.MimeType.JSON);
+}`;
 
 export default function SettingsPage() {
   const [settings, setSettings] = useState<FarmSettings | null>(null);
@@ -62,6 +155,22 @@ export default function SettingsPage() {
   const [dualSyncResult, setDualSyncResult] = useState<DualSheetSyncResult | null>(null);
   const [copiedWebhook, setCopiedWebhook] = useState(false);
 
+  // 2-Way Push to Google Sheets State
+  const [googleSheetsWebhookUrl, setGoogleSheetsWebhookUrl] = useState("");
+  const [isTestingWebhook, setIsTestingWebhook] = useState(false);
+  const [isSavingWebhook, setIsSavingWebhook] = useState(false);
+  const [saveWebhookSuccess, setSaveWebhookSuccess] = useState(false);
+  const [isPushingAll, setIsPushingAll] = useState(false);
+  const [pushAllResult, setPushAllResult] = useState<{
+    success: boolean;
+    message: string;
+  } | null>(null);
+  const [webhookTestResult, setWebhookTestResult] = useState<{
+    success?: boolean;
+    message?: string;
+  } | null>(null);
+  const [copiedInsertScript, setCopiedInsertScript] = useState(false);
+
   useEffect(() => {
     async function load() {
       const [s, b] = await Promise.all([getSettings(), getBreeds()]);
@@ -69,6 +178,9 @@ export default function SettingsPage() {
       setBreeds(b);
       if (s?.googleSheetsUrl) {
         setPigeonsSheetUrl(s.googleSheetsUrl);
+      }
+      if (s?.googleSheetsWebhookUrl) {
+        setGoogleSheetsWebhookUrl(s.googleSheetsWebhookUrl);
       }
     }
     load();
@@ -127,12 +239,96 @@ export default function SettingsPage() {
     }
   };
 
+  const handleTestWebhook = async () => {
+    if (!googleSheetsWebhookUrl.trim()) return;
+    setIsTestingWebhook(true);
+    setWebhookTestResult(null);
+    try {
+      const res = await fetch("/api/sync/google-sheets/push", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          webhookUrl: googleSheetsWebhookUrl.trim(),
+          testOnly: true,
+        }),
+      });
+      const data = await res.json();
+      setWebhookTestResult(data);
+      if (data.success && settings) {
+        const updated = {
+          ...settings,
+          googleSheetsWebhookUrl: googleSheetsWebhookUrl.trim(),
+        };
+        await updateSettings(updated);
+        setSettings(updated);
+      }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Connection failed";
+      setWebhookTestResult({ success: false, message: msg });
+    } finally {
+      setIsTestingWebhook(false);
+    }
+  };
+
+  const handleSaveWebhook = async () => {
+    if (!settings) return;
+    setIsSavingWebhook(true);
+    try {
+      const updated = {
+        ...settings,
+        googleSheetsWebhookUrl: googleSheetsWebhookUrl.trim(),
+      };
+      await updateSettings(updated);
+      setSettings(updated);
+      setSaveWebhookSuccess(true);
+      setTimeout(() => setSaveWebhookSuccess(false), 4000);
+    } catch (err) {
+      console.error("Save webhook failed:", err);
+    } finally {
+      setIsSavingWebhook(false);
+    }
+  };
+
+  const handlePushAllToSheet = async () => {
+    if (!googleSheetsWebhookUrl.trim()) return;
+    setIsPushingAll(true);
+    setPushAllResult(null);
+    try {
+      const res = await fetch("/api/sync/google-sheets/push", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          webhookUrl: googleSheetsWebhookUrl.trim(),
+          pushAll: true,
+        }),
+      });
+      const data = await res.json();
+      setPushAllResult({
+        success: data.success,
+        message: data.message || (data.success ? `Pushed ${data.pushedCount} pigeons to Google Sheet.` : data.error),
+      });
+    } catch (err) {
+      setPushAllResult({
+        success: false,
+        message: err instanceof Error ? err.message : "Failed to push to Google Sheet",
+      });
+    } finally {
+      setIsPushingAll(false);
+    }
+  };
+
   const handleSaveSettings = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!settings) return;
     setIsSavingSettings(true);
     try {
-      await updateSettings(settings);
+      const updated = {
+        ...settings,
+        googleSheetsUrl: pigeonsSheetUrl,
+        googleSheetsWebhookUrl: googleSheetsWebhookUrl.trim(),
+      };
+      await updateSettings(updated);
+      setSettings(updated);
       setSavedSuccess(true);
       setTimeout(() => setSavedSuccess(false), 3000);
     } catch (err) {
@@ -549,6 +745,141 @@ export default function SettingsPage() {
                   <span>Sync Finance</span>
                 </Button>
               </div>
+            </div>
+          </div>
+
+          {/* 3. Automatic 2-Way Sync: Insert Registered Pigeons into Google Sheet */}
+          <div className="p-4 bg-emerald-50/50 rounded-xl border border-emerald-200/80 space-y-3 shadow-2xs">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                <Send className="w-3.5 h-3.5 text-emerald-600" />
+                <span>3. Automatic 2-Way Sync: Insert Registered Pigeons into Google Sheet</span>
+              </span>
+              <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">
+                ERP → Google Sheet
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-600 leading-relaxed">
+              When you click <strong>Register Pigeon</strong> in the ERP, the app automatically appends the new pigeon row directly into your Google Sheet. Paste your Google Apps Script Web App URL below:
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-2.5 items-end">
+              <div className="flex-1 w-full">
+                <Input
+                  label="Pigeon Insert Webhook URL (Apps Script Web App)"
+                  value={googleSheetsWebhookUrl}
+                  onChange={(e) => setGoogleSheetsWebhookUrl(e.target.value)}
+                  placeholder="https://script.google.com/macros/s/.../exec"
+                />
+              </div>
+              <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto shrink-0 pb-0.5">
+                <Button
+                  type="button"
+                  variant="primary"
+                  size="md"
+                  onClick={handleSaveWebhook}
+                  disabled={!googleSheetsWebhookUrl.trim() || isSavingWebhook}
+                  isLoading={isSavingWebhook}
+                  className="gap-1.5 flex-1 sm:flex-initial text-xs bg-emerald-600 hover:bg-emerald-700"
+                >
+                  <Save className="w-3.5 h-3.5" />
+                  <span>{saveWebhookSuccess ? "Saved!" : "Save Webhook"}</span>
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="md"
+                  onClick={handleTestWebhook}
+                  disabled={!googleSheetsWebhookUrl.trim() || isTestingWebhook}
+                  isLoading={isTestingWebhook}
+                  className="gap-1.5 flex-1 sm:flex-initial text-xs text-slate-800 border-slate-300"
+                >
+                  <Zap className={`w-3.5 h-3.5 ${isTestingWebhook ? "text-amber-500 animate-pulse" : "text-emerald-600"}`} />
+                  <span>Test Connection</span>
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="md"
+                  onClick={handlePushAllToSheet}
+                  disabled={!googleSheetsWebhookUrl.trim() || isPushingAll}
+                  isLoading={isPushingAll}
+                  className="gap-1.5 flex-1 sm:flex-initial text-xs text-slate-800 border-slate-300 hover:bg-emerald-50"
+                  title="Push all registered pigeons in ERP (Rings 21, 22...) to Google Sheet"
+                >
+                  <Send className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Push All Pigeons to Sheet</span>
+                </Button>
+              </div>
+            </div>
+
+            {saveWebhookSuccess && (
+              <div className="p-2.5 rounded-lg text-xs flex items-center gap-2 border bg-emerald-100/70 text-emerald-900 border-emerald-300">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>Google Sheet Webhook URL saved successfully! Live 2-way push is active.</span>
+              </div>
+            )}
+
+            {webhookTestResult && (
+              <div
+                className={`p-2.5 rounded-lg text-xs flex items-center gap-2 border ${
+                  webhookTestResult.success
+                    ? "bg-emerald-100/60 text-emerald-900 border-emerald-300"
+                    : "bg-rose-50 text-rose-800 border-rose-200"
+                }`}
+              >
+                {webhookTestResult.success ? (
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                ) : (
+                  <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                )}
+                <span>{webhookTestResult.message}</span>
+              </div>
+            )}
+
+            {pushAllResult && (
+              <div
+                className={`p-2.5 rounded-lg text-xs flex items-center gap-2 border ${
+                  pushAllResult.success
+                    ? "bg-emerald-100/60 text-emerald-900 border-emerald-300"
+                    : "bg-rose-50 text-rose-800 border-rose-200"
+                }`}
+              >
+                {pushAllResult.success ? (
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                ) : (
+                  <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                )}
+                <span>{pushAllResult.message}</span>
+              </div>
+            )}
+
+            {/* Apps Script Guide */}
+            <div className="pt-2 border-t border-emerald-200/60 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-[11px] text-slate-700 flex items-center gap-1">
+                  <span>📋</span> Google Apps Script Code (Copy & Deploy in 1 minute):
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText(GOOGLE_APPS_SCRIPT_INSERT_CODE);
+                    setCopiedInsertScript(true);
+                    setTimeout(() => setCopiedInsertScript(false), 3000);
+                  }}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-[11px] font-bold text-white transition-colors cursor-pointer"
+                >
+                  {copiedInsertScript ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                  <span>{copiedInsertScript ? "Copied!" : "Copy Insert Script"}</span>
+                </button>
+              </div>
+
+              <ol className="text-[11px] text-slate-600 list-decimal list-inside space-y-1 bg-white p-2.5 rounded-lg border border-slate-200">
+                <li>In Google Sheet, open <strong>Extensions &gt; Apps Script</strong>.</li>
+                <li>Paste the script, click <strong>Deploy &gt; New deployment &gt; Select type: Web app</strong>.</li>
+                <li>Set <strong>Execute as: Me</strong> and <strong>Who has access: Anyone</strong>.</li>
+                <li>Copy the <strong>Web App URL</strong>, paste it into the field above, and click <strong>Test Connection</strong>.</li>
+              </ol>
             </div>
           </div>
 

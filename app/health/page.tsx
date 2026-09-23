@@ -19,6 +19,7 @@ import { MedicineScheduleModal } from "@/components/health/MedicineScheduleModal
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Tabs } from "@/components/ui/Tabs";
+import { HealthSkeleton } from "@/components/ui/Skeleton";
 import {
   Pill,
   HeartPulse,
@@ -76,6 +77,10 @@ export default function HealthManagementPage() {
 
   const pigeonMap = new Map<string, Pigeon>();
   pigeons.forEach((p) => pigeonMap.set(p.id, p));
+
+  if (isLoading) {
+    return <HealthSkeleton />;
+  }
 
   const tabsConfig = [
     { id: "schedules", label: "Planned Medicine Courses", icon: Calendar, count: schedules.length },

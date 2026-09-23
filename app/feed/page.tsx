@@ -16,6 +16,7 @@ import { FeedUsageModal } from "@/components/feed/FeedUsageModal";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Tabs } from "@/components/ui/Tabs";
+import { FeedSkeleton } from "@/components/ui/Skeleton";
 import {
   Wheat,
   ShoppingCart,
@@ -64,6 +65,10 @@ export default function FeedInventoryPage() {
       window.removeEventListener(DATA_CHANGE_EVENT, handleDataChange);
     };
   }, []);
+
+  if (isLoading) {
+    return <FeedSkeleton />;
+  }
 
   const totalStockKg = summaries.reduce(
     (sum, s) => sum + (s.currentStockKg || 0),

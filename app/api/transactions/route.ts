@@ -2,9 +2,35 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import TransactionModel from "@/models/Transaction";
 import { fallbackStore } from "@/lib/fallbackStore";
+import { syncFinanceSheetToDatabase } from "@/lib/services/googleSheetsSync";
+
+let lastFinanceSyncTime = 0;
+let inFlightFinanceSync: Promise<unknown> | null = null;
+
+async function ensureFreshFinanceFromSheet(): Promise<void> {
+  const now = Date.now();
+  if (now - lastFinanceSyncTime < 4000) {
+    return;
+  }
+  if (!inFlightFinanceSync) {
+    inFlightFinanceSync = syncFinanceSheetToDatabase()
+      .then(() => {
+        lastFinanceSyncTime = Date.now();
+      })
+      .catch((err) => {
+        console.warn("Auto-sync on GET /api/transactions failed:", err);
+      })
+      .finally(() => {
+        inFlightFinanceSync = null;
+      });
+  }
+  await inFlightFinanceSync;
+}
 
 export async function GET(request: NextRequest) {
   try {
+    await ensureFreshFinanceFromSheet();
+
     const { searchParams } = new URL(request.url);
     const type = searchParams.get("type");
     const month = searchParams.get("month"); // YYYY-MM

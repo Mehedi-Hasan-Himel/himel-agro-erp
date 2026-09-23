@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import PigeonModel from "@/models/Pigeon";
 import { fallbackStore } from "@/lib/fallbackStore";
+import { pushPigeonToGoogleSheet, deletePigeonFromGoogleSheet } from "@/lib/services/googleSheetsPush";
+import { syncGoogleSheetToDatabase } from "@/lib/services/googleSheetsSync";
+import fs from "fs";
+import path from "path";
 
 function normalizePigeon(p: any) {
   if (!p) return p;
@@ -51,6 +55,23 @@ export async function GET(
       }
 
       if (!pigeon) {
+        try {
+          await syncGoogleSheetToDatabase();
+          pigeon = await PigeonModel.findById(id).lean();
+          if (!pigeon) {
+            pigeon = await PigeonModel.findOne({
+              $or: [
+                { _id: new RegExp(`^${cleanId}(-[a-z]+)?$`, "i") },
+                { id: new RegExp(`^${cleanId}(-[a-z]+)?$`, "i") },
+              ],
+            }).lean();
+          }
+        } catch {
+          // ignore
+        }
+      }
+
+      if (!pigeon) {
         return NextResponse.json({ error: "Pigeon not found" }, { status: 404 });
       }
       return NextResponse.json(normalizePigeon(pigeon));
@@ -87,6 +108,22 @@ export async function GET(
         if (!isNaN(y) && !isNaN(s)) {
           found = pigeons.find((p: any) => p.ringYear === y && p.ringSerial === s);
         }
+      }
+    }
+
+    if (!found) {
+      try {
+        await syncGoogleSheetToDatabase();
+        const fresh = fallbackStore.get().pigeons;
+        found = fresh.find((p: any) => {
+          const norm = normalizePigeon(p);
+          return (
+            (norm._id || norm.id)?.toLowerCase() === cleanId ||
+            (p._id || p.id)?.toLowerCase() === cleanId
+          );
+        });
+      } catch {
+        // ignore
       }
     }
 
@@ -146,17 +183,14 @@ export async function PUT(
 
       if (targetId !== currentActualId) {
         await PigeonModel.findByIdAndDelete(currentActualId);
-        const created = await PigeonModel.create({ ...existingDoc, ...body, _id: targetId });
-        return NextResponse.json(normalizePigeon({ ...created.toObject(), id: targetId }));
+        await PigeonModel.create({ ...existingDoc, ...body, _id: targetId });
+      } else {
+        await PigeonModel.findByIdAndUpdate(
+          currentActualId,
+          { $set: body },
+          { new: true, runValidators: true }
+        );
       }
-
-      const updated = await PigeonModel.findByIdAndUpdate(
-        currentActualId,
-        { $set: body },
-        { new: true, runValidators: true }
-      ).lean();
-
-      return NextResponse.json(normalizePigeon(updated));
     }
 
     const store = fallbackStore.get();
@@ -200,7 +234,23 @@ export async function PUT(
 
     const targetId = newId || (pigeons[idx]._id || pigeons[idx].id);
     pigeons[idx] = { ...pigeons[idx], ...body, id: targetId, _id: targetId };
-    return NextResponse.json(normalizePigeon(pigeons[idx]));
+    const resultDoc = normalizePigeon(pigeons[idx]);
+
+    // Persist snapshot to data/pigeons.json
+    try {
+      const filePath = path.join(process.cwd(), "data", "pigeons.json");
+      if (fs.existsSync(filePath)) {
+        fs.writeFileSync(filePath, JSON.stringify(pigeons, null, 2), "utf-8");
+      }
+    } catch (fsErr) {
+      console.warn("Could not persist to data/pigeons.json:", fsErr);
+    }
+
+    pushPigeonToGoogleSheet(resultDoc).catch((e) =>
+      console.warn("Could not push updated pigeon to sheet:", e)
+    );
+
+    return NextResponse.json(resultDoc);
   } catch (error) {
     console.error("PUT /api/pigeons/[id] error:", error);
     return NextResponse.json({ error: "Failed to update pigeon" }, { status: 500 });
@@ -215,6 +265,9 @@ export async function DELETE(
     const { id } = await params;
     const cleanId = id.trim().toLowerCase();
     const db = await connectDB();
+    let deletedRingNumber: string | null = null;
+    let targetActualId: string = id;
+
     if (db) {
       let deleted = await PigeonModel.findByIdAndDelete(id).lean();
       if (!deleted) {
@@ -237,10 +290,31 @@ export async function DELETE(
         }
       }
 
-      if (!deleted) {
-        return NextResponse.json({ error: "Pigeon not found" }, { status: 404 });
+      if (deleted) {
+        targetActualId = String((deleted as any)._id || (deleted as any).id || id);
+        deletedRingNumber =
+          (deleted as any).officialRingNumber ||
+          `${String((deleted as any).ringSerial || 1).padStart(2, "0")}--${(deleted as any).ringYear || 2026}`;
+
+        // Also end active pairs in DB
+        try {
+          const PairModel = (await import("@/models/Pair")).default;
+          await PairModel.updateMany(
+            {
+              status: "ACTIVE",
+              $or: [{ maleId: targetActualId }, { femaleId: targetActualId }],
+            },
+            {
+              $set: {
+                status: "ENDED",
+                endDate: new Date().toISOString().split("T")[0],
+              },
+            }
+          );
+        } catch (pairErr) {
+          console.warn("Could not end active pairs in DB:", pairErr);
+        }
       }
-      return NextResponse.json({ success: true, message: `Pigeon ${id} deleted permanently.` });
     }
 
     const store = fallbackStore.get();
@@ -279,12 +353,33 @@ export async function DELETE(
     }
 
     if (idx === -1) {
+      if (deletedRingNumber) {
+        deletePigeonFromGoogleSheet(deletedRingNumber).catch((e) =>
+          console.warn("Could not delete pigeon from sheet:", e)
+        );
+        return NextResponse.json({ success: true, message: `Pigeon ${id} deleted permanently.` });
+      }
       return NextResponse.json({ error: "Pigeon not found" }, { status: 404 });
     }
 
     const targetPigeon = store.pigeons[idx];
-    const targetActualId = String((targetPigeon as any)._id || (targetPigeon as any).id || "");
+    const pigeonActualId = String((targetPigeon as any)._id || (targetPigeon as any).id || targetActualId);
+    const ringNumber =
+      deletedRingNumber ||
+      (targetPigeon as any).officialRingNumber ||
+      `${String((targetPigeon as any).ringSerial || 1).padStart(2, "0")}--${(targetPigeon as any).ringYear || 2026}`;
+
     store.pigeons.splice(idx, 1);
+
+    // Persist snapshot to data/pigeons.json
+    try {
+      const filePath = path.join(process.cwd(), "data", "pigeons.json");
+      if (fs.existsSync(filePath)) {
+        fs.writeFileSync(filePath, JSON.stringify(store.pigeons, null, 2), "utf-8");
+      }
+    } catch (fsErr) {
+      console.warn("Could not persist to data/pigeons.json:", fsErr);
+    }
 
     // Also end any active pairs containing this pigeon
     store.pairs = store.pairs.map((pair: any) => {
@@ -303,6 +398,10 @@ export async function DELETE(
       }
       return pair;
     });
+
+    deletePigeonFromGoogleSheet(ringNumber).catch((e) =>
+      console.warn("Could not delete pigeon from sheet:", e)
+    );
 
     return NextResponse.json({ success: true, message: `Pigeon ${id} deleted permanently.` });
   } catch (error) {

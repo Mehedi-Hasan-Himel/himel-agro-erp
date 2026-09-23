@@ -10,5 +10,6 @@
   "facebookUrl": "https://www.facebook.com/Himel.Pet.House",
   "googleMapUrl": "https://maps.app.goo.gl/rxvdsxq8ydnqfEKQ6",
   "logoUrl": "/logo.png",
-  "notes": "Premium Pigeon Breeding, Performance & Genealogy Center"
+  "notes": "Premium Pigeon Breeding, Performance & Genealogy Center",
+  "googleSheetsWebhookUrl": "https://script.google.com/macros/s/AKfycbzU4871CsSjuimWX2oRG5pqpgWokFsK4Hhjd6EPr6YcsOwVA-knV9fexscWrRO-eofLTg/exec"
 }

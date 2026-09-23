@@ -15,6 +15,7 @@ import { PairFormModal } from "@/components/breeding/PairFormModal";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { HeartHandshake, GitFork, PlusCircle, ArrowRight } from "lucide-react";
+import { BreedingSkeleton } from "@/components/ui/Skeleton";
 
 export default function BreedingOverviewPage() {
   const [pairs, setPairs] = useState<Pair[]>([]);
@@ -52,6 +53,10 @@ export default function BreedingOverviewPage() {
       window.removeEventListener(DATA_CHANGE_EVENT, handleDataChange);
     };
   }, []);
+
+  if (isLoading) {
+    return <BreedingSkeleton />;
+  }
 
   const overallStats = calculateHatchingStats(rounds);
   const activePairs = pairs.filter((p) => p.status === "ACTIVE");
