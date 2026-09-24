@@ -110,7 +110,7 @@ const GOOGLE_APPS_SCRIPT_INSERT_CODE = `function doPost(e) {
       payload.breed || "Giribaz",
       payload.hatchDate || "",
       payload.colorPattern || "",
-      payload.gender || payload.sex || "Young / NA",
+      payload.gender || payload.sex || "Baby",
       payload.status || "Kept",
       payload.notes || "",
       payload.fatherDetails || payload.father || "",

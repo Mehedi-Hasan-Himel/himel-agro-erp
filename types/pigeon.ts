@@ -2,7 +2,7 @@ export type PigeonStatus = "ACTIVE" | "SOLD" | "DEAD" | "LOST";
 
 export type PigeonSource = "BORN_HIMEL_AGRO" | "PURCHASED";
 
-export type PigeonSex = "MALE" | "FEMALE" | "UNKNOWN";
+export type PigeonSex = "MALE" | "FEMALE" | "UNKNOWN" | "BABY";
 
 export interface Pigeon {
   id: string; // e.g. "pigeon_2026_001"

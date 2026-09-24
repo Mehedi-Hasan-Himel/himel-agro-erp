@@ -87,7 +87,7 @@ export async function pushPigeonToGoogleSheet(
         ? "Hen / Female"
         : pigeon.sex === "MALE"
         ? "Cock / Male"
-        : "Young / NA",
+        : "Baby",
     sex: pigeon.sex || "UNKNOWN",
     status:
       pigeon.status === "ACTIVE"

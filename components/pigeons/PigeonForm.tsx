@@ -443,7 +443,7 @@ export function PigeonForm({
             >
               <option value="MALE">Male (♂)</option>
               <option value="FEMALE">Female (♀)</option>
-              <option value="UNKNOWN">Baby / Unknown</option>
+              <option value="UNKNOWN">Baby</option>
             </Select>
 
             <Select

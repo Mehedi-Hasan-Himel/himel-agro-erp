@@ -19,6 +19,7 @@ import {
   RotateCcw,
   Sparkles,
   PlusCircle,
+  AlertCircle,
 } from "lucide-react";
 
 export interface PigeonGridProps {
@@ -28,6 +29,54 @@ export interface PigeonGridProps {
   onRefresh?: () => void;
 }
 
+const CATEGORY_OPTIONS = [
+  {
+    id: "ALL",
+    label: "All",
+    icon: null,
+    iconClass: "",
+    activeColor: "bg-white text-emerald-800 shadow-2xs font-semibold",
+    badgeActive: "bg-emerald-100 text-emerald-800",
+  },
+  {
+    id: "MALE",
+    label: "Male",
+    icon: CockPigeonIcon,
+    iconClass: "text-sky-700",
+    activeColor: "bg-white text-sky-800 shadow-2xs font-semibold",
+    badgeActive: "bg-sky-100 text-sky-800",
+  },
+  {
+    id: "FEMALE",
+    label: "Female",
+    icon: HenPigeonIcon,
+    iconClass: "text-pink-700",
+    activeColor: "bg-white text-pink-800 shadow-2xs font-semibold",
+    badgeActive: "bg-pink-100 text-pink-800",
+  },
+  {
+    id: "BABY",
+    label: "Baby",
+    icon: SquabIcon,
+    iconClass: "text-emerald-700",
+    activeColor: "bg-white text-emerald-800 shadow-2xs font-semibold",
+    badgeActive: "bg-emerald-100 text-emerald-800",
+  },
+  {
+    id: "LOST",
+    label: "Lost",
+    icon: AlertCircle,
+    iconClass: "text-amber-600",
+    activeColor: "bg-white text-amber-800 shadow-2xs font-semibold",
+    badgeActive: "bg-amber-100 text-amber-800",
+  },
+] as const;
+
+const isLostPigeon = (p: Pigeon) =>
+  p.status === "LOST" ||
+  (p.notes || "").toLowerCase().includes("ring lost") ||
+  (p.breedSubtype || "").toLowerCase().includes("ring lost");
+
 export function PigeonGrid({
   pigeons,
   pairs = [],
@@ -36,7 +85,9 @@ export function PigeonGrid({
 }: PigeonGridProps) {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState(initialStatusFilter);
-  const [sexFilter, setSexFilter] = useState("ALL");
+  const [categoryFilter, setCategoryFilter] = useState(
+    initialStatusFilter === "LOST" ? "LOST" : "ALL"
+  );
   const [breedFilter, setBreedFilter] = useState("ALL");
   const [yearFilter, setYearFilter] = useState("ALL");
   const [sortBy, setSortBy] = useState("hatchDate_desc");
@@ -53,6 +104,43 @@ export function PigeonGrid({
   const activePigeonSerialMap = useMemo(() => {
     return getActivePigeonSerialMap(pigeons);
   }, [pigeons]);
+
+  const categoryCounts = useMemo(() => {
+    let all = pigeons.length;
+    let male = 0;
+    let female = 0;
+    let baby = 0;
+    let lost = 0;
+
+    pigeons.forEach((p) => {
+      if (isLostPigeon(p)) {
+        lost += 1;
+        return;
+      }
+      if (p.sex === "MALE") {
+        male += 1;
+      } else if (p.sex === "FEMALE") {
+        female += 1;
+      } else {
+        baby += 1;
+      }
+    });
+
+    return { ALL: all, MALE: male, FEMALE: female, BABY: baby, LOST: lost };
+  }, [pigeons]);
+
+  const handleCategoryClick = (cat: string) => {
+    setCategoryFilter(cat);
+    if (cat === "LOST") {
+      if (statusFilter !== "ALL" && statusFilter !== "LOST") {
+        setStatusFilter("ALL");
+      }
+    } else if (cat !== "ALL") {
+      if (statusFilter === "LOST") {
+        setStatusFilter("ALL");
+      }
+    }
+  };
 
   // Filter & Search
   const filteredPigeons = useMemo(() => {
@@ -93,12 +181,22 @@ export function PigeonGrid({
       // Status filter
       if (statusFilter === "FOR_SALE") {
         if (!(p.status === "ACTIVE" && p.isForSale === true)) return false;
+      } else if (statusFilter === "LOST") {
+        if (!isLostPigeon(p)) return false;
       } else if (statusFilter !== "ALL" && p.status !== statusFilter) {
         return false;
       }
 
-      // Sex filter
-      if (sexFilter !== "ALL" && p.sex !== sexFilter) return false;
+      // Category filter (All, Male, Female, Baby, Lost)
+      if (categoryFilter === "LOST") {
+        if (!isLostPigeon(p)) return false;
+      } else if (categoryFilter === "MALE") {
+        if (p.sex !== "MALE" || isLostPigeon(p)) return false;
+      } else if (categoryFilter === "FEMALE") {
+        if (p.sex !== "FEMALE" || isLostPigeon(p)) return false;
+      } else if (categoryFilter === "BABY") {
+        if (p.sex === "MALE" || p.sex === "FEMALE" || isLostPigeon(p)) return false;
+      }
 
       // Breed filter
       if (breedFilter !== "ALL" && p.breed !== breedFilter) return false;
@@ -134,19 +232,19 @@ export function PigeonGrid({
       }
       return 0;
     });
-  }, [pigeons, search, statusFilter, sexFilter, breedFilter, yearFilter, sortBy]);
+  }, [pigeons, search, statusFilter, categoryFilter, breedFilter, yearFilter, sortBy]);
 
   const hasActiveFilters =
     search.trim() !== "" ||
     statusFilter !== "ALL" ||
-    sexFilter !== "ALL" ||
+    categoryFilter !== "ALL" ||
     breedFilter !== "ALL" ||
     yearFilter !== "ALL";
 
   const handleResetFilters = () => {
     setSearch("");
     setStatusFilter("ALL");
-    setSexFilter("ALL");
+    setCategoryFilter("ALL");
     setBreedFilter("ALL");
     setYearFilter("ALL");
     setSortBy("hatchDate_desc");
@@ -198,7 +296,15 @@ export function PigeonGrid({
           <div>
             <select
               value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
+              onChange={(e) => {
+                const val = e.target.value;
+                setStatusFilter(val);
+                if (val === "LOST") {
+                  setCategoryFilter("LOST");
+                } else if (categoryFilter === "LOST") {
+                  setCategoryFilter("ALL");
+                }
+              }}
               className="w-full rounded-2xl border border-slate-200 bg-slate-50/60 px-3.5 py-2.5 text-xs text-slate-700 font-medium focus:border-emerald-500 focus:bg-white focus:outline-none transition-colors"
             >
               <option value="ALL">All Statuses</option>
@@ -213,40 +319,38 @@ export function PigeonGrid({
 
         {/* Secondary Filter & Sort Controls Row */}
         <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-100 text-xs">
-          {/* Sex Filter Buttons */}
+          {/* Category Filter Buttons */}
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-slate-600 hidden sm:inline">Sex:</span>
+            <span className="font-semibold text-slate-600 hidden sm:inline">Category:</span>
             <div className="inline-flex rounded-xl border border-slate-200 p-0.5 bg-slate-50/80">
-              {["ALL", "MALE", "FEMALE", "UNKNOWN"].map((s) => (
-                <button
-                  key={s}
-                  onClick={() => setSexFilter(s)}
-                  className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg font-bold text-xs transition-all cursor-pointer ${
-                    sexFilter === s
-                      ? "bg-white text-emerald-800 shadow-2xs"
-                      : "text-slate-500 hover:text-slate-800"
-                  }`}
-                >
-                  {s === "ALL" ? (
-                    "All"
-                  ) : s === "MALE" ? (
-                    <>
-                      <CockPigeonIcon className="w-3.5 h-3.5 text-sky-700 shrink-0" />
-                      <span>Male</span>
-                    </>
-                  ) : s === "FEMALE" ? (
-                    <>
-                      <HenPigeonIcon className="w-3.5 h-3.5 text-pink-700 shrink-0" />
-                      <span>Female</span>
-                    </>
-                  ) : (
-                    <>
-                      <SquabIcon className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
-                      <span>Baby</span>
-                    </>
-                  )}
-                </button>
-              ))}
+              {CATEGORY_OPTIONS.map((opt) => {
+                const Icon = opt.icon;
+                const isActive = categoryFilter === opt.id;
+                const count = categoryCounts[opt.id as keyof typeof categoryCounts] ?? 0;
+                return (
+                  <button
+                    key={opt.id}
+                    onClick={() => handleCategoryClick(opt.id)}
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold text-xs transition-all cursor-pointer ${
+                      isActive
+                        ? opt.activeColor
+                        : "text-slate-500 hover:text-slate-800"
+                    }`}
+                  >
+                    {Icon && <Icon className={`w-3.5 h-3.5 ${opt.iconClass} shrink-0`} />}
+                    <span>{opt.label}</span>
+                    <span
+                      className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ml-0.5 ${
+                        isActive
+                          ? opt.badgeActive
+                          : "bg-slate-200/60 text-slate-600"
+                      }`}
+                    >
+                      {count}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           </div>
 

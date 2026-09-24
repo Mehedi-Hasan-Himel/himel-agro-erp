@@ -55,7 +55,7 @@ export function SexBadge({
       )}
     >
       {showIcon && <SquabIcon className="w-3.5 h-3.5 text-emerald-700 shrink-0" />}
-      <span>Baby / Young</span>
+      <span>Baby</span>
     </span>
   );
 }

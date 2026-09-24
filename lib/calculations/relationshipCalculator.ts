@@ -63,7 +63,7 @@ function getSiblingGenderLabel(pigeon: Pigeon, baseType: string): string {
  * Helper to determine child gender label
  */
 function getChildGenderLabel(pigeon: Pigeon): string {
-  return pigeon.sex === "MALE" ? "Son" : pigeon.sex === "FEMALE" ? "Daughter" : "Child (Young)";
+  return pigeon.sex === "MALE" ? "Son" : pigeon.sex === "FEMALE" ? "Daughter" : "Child (Baby)";
 }
 
 /**
