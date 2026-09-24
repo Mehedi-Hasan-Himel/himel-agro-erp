@@ -294,6 +294,17 @@ export function PigeonGrid({
     <div className="space-y-6">
       {/* Search & Filter Toolbar */}
       <div className="bg-white p-4 sm:p-5 rounded-3xl border border-slate-200/90 shadow-xs space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 pb-1 border-b border-slate-100">
+          <div>
+            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+              <span>Flock Search, Filter & Category Directory</span>
+            </h2>
+            <p className="text-[11px] text-slate-500 mt-0.5">
+              Filter birds by ring band number, hatch year, breed, operational status, or sex category in visual card format.
+            </p>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
           <div className="lg:col-span-2">
             <SearchInput
@@ -427,6 +438,18 @@ export function PigeonGrid({
               </select>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Loft Roster & Bird Specifications Section Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 pt-1">
+        <div>
+          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700">
+            Loft Roster & Visual Bird Cards ({filteredPigeons.length} Shown)
+          </h2>
+          <p className="text-[11px] text-slate-500 mt-0.5">
+            Card showcase of banded birds with photo profiles, ring IDs, sex badges, bloodlines, and active breeding status.
+          </p>
         </div>
       </div>
 

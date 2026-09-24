@@ -148,8 +148,11 @@ export default function DashboardPage() {
     };
   }, []);
 
-  // Latest month financial summary for current active month (e.g. September 2026)
+  // 1. Latest month financial summary for current active month (e.g. September 2026)
   const currentMonthSummary =
+    monthlySummaries.find(
+      (m) => m.monthKey !== "ALL" && m.monthKey.startsWith("2026-")
+    ) ||
     monthlySummaries.find((m) => m.monthKey !== "ALL") || {
       year: 2026,
       month: 9,
@@ -161,25 +164,57 @@ export default function DashboardPage() {
       transactionCount: 0,
     };
 
-  // Cumulative all-time financial summary across all records (2019–Present)
+  // 2. Current Year Financial Summary (all active operational months of 2026)
+  const currentYearSummary = useMemo(() => {
+    const months2026 = monthlySummaries.filter(
+      (m) => m.year === 2026 && m.monthKey !== "ALL"
+    );
+    const totalIncome = months2026.reduce((sum, m) => sum + m.totalIncome, 0);
+    const totalExpense = months2026.reduce((sum, m) => sum + m.totalExpense, 0);
+    const transactionCount = months2026.reduce(
+      (sum, m) => sum + m.transactionCount,
+      0
+    );
+    return {
+      year: 2026,
+      yearLabel: "Year 2026",
+      totalIncome,
+      totalExpense,
+      profitLoss: totalIncome - totalExpense,
+      transactionCount,
+      activeMonthsCount: months2026.length,
+    };
+  }, [monthlySummaries]);
+
+  // 3. Cumulative all-time financial summary across all records (2019–Present)
   const totalFinancialSummary =
     monthlySummaries.find((m) => m.monthKey === "ALL") || {
       year: 2026,
       month: 0,
       monthKey: "ALL",
       monthLabel: "All Time (Cumulative)",
-      totalIncome: monthlySummaries.reduce((sum, m) => sum + (m.monthKey !== "ALL" ? m.totalIncome : 0), 0),
-      totalExpense: monthlySummaries.reduce((sum, m) => sum + (m.monthKey !== "ALL" ? m.totalExpense : 0), 0),
-      profitLoss: monthlySummaries.reduce((sum, m) => sum + (m.monthKey !== "ALL" ? m.profitLoss : 0), 0),
-      transactionCount: monthlySummaries.reduce((sum, m) => sum + (m.monthKey !== "ALL" ? m.transactionCount : 0), 0),
+      totalIncome: monthlySummaries.reduce(
+        (sum, m) => sum + (m.monthKey !== "ALL" ? m.totalIncome : 0),
+        0
+      ),
+      totalExpense: monthlySummaries.reduce(
+        (sum, m) => sum + (m.monthKey !== "ALL" ? m.totalExpense : 0),
+        0
+      ),
+      profitLoss: monthlySummaries.reduce(
+        (sum, m) => sum + (m.monthKey !== "ALL" ? m.profitLoss : 0),
+        0
+      ),
+      transactionCount: monthlySummaries.reduce(
+        (sum, m) => sum + (m.monthKey !== "ALL" ? m.transactionCount : 0),
+        0
+      ),
     };
 
   const historicalExpense =
     monthlySummaries.find((m) => m.monthKey === "2025-12")?.totalExpense || 100000;
-  const operationalExpense2026 =
-    Math.max(0, totalFinancialSummary.totalExpense - historicalExpense);
-  const operationalNet2026 =
-    totalFinancialSummary.totalIncome - operationalExpense2026;
+  const operationalExpense2026 = currentYearSummary.totalExpense;
+  const operationalNet2026 = currentYearSummary.profitLoss;
 
   // Low feed stock items
   const lowFeedItems = feedSummaries.filter(
@@ -302,18 +337,23 @@ export default function DashboardPage() {
 
       {/* Pigeon KPI Cards Grid */}
       <div>
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700">
-              Loft Metrics & Flock Summary (Google Sheet)
-            </h2>
-            <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 rounded-full">
-              Live Registry
-            </span>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 mb-3">
+          <div>
+            <div className="flex items-center gap-2">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700">
+                Loft Metrics & Flock Summary (Google Sheet Live Sync)
+              </h2>
+              <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 rounded-full">
+                Live Registry
+              </span>
+            </div>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Live census of active kept pigeons, Racing Homer lines, Giribaz tumblers, breeding sex ratios, and allocated rings.
+            </p>
           </div>
           <Link
             href="/pigeons"
-            className="text-xs font-bold text-emerald-800 hover:text-emerald-900 hover:underline flex items-center gap-1"
+            className="text-xs font-bold text-emerald-800 hover:text-emerald-900 hover:underline flex items-center gap-1 shrink-0"
           >
             View All Pigeons <ArrowRight className="w-3.5 h-3.5" />
           </Link>
@@ -437,21 +477,21 @@ export default function DashboardPage() {
         isLoading={isLoading}
       />
 
-      {/* 1. Monthly Financial Overview Section (Current Active Month) */}
+      {/* 1. Current Monthly Financial Overview Section (Current Active Month) */}
       <div className="bg-white rounded-2xl border border-slate-200 shadow-xs p-5 space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <div className="flex items-center gap-2">
               <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
                 <TakaIcon className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span>Monthly Financial Overview ({currentMonthSummary.monthLabel})</span>
+                <span>Current Monthly Financial Overview ({currentMonthSummary.monthLabel})</span>
               </h3>
               <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 rounded-full">
                 Active Month
               </span>
             </div>
             <p className="text-xs text-slate-500 mt-0.5">
-              Operating income, expenses, and net performance for current month • {currentMonthSummary.transactionCount} transactions recorded
+              Operating income from bird sales, ongoing feed and medication costs, and net margin for {currentMonthSummary.monthLabel} • {currentMonthSummary.transactionCount} transactions recorded
             </p>
           </div>
           <Link
@@ -523,7 +563,7 @@ export default function DashboardPage() {
                 {formatCurrency(currentMonthSummary.profitLoss)}
               </span>
               <span className="text-[10px] text-slate-600 block mt-0.5">
-                Profit = Income - Expense
+                Net = Monthly Income - Monthly Expense
               </span>
             </div>
             <div
@@ -543,21 +583,147 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* 2. Total Financial Overview Section (Cumulative All-Time) */}
+      {/* 2. Current Year Financial Overview Section (Year 2026) */}
       <div className="bg-white rounded-2xl border border-slate-200 shadow-xs p-5 space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <div className="flex items-center gap-2">
               <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
                 <TakaIcon className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span>Total Financial Overview (Cumulative All-Time)</span>
+                <span>Current Year Financial Overview ({currentYearSummary.yearLabel})</span>
+              </h3>
+              <span className="text-[10px] font-bold text-sky-700 bg-sky-50 border border-sky-200/80 px-2 py-0.5 rounded-full">
+                Calendar Year 2026
+              </span>
+            </div>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Annual operational summary tracking all bird sales revenue, flock feed, medication, and upkeep expenses across all {currentYearSummary.activeMonthsCount} operational months of {currentYearSummary.year} • {currentYearSummary.transactionCount} transactions recorded
+            </p>
+          </div>
+          <Link
+            href="/finance"
+            className="text-xs font-semibold text-emerald-700 hover:underline flex items-center gap-1 shrink-0"
+          >
+            2026 Financial Logs <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+          {/* Yearly Income */}
+          <div className="p-4 rounded-xl bg-emerald-50/50 border border-emerald-100 flex items-center justify-between shadow-2xs">
+            <div>
+              <span className="text-[11px] font-semibold text-slate-600 uppercase block">
+                Year-to-Date Revenue
+              </span>
+              <span className="text-xl sm:text-2xl font-black text-emerald-700">
+                {formatCurrency(currentYearSummary.totalIncome)}
+              </span>
+              <span className="text-[10px] text-slate-500 block mt-0.5">
+                Total 2026 bird sales & earnings
+              </span>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+              <ArrowUpRight className="w-5 h-5" />
+            </div>
+          </div>
+
+          {/* Yearly Expense */}
+          <div className="p-4 rounded-xl bg-rose-50/50 border border-rose-100 flex items-center justify-between shadow-2xs">
+            <div>
+              <span className="text-[11px] font-semibold text-slate-600 uppercase block">
+                Year-to-Date Operational Expenses
+              </span>
+              <span className="text-xl sm:text-2xl font-black text-rose-700">
+                {formatCurrency(currentYearSummary.totalExpense)}
+              </span>
+              <span className="text-[10px] text-slate-500 block mt-0.5">
+                2026 feeding, health, loft upkeep
+              </span>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center shrink-0">
+              <ArrowDownRight className="w-5 h-5" />
+            </div>
+          </div>
+
+          {/* Yearly Profit / Loss */}
+          <div
+            className={`p-4 rounded-xl border flex items-center justify-between shadow-2xs ${
+              currentYearSummary.profitLoss >= 0
+                ? "bg-emerald-50 border-emerald-200"
+                : "bg-rose-50 border-rose-200"
+            }`}
+          >
+            <div>
+              <span className="text-[11px] font-bold uppercase block text-slate-700">
+                {currentYearSummary.profitLoss >= 0
+                  ? "2026 Operating Net Profit"
+                  : "2026 Operating Net Balance"}
+              </span>
+              <span
+                className={`text-xl sm:text-2xl font-black ${
+                  currentYearSummary.profitLoss >= 0
+                    ? "text-emerald-700"
+                    : "text-rose-700"
+                }`}
+              >
+                {formatCurrency(currentYearSummary.profitLoss)}
+              </span>
+              <span className="text-[10px] text-slate-600 block mt-0.5">
+                Annual Balance = 2026 Sales - 2026 Ops
+              </span>
+            </div>
+            <div
+              className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
+                currentYearSummary.profitLoss >= 0
+                  ? "bg-emerald-200 text-emerald-800"
+                  : "bg-rose-200 text-rose-800"
+              }`}
+            >
+              {currentYearSummary.profitLoss >= 0 ? (
+                <TrendingUp className="w-5 h-5" />
+              ) : (
+                <TrendingDown className="w-5 h-5" />
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* 2026 Operations Sub-strip */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-2 border-t border-slate-100 text-xs">
+          <div className="p-2.5 rounded-xl bg-slate-50/80 border border-slate-100 flex items-center justify-between">
+            <span className="text-slate-500 font-medium">Active Operational Months:</span>
+            <span className="font-mono font-bold text-slate-700">{currentYearSummary.activeMonthsCount} Months (Jan – Sep 2026)</span>
+          </div>
+          <div className="p-2.5 rounded-xl bg-slate-50/80 border border-slate-100 flex items-center justify-between">
+            <span className="text-slate-500 font-medium">Monthly Average Operational Cost:</span>
+            <span className="font-mono font-bold text-rose-600">
+              {formatCurrency(Math.round(currentYearSummary.totalExpense / (currentYearSummary.activeMonthsCount || 1)))} / mo
+            </span>
+          </div>
+          <div className="p-2.5 rounded-xl bg-slate-50/80 border border-slate-100 flex items-center justify-between">
+            <span className="text-slate-500 font-medium">2026 Operating Cash Margin:</span>
+            <span className={`font-mono font-bold ${currentYearSummary.profitLoss >= 0 ? "text-emerald-600" : "text-rose-600"}`}>
+              {formatCurrency(currentYearSummary.profitLoss)}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* 3. From Beginning to Today Date Financial Overview Section (Cumulative 2019 – Present) */}
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-xs p-5 space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <div className="flex items-center gap-2">
+              <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                <TakaIcon className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>From Beginning to Today Date Financial Overview (Cumulative 2019 – Present)</span>
               </h3>
               <span className="text-[10px] font-bold text-indigo-700 bg-indigo-50 border border-indigo-200/80 px-2 py-0.5 rounded-full">
                 2019 – Present
               </span>
             </div>
             <p className="text-xs text-slate-500 mt-0.5">
-              Cumulative farm ledger including initial setup & multi-year operations • {totalFinancialSummary.transactionCount} total records
+              Comprehensive lifetime financial ledger from loft founding (2019) through today, capturing initial infrastructure setup investment alongside cumulative operational transactions • {totalFinancialSummary.transactionCount} total records
             </p>
           </div>
           <Link
@@ -629,7 +795,7 @@ export default function DashboardPage() {
                 {formatCurrency(totalFinancialSummary.profitLoss)}
               </span>
               <span className="text-[10px] text-slate-600 block mt-0.5">
-                Total Balance = Income - All Expenses
+                Total Balance = Lifetime Income - All Expenses
               </span>
             </div>
             <div
@@ -668,178 +834,229 @@ export default function DashboardPage() {
       </div>
 
       {/* Operational Grid: Medicine Due & Low Feed Stock */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Medicine Due Widget */}
-        <MedicineDueCard
-          dueToday={dueMedicines.dueToday}
-          upcoming={dueMedicines.upcoming}
-        />
+      <div className="space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+          <div>
+            <div className="flex items-center gap-2">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700">
+                Daily Operations & Inventory Management
+              </h2>
+              <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 rounded-full">
+                Loft Care
+              </span>
+            </div>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Critical daily health protocols, due medication doses, vaccine schedules, and warehouse grain inventory thresholds.
+            </p>
+          </div>
+        </div>
 
-        {/* Feed Stock & Inventory Alerts Widget */}
-        <Card className="border-slate-200/80 shadow-xs">
-          <CardHeader className="bg-slate-50/50">
-            <CardTitle className="text-sm font-bold text-slate-800 flex items-center gap-2">
-              <Wheat className="w-4 h-4 text-emerald-600" />
-              <span>Feed Inventory & Low Stock Alerts</span>
-            </CardTitle>
-            <Link
-              href="/feed"
-              className="text-xs font-semibold text-emerald-700 hover:underline"
-            >
-              Manage Feed →
-            </Link>
-          </CardHeader>
-          <CardContent className="p-5 space-y-4">
-            {lowFeedItems.length > 0 && (
-              <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 text-xs space-y-2">
-                <div className="flex items-center gap-1.5 font-bold text-amber-800">
-                  <AlertTriangle className="w-4 h-4 text-amber-600" />
-                  <span>Low Feed Stock Alert:</span>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Medicine Due Widget */}
+          <MedicineDueCard
+            dueToday={dueMedicines.dueToday}
+            upcoming={dueMedicines.upcoming}
+          />
+
+          {/* Feed Stock & Inventory Alerts Widget */}
+          <Card className="border-slate-200/80 shadow-xs">
+            <CardHeader className="bg-slate-50/50">
+              <div>
+                <CardTitle className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                  <Wheat className="w-4 h-4 text-emerald-600" />
+                  <span>Feed Inventory & Low Stock Alerts</span>
+                </CardTitle>
+                <p className="text-[11px] text-slate-500 font-normal mt-0.5">
+                  Warehouse grain levels, low-quantity reorder warnings, and consumption velocity.
+                </p>
+              </div>
+              <Link
+                href="/feed"
+                className="text-xs font-semibold text-emerald-700 hover:underline shrink-0"
+              >
+                Manage Feed →
+              </Link>
+            </CardHeader>
+            <CardContent className="p-5 space-y-4">
+              {lowFeedItems.length > 0 && (
+                <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 text-xs space-y-2">
+                  <div className="flex items-center gap-1.5 font-bold text-amber-800">
+                    <AlertTriangle className="w-4 h-4 text-amber-600" />
+                    <span>Low Feed Stock Alert:</span>
+                  </div>
+                  {lowFeedItems.map((item) => (
+                    <div
+                      key={item.feedType}
+                      className="flex items-center justify-between text-xs text-amber-900"
+                    >
+                      <span>{item.feedType}</span>
+                      <span className="font-bold">
+                        Only {item.currentStockKg}kg left in stock!
+                      </span>
+                    </div>
+                  ))}
                 </div>
-                {lowFeedItems.map((item) => (
+              )}
+
+              {/* Quick stock status list */}
+              <div className="space-y-2">
+                {feedSummaries.slice(0, 4).map((f) => (
                   <div
-                    key={item.feedType}
-                    className="flex items-center justify-between text-xs text-amber-900"
+                    key={f.feedType}
+                    className="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl text-xs"
                   >
-                    <span>{item.feedType}</span>
-                    <span className="font-bold">
-                      Only {item.currentStockKg}kg left in stock!
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                      <span className="font-semibold text-slate-800">
+                        {f.feedType}
+                      </span>
+                    </div>
+                    <div className="text-right">
+                      <span className="font-bold text-slate-900">
+                        {f.currentStockKg} kg
+                      </span>
+                      <span className="text-[10px] text-slate-400 block">
+                        Used: {f.totalUsedKg}kg
+                      </span>
+                    </div>
                   </div>
                 ))}
               </div>
-            )}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
 
-            {/* Quick stock status list */}
-            <div className="space-y-2">
-              {feedSummaries.slice(0, 4).map((f) => (
+      {/* Recent Activity Grid: Breeding & Sales */}
+      <div className="space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+          <div>
+            <div className="flex items-center gap-2">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700">
+                Recent Activity & Commercial Records
+              </h2>
+              <span className="text-[10px] font-bold text-blue-700 bg-blue-50 border border-blue-200/80 px-2 py-0.5 rounded-full">
+                Loft History
+              </span>
+            </div>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Active egg clutches, incubation milestones, squab hatchings, and verified buyer sales records.
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Recent Breeding Activity */}
+          <Card className="border-slate-200/80 shadow-xs">
+            <CardHeader className="bg-slate-50/50">
+              <div>
+                <CardTitle className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                  <Egg className="w-4 h-4 text-emerald-600" />
+                  <span>Recent Breeding Clutches & Hatching Activity</span>
+                </CardTitle>
+                <p className="text-[11px] text-slate-500 font-normal mt-0.5">
+                  Active nesting rounds, clutch fertility rates, and newly hatched squabs awaiting banding.
+                </p>
+              </div>
+              <Link
+                href="/breeding"
+                className="text-xs font-semibold text-emerald-700 hover:underline shrink-0"
+              >
+                Breeding Center →
+              </Link>
+            </CardHeader>
+            <CardContent className="p-5 space-y-3">
+              {recentBreedingRounds.map((rnd) => (
                 <div
-                  key={f.feedType}
-                  className="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl text-xs"
+                  key={rnd.id}
+                  className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between text-xs"
                 >
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                    <span className="font-semibold text-slate-800">
-                      {f.feedType}
+                  <div>
+                    <div className="flex items-center gap-1.5 font-mono font-bold text-slate-900">
+                      {activeSerialMap.get(rnd.pairId) && (
+                        <span className="font-mono text-[10px] bg-emerald-600 text-white px-1.5 py-0.2 rounded font-black shadow-2xs">
+                          #{activeSerialMap.get(rnd.pairId)}
+                        </span>
+                      )}
+                      <span>{rnd.pairId}</span>
+                      <span className="text-slate-400 font-normal font-sans text-xs">— Round #{rnd.roundNumber}</span>
+                    </div>
+                    <span className="text-[11px] text-slate-500">
+                      Laid: {formatDate(rnd.date)} • Hatched:{" "}
+                      {formatDate(rnd.hatchDate)}
                     </span>
                   </div>
                   <div className="text-right">
-                    <span className="font-bold text-slate-900">
-                      {f.currentStockKg} kg
+                    <span className="font-bold text-emerald-700 block">
+                      {rnd.babiesHatched} / {rnd.eggsLaid} Hatched
                     </span>
-                    <span className="text-[10px] text-slate-400 block">
-                      Used: {f.totalUsedKg}kg
+                    <span className="text-[10px] text-slate-400">
+                      {rnd.babyPigeonIds.length > 0
+                        ? `${rnd.babyPigeonIds.length} Ringed`
+                        : "Pending registration"}
                     </span>
                   </div>
                 </div>
               ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+            </CardContent>
+          </Card>
 
-      {/* Recent Activity Grid: Breeding & Sales */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent Breeding Activity */}
-        <Card className="border-slate-200/80 shadow-xs">
-          <CardHeader className="bg-slate-50/50">
-            <CardTitle className="text-sm font-bold text-slate-800 flex items-center gap-2">
-              <Egg className="w-4 h-4 text-emerald-600" />
-              <span>Recent Breeding Clutches</span>
-            </CardTitle>
-            <Link
-              href="/breeding"
-              className="text-xs font-semibold text-emerald-700 hover:underline"
-            >
-              Breeding Center →
-            </Link>
-          </CardHeader>
-          <CardContent className="p-5 space-y-3">
-            {recentBreedingRounds.map((rnd) => (
-              <div
-                key={rnd.id}
-                className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between text-xs"
-              >
-                <div>
-                  <div className="flex items-center gap-1.5 font-mono font-bold text-slate-900">
-                    {activeSerialMap.get(rnd.pairId) && (
-                      <span className="font-mono text-[10px] bg-emerald-600 text-white px-1.5 py-0.2 rounded font-black shadow-2xs">
-                        #{activeSerialMap.get(rnd.pairId)}
-                      </span>
-                    )}
-                    <span>{rnd.pairId}</span>
-                    <span className="text-slate-400 font-normal font-sans text-xs">— Round #{rnd.roundNumber}</span>
-                  </div>
-                  <span className="text-[11px] text-slate-500">
-                    Laid: {formatDate(rnd.date)} • Hatched:{" "}
-                    {formatDate(rnd.hatchDate)}
-                  </span>
-                </div>
-                <div className="text-right">
-                  <span className="font-bold text-emerald-700 block">
-                    {rnd.babiesHatched} / {rnd.eggsLaid} Hatched
-                  </span>
-                  <span className="text-[10px] text-slate-400">
-                    {rnd.babyPigeonIds.length > 0
-                      ? `${rnd.babyPigeonIds.length} Ringed`
-                      : "Pending registration"}
-                  </span>
-                </div>
+          {/* Recent Pigeon Sales */}
+          <Card className="border-slate-200/80 shadow-xs">
+            <CardHeader className="bg-slate-50/50">
+              <div>
+                <CardTitle className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                  <TakaIcon className="w-4 h-4 text-blue-600" />
+                  <span>Preserved Pigeon Sale Records</span>
+                </CardTitle>
+                <p className="text-[11px] text-slate-500 font-normal mt-0.5">
+                  Commercial sale archives with prices, buyer identities, and full pedigree preservation.
+                </p>
               </div>
-            ))}
-          </CardContent>
-        </Card>
-
-        {/* Recent Pigeon Sales */}
-        <Card className="border-slate-200/80 shadow-xs">
-          <CardHeader className="bg-slate-50/50">
-            <CardTitle className="text-sm font-bold text-slate-800 flex items-center gap-2">
-              <TakaIcon className="w-4 h-4 text-blue-600" />
-              <span>Preserved Sale Records</span>
-            </CardTitle>
-            <Link
-              href="/pigeons?status=SOLD"
-              className="text-xs font-semibold text-emerald-700 hover:underline"
-            >
-              All Sold Birds →
-            </Link>
-          </CardHeader>
-          <CardContent className="p-5 space-y-3">
-            {recentSales.length === 0 ? (
-              <p className="text-xs text-slate-400 text-center py-6">
-                No sold pigeons recorded yet.
-              </p>
-            ) : (
-              recentSales.map((s) => (
-                <div
-                  key={s.id}
-                  className="p-3 bg-blue-50/30 rounded-xl border border-blue-100 flex items-center justify-between text-xs"
-                >
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <RingBadge pigeon={s} size="sm" />
-                      <span className="font-bold text-slate-900">
-                        {s.breedSubtype || s.breed}
+              <Link
+                href="/pigeons?status=SOLD"
+                className="text-xs font-semibold text-emerald-700 hover:underline shrink-0"
+              >
+                All Sold Birds →
+              </Link>
+            </CardHeader>
+            <CardContent className="p-5 space-y-3">
+              {recentSales.length === 0 ? (
+                <p className="text-xs text-slate-400 text-center py-6">
+                  No sold pigeons recorded yet.
+                </p>
+              ) : (
+                recentSales.map((s) => (
+                  <div
+                    key={s.id}
+                    className="p-3 bg-blue-50/30 rounded-xl border border-blue-100 flex items-center justify-between text-xs"
+                  >
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <RingBadge pigeon={s} size="sm" />
+                        <span className="font-bold text-slate-900">
+                          {s.breedSubtype || s.breed}
+                        </span>
+                      </div>
+                      <span className="text-[11px] text-slate-500 mt-1 block">
+                        Sold to: <strong>{s.buyer || "Enthusiast"}</strong> on{" "}
+                        {formatDate(s.saleDate)}
                       </span>
                     </div>
-                    <span className="text-[11px] text-slate-500 mt-1 block">
-                      Sold to: <strong>{s.buyer || "Enthusiast"}</strong> on{" "}
-                      {formatDate(s.saleDate)}
-                    </span>
+                    <div className="text-right">
+                      <span className="font-mono font-bold text-emerald-700 text-sm block">
+                        +{formatCurrency(s.salePrice || 0)}
+                      </span>
+                      <span className="text-[10px] text-blue-700 font-semibold">
+                        Full History Preserved
+                      </span>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <span className="font-mono font-bold text-emerald-700 text-sm block">
-                      +{formatCurrency(s.salePrice || 0)}
-                    </span>
-                    <span className="text-[10px] text-blue-700 font-semibold">
-                      Full History Preserved
-                    </span>
-                  </div>
-                </div>
-              ))
-            )}
-          </CardContent>
-        </Card>
+                ))
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );

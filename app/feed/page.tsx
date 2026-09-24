@@ -143,6 +143,21 @@ export default function FeedInventoryPage() {
         </div>
       </div>
 
+      {/* Warehouse Grain Inventory Overview Header */}
+      <div className="space-y-1">
+        <div className="flex items-center gap-2">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700">
+            Warehouse Grain Stock Overview
+          </h2>
+          <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 rounded-full">
+            Dynamic Balance
+          </span>
+        </div>
+        <p className="text-xs text-slate-500">
+          High-level metrics showing total available grain reserves, cumulative procurement, and daily consumption velocity across all seed varieties.
+        </p>
+      </div>
+
       {/* Top Aggregates KPI Bar */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card className="bg-white border-slate-200/80">
@@ -201,7 +216,18 @@ export default function FeedInventoryPage() {
 
       {/* Tab 1: Current Stock Grid */}
       {activeTab === "stock" && (
-        <div>
+        <div className="space-y-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+            <div>
+              <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700">
+                Grain Stock Inventory & Reorder Status ({summaries.length} Varieties)
+              </h2>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Current warehouse stock for individual seed varieties (Maize, Wheat, Mustard, Peas, etc.), reorder thresholds, and depletion warning indicators.
+              </p>
+            </div>
+          </div>
+
           {isLoading ? (
             <div className="py-12 text-center text-slate-400">
               Calculating feed inventory...
@@ -218,7 +244,19 @@ export default function FeedInventoryPage() {
 
       {/* Tab 2: Purchase History */}
       {activeTab === "purchases" && (
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+        <div className="space-y-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+            <div>
+              <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700">
+                Grain Procurement & Purchase Ledger ({purchases.length} Invoices)
+              </h2>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Historical feed purchasing records with date, bag weights (kg), supplier sources, and financial expense ledger entries.
+              </p>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
@@ -269,11 +307,24 @@ export default function FeedInventoryPage() {
             </table>
           </div>
         </div>
+      </div>
       )}
 
       {/* Tab 3: Usage History */}
       {activeTab === "usage" && (
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+        <div className="space-y-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+            <div>
+              <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700">
+                Daily Feed Usage & Consumption Tracking ({usages.length} Logs)
+              </h2>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Audit logs of daily grain portions dispensed across breeding pairs, racing homer lofts, and nursery squabs.
+              </p>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
@@ -316,6 +367,7 @@ export default function FeedInventoryPage() {
             </table>
           </div>
         </div>
+      </div>
       )}
 
       {/* Purchase Modal */}

@@ -491,7 +491,12 @@ export default function SettingsPage() {
       {/* 1. Farm Identity Settings */}
       <Card>
         <CardHeader>
-          <CardTitle>1. Farm Profile & Social Integration</CardTitle>
+          <div>
+            <CardTitle>1. Farm Profile & Social Integration</CardTitle>
+            <p className="text-[11px] text-slate-500 font-normal mt-0.5">
+              Configure official loft name, owner details, WhatsApp contact, Facebook page, and Google Maps location.
+            </p>
+          </div>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSaveSettings} className="space-y-4">
@@ -947,7 +952,12 @@ export default function SettingsPage() {
       {/* 3. Breed Categories & Subtypes */}
       <Card>
         <CardHeader>
-          <CardTitle>3. Breed Lineages & Subtypes</CardTitle>
+          <div>
+            <CardTitle>3. Breed Lineages & Subtypes</CardTitle>
+            <p className="text-[11px] text-slate-500 font-normal mt-0.5">
+              Customize recognized pigeon breeds, highflyer variants, and pedigree classifications.
+            </p>
+          </div>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-4">
@@ -1014,10 +1024,15 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
 
-      {/* 3. Data Persistence & Backup Tools */}
+      {/* 4. Data Persistence & Backup Tools */}
       <Card>
         <CardHeader>
-          <CardTitle>3. Data Backup, Export & Reset</CardTitle>
+          <div>
+            <CardTitle>4. Data Backup, Export & Reset</CardTitle>
+            <p className="text-[11px] text-slate-500 font-normal mt-0.5">
+              Export full MongoDB database backups as JSON, import saved snapshots, or reset to demo seed data.
+            </p>
+          </div>
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-xs text-slate-600 leading-relaxed">

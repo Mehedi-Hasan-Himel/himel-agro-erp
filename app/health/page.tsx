@@ -128,11 +128,31 @@ export default function HealthManagementPage() {
         </div>
       </div>
 
-      {/* Top Due Today / Active Courses Widget */}
-      <MedicineDueCard
-        dueToday={dueMeds.dueToday}
-        upcoming={dueMeds.upcoming}
-      />
+      {/* Top Due Today / Active Courses Section */}
+      <div className="space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+          <div>
+            <div className="flex items-center gap-2">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700">
+                Immediate Health Alerts & Today's Dosages
+              </h2>
+              {dueMeds.dueToday.length > 0 && (
+                <span className="text-[10px] font-bold text-amber-800 bg-amber-100 border border-amber-300 px-2 py-0.5 rounded-full">
+                  Action Required
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Daily medical schedule tracking urgent prescriptions, vaccines, and supplements due for administration today or upcoming.
+            </p>
+          </div>
+        </div>
+
+        <MedicineDueCard
+          dueToday={dueMeds.dueToday}
+          upcoming={dueMeds.upcoming}
+        />
+      </div>
 
       {/* Tabs */}
       <Tabs
@@ -144,7 +164,19 @@ export default function HealthManagementPage() {
 
       {/* Tab 1: Schedules Table */}
       {activeTab === "schedules" && (
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+        <div className="space-y-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+            <div>
+              <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700">
+                Planned Medicine Courses & Preventative Protocols ({schedules.length} Scheduled)
+              </h2>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Calendar courses for deworming, pest control, vaccine cycles, and vitamin therapies scheduled across the farm.
+              </p>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
@@ -221,11 +253,24 @@ export default function HealthManagementPage() {
             </table>
           </div>
         </div>
+      </div>
       )}
 
       {/* Tab 2: Treatment History Table */}
       {activeTab === "treatments" && (
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+        <div className="space-y-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+            <div>
+              <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700">
+                Clinical Treatment Logs & Medical Interventions ({healthRecords.length} Records)
+              </h2>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Archived clinical logs detailing diagnosed ailments, medications administered, attending handlers, and recovery history.
+              </p>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
@@ -291,6 +336,7 @@ export default function HealthManagementPage() {
             </table>
           </div>
         </div>
+      </div>
       )}
 
       {/* Modals */}

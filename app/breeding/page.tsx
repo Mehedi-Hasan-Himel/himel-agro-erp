@@ -101,18 +101,28 @@ export default function BreedingOverviewPage() {
       <BreedingStatsCard
         stats={overallStats}
         title="Farm-Wide Breeding & Hatching Output"
-        subtitle="Dynamic summary of all recorded eggs and hatched squabs"
+        subtitle="Comprehensive farm metrics tracking total eggs laid, fertile hatch rates, active squabs produced, and breeding efficiency across all cycles."
       />
 
       {/* Active Pairs Table Section */}
       <div>
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500">
-            Active Breeding Units & Lofts
-          </h2>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-3">
+          <div>
+            <div className="flex items-center gap-2">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700">
+                Active Breeding Units & Loft Pairings
+              </h2>
+              <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 rounded-full">
+                {activePairs.length} Active Units
+              </span>
+            </div>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Active breeding pairs bonded in nesting boxes, detailing cock and hen identities, active round progress, and historical clutch performance.
+            </p>
+          </div>
           <Link
             href="/breeding/pairs"
-            className="text-xs font-semibold text-emerald-700 hover:underline flex items-center gap-1"
+            className="text-xs font-semibold text-emerald-700 hover:underline flex items-center gap-1 shrink-0"
           >
             Manage All Pairs <ArrowRight className="w-3.5 h-3.5" />
           </Link>

@@ -463,7 +463,12 @@ export default function PigeonProfilePage({
             <div className="lg:col-span-2 space-y-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>Core Identification & Lineage</CardTitle>
+                  <div>
+                    <CardTitle>Core Identification & Lineage</CardTitle>
+                    <p className="text-[11px] text-slate-500 font-normal mt-0.5">
+                      Biological sire, dam, and active breeding mate assignments linked to this bird.
+                    </p>
+                  </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -665,7 +670,12 @@ export default function PigeonProfilePage({
               {/* Description & Notes */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Physical Notes & Description</CardTitle>
+                  <div>
+                    <CardTitle>Physical Notes & Description</CardTitle>
+                    <p className="text-[11px] text-slate-500 font-normal mt-0.5">
+                      Color patterns, eye ring traits, feather markings, and loft keeper observations.
+                    </p>
+                  </div>
                 </CardHeader>
                 <CardContent className="space-y-2.5">
                   {pigeon.colorPattern && (
@@ -695,7 +705,12 @@ export default function PigeonProfilePage({
 
               <Card>
                 <CardHeader>
-                  <CardTitle>Quick Family Lineage</CardTitle>
+                  <div>
+                    <CardTitle>Quick Family Lineage</CardTitle>
+                    <p className="text-[11px] text-slate-500 font-normal mt-0.5">
+                      High-level genealogy counts for direct offspring, historical pair bonds, and flights.
+                    </p>
+                  </div>
                 </CardHeader>
                 <CardContent className="space-y-3 text-xs">
                   <div className="flex items-center justify-between">
@@ -767,7 +782,12 @@ export default function PigeonProfilePage({
           {/* Historical Pairs */}
           <Card>
             <CardHeader>
-              <CardTitle>Historical Pair Relationships ({pairs.length})</CardTitle>
+              <div>
+                <CardTitle>Historical Pair Relationships ({pairs.length})</CardTitle>
+                <p className="text-[11px] text-slate-500 font-normal mt-0.5">
+                  Partnership history, box allocations, active clutches, and hatch success rates with each mate.
+                </p>
+              </div>
             </CardHeader>
             <CardContent className="space-y-4">
               {pairs.length === 0 ? (
@@ -910,7 +930,12 @@ export default function PigeonProfilePage({
       {activeTab === "offspring" && (
         <Card>
           <CardHeader>
-            <CardTitle>Direct Biological Offspring ({childrenList.length})</CardTitle>
+            <div>
+              <CardTitle>Direct Biological Offspring ({childrenList.length})</CardTitle>
+              <p className="text-[11px] text-slate-500 font-normal mt-0.5">
+                Verified biological progeny hatched from this pigeon, with ring numbers and current status.
+              </p>
+            </div>
           </CardHeader>
           <CardContent>
             {childrenList.length === 0 ? (
@@ -959,8 +984,8 @@ export default function PigeonProfilePage({
               <h3 className="text-sm font-bold text-slate-800">
                 Interactive Ancestry Bloodline Tree
               </h3>
-              <p className="text-xs text-slate-500">
-                Click any known ancestor to explore their digital identity profile.
+              <p className="text-xs text-slate-500 mt-0.5">
+                Multi-generation genealogy tree mapping sires, dams, and foundational ancestral strains. Click any known ancestor to view their profile.
               </p>
             </div>
 
@@ -982,7 +1007,12 @@ export default function PigeonProfilePage({
       {activeTab === "flying" && (
         <Card>
           <CardHeader>
-            <CardTitle>Flight & Racing Performance ({flyingRecords.length})</CardTitle>
+            <div>
+              <CardTitle>Flight & Racing Performance ({flyingRecords.length})</CardTitle>
+              <p className="text-[11px] text-slate-500 font-normal mt-0.5">
+                Training release logs, tossing distances, air speeds, and endurance performance records.
+              </p>
+            </div>
           </CardHeader>
           <CardContent className="space-y-3">
             {flyingRecords.length === 0 ? (
@@ -1032,7 +1062,12 @@ export default function PigeonProfilePage({
       {activeTab === "health" && (
         <Card>
           <CardHeader>
-            <CardTitle>Health & Treatment Log ({healthRecords.length})</CardTitle>
+            <div>
+              <CardTitle>Health & Treatment Log ({healthRecords.length})</CardTitle>
+              <p className="text-[11px] text-slate-500 font-normal mt-0.5">
+                Individual clinical interventions, diagnosis records, prescribed medications, and recovery tracking.
+              </p>
+            </div>
           </CardHeader>
           <CardContent className="space-y-3">
             {healthRecords.length === 0 ? (

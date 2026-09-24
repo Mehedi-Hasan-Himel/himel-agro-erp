@@ -91,17 +91,28 @@ export default function BreedingPairsPage() {
         </Button>
       </div>
 
-      {/* Pairs Table */}
-      {isLoading ? (
-        <div className="py-12 text-center text-slate-400">Loading pairs...</div>
-      ) : (
-        <PairTable
-          pairs={pairs}
-          pigeons={pigeons}
-          rounds={rounds}
-          onDataChanged={loadData}
-        />
-      )}
+      {/* Pairs Table Section */}
+      <div className="space-y-3">
+        <div>
+          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700">
+            Breeding Pair Registry & Nesting Directory ({pairs.length} Pairs)
+          </h2>
+          <p className="text-xs text-slate-500 mt-0.5">
+            Active and historical pairings detailing cock and hen rings, box allocations, active clutches, and lifelong hatch rates.
+          </p>
+        </div>
+
+        {isLoading ? (
+          <div className="py-12 text-center text-slate-400">Loading pairs...</div>
+        ) : (
+          <PairTable
+            pairs={pairs}
+            pigeons={pigeons}
+            rounds={rounds}
+            onDataChanged={loadData}
+          />
+        )}
+      </div>
 
       {/* Pair Form Modal */}
       {isPairModalOpen && (

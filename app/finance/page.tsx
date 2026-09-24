@@ -162,6 +162,21 @@ export default function FinanceManagementPage() {
         </div>
       )}
 
+      {/* Monthly & Period Financial Performance Section */}
+      <div className="space-y-1">
+        <div className="flex items-center gap-2">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700">
+            Monthly & Period Financial Performance
+          </h2>
+          <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 rounded-full">
+            Financial Balance
+          </span>
+        </div>
+        <p className="text-xs text-slate-500">
+          Period-specific cash breakdown showing income from pigeon sales, operational expenditures, and net margin (Net = Income - Expenses).
+        </p>
+      </div>
+
       {/* Monthly KPI Overview Card */}
       {activeMonthSummary && (
         <MonthlyProfitLossCard
@@ -173,11 +188,21 @@ export default function FinanceManagementPage() {
       )}
 
       {/* Transactions Ledger */}
-      <div>
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500">
-            Complete Financial Ledger ({transactions.length} Records)
-          </h2>
+      <div className="space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+          <div>
+            <div className="flex items-center gap-2">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700">
+                Complete Financial Transaction Ledger ({transactions.length} Records)
+              </h2>
+              <span className="text-[10px] font-bold text-blue-700 bg-blue-50 border border-blue-200/80 px-2 py-0.5 rounded-full">
+                Audit Trail
+              </span>
+            </div>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Chronological log of all farm incomes and expenses, detailing transaction date, category, amount, payment method, and description.
+            </p>
+          </div>
         </div>
 
         {isLoading ? (

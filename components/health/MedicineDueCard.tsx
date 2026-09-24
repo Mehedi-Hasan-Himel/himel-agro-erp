@@ -21,13 +21,18 @@ export function MedicineDueCard({
   return (
     <Card className="border-emerald-200/80 shadow-xs">
       <CardHeader className="bg-slate-50/50">
-        <CardTitle className="text-sm font-bold text-slate-800 flex items-center gap-2">
-          <Pill className="w-4 h-4 text-emerald-600" />
-          <span>Medicine & Treatment Protocol</span>
-        </CardTitle>
+        <div>
+          <CardTitle className="text-sm font-bold text-slate-800 flex items-center gap-2">
+            <Pill className="w-4 h-4 text-emerald-600" />
+            <span>Medicine & Treatment Protocol</span>
+          </CardTitle>
+          <p className="text-[11px] text-slate-500 font-normal mt-0.5">
+            Active healthcare courses, scheduled vaccines, and pending dosages due for administration today or upcoming.
+          </p>
+        </div>
         <Link
           href="/health"
-          className="text-xs font-semibold text-emerald-700 hover:underline"
+          className="text-xs font-semibold text-emerald-700 hover:underline shrink-0"
         >
           View All →
         </Link>
