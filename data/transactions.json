@@ -9,7 +9,7 @@
     "description": "2019-2025 total cost",
     "customer": "Local Supplier",
     "notes": "Sheet: BUY | Month: 2019-2025",
-    "createdAt": "2026-09-24T15:33:28.559Z"
+    "createdAt": "2026-09-24T15:41:46.228Z"
   },
   {
     "_id": "txn_sheet_2",
@@ -21,7 +21,7 @@
     "description": "Seeds Mix Kobutor (50KG)",
     "customer": "Joina Bazar",
     "notes": "Sheet: BUY | Month: May",
-    "createdAt": "2026-09-24T15:33:28.559Z"
+    "createdAt": "2026-09-24T15:41:46.228Z"
   },
   {
     "_id": "txn_sheet_3",
@@ -33,7 +33,7 @@
     "description": "MosalDom 2",
     "customer": "Momo",
     "notes": "Sheet: SELL | Month: May",
-    "createdAt": "2026-09-24T15:33:28.559Z"
+    "createdAt": "2026-09-24T15:41:46.228Z"
   },
   {
     "_id": "txn_sheet_4",
@@ -45,7 +45,7 @@
     "description": "Chila Baccha 2",
     "customer": "(Hamim's Mother)",
     "notes": "Sheet: SELL | Month: May",
-    "createdAt": "2026-09-24T15:33:28.559Z"
+    "createdAt": "2026-09-24T15:41:46.228Z"
   },
   {
     "_id": "txn_sheet_5",
@@ -57,7 +57,7 @@
     "description": "Chila Baccha Kalo 2",
     "customer": "Akhi",
     "notes": "Sheet: SELL | Month: May",
-    "createdAt": "2026-09-24T15:33:28.559Z"
+    "createdAt": "2026-09-24T15:41:46.228Z"
   },
   {
     "_id": "txn_sheet_6",
@@ -69,7 +69,7 @@
     "description": "Kath Golap",
     "customer": "Tazri's Friends",
     "notes": "Sheet: SELL | Month: May",
-    "createdAt": "2026-09-24T15:33:28.559Z"
+    "createdAt": "2026-09-24T15:41:46.228Z"
   },
   {
     "_id": "txn_sheet_7",
@@ -81,7 +81,7 @@
     "description": "Giribaz Baccha 2",
     "customer": "(Hamim's Mother)",
     "notes": "Sheet: SELL | Month: June",
-    "createdAt": "2026-09-24T15:33:28.559Z"
+    "createdAt": "2026-09-24T15:41:46.228Z"
   },
   {
     "_id": "txn_sheet_8",
@@ -93,7 +93,7 @@
     "description": "Chuina Baccha 2",
     "customer": "Sajeeb Bhai",
     "notes": "Sheet: Exchange | Month: June",
-    "createdAt": "2026-09-24T15:33:28.559Z"
+    "createdAt": "2026-09-24T15:41:46.228Z"
   },
   {
     "_id": "txn_sheet_9",
@@ -105,7 +105,7 @@
     "description": "Gom 1 Bosta (50 KG)",
     "customer": "Joina Bazar",
     "notes": "Sheet: BUY | Month: July",
-    "createdAt": "2026-09-24T15:33:28.559Z"
+    "createdAt": "2026-09-24T15:41:46.228Z"
   },
   {
     "_id": "txn_sheet_10",
@@ -117,7 +117,7 @@
     "description": "Giribaz Baccha 1",
     "customer": "Aunty",
     "notes": "Sheet: SELL | Month: July",
-    "createdAt": "2026-09-24T15:33:28.559Z"
+    "createdAt": "2026-09-24T15:41:46.228Z"
   },
   {
     "_id": "txn_sheet_11",
@@ -129,7 +129,7 @@
     "description": "Chuina Baccha 1",
     "customer": "Aunty",
     "notes": "Sheet: SELL | Month: July",
-    "createdAt": "2026-09-24T15:33:28.559Z"
+    "createdAt": "2026-09-24T15:41:46.228Z"
   },
   {
     "_id": "txn_sheet_12",
@@ -141,7 +141,7 @@
     "description": "Pankhi Baccha 2",
     "customer": "Momo",
     "notes": "Sheet: SELL | Month: July",
-    "createdAt": "2026-09-24T15:33:28.559Z"
+    "createdAt": "2026-09-24T15:41:46.228Z"
   },
   {
     "_id": "txn_sheet_13",
@@ -153,7 +153,7 @@
     "description": "Kalo Chila 2",
     "customer": "Sajeeb Bhai",
     "notes": "Sheet: Exchange | Month: July",
-    "createdAt": "2026-09-24T15:33:28.559Z"
+    "createdAt": "2026-09-24T15:41:46.228Z"
   },
   {
     "_id": "txn_sheet_14",
@@ -165,7 +165,7 @@
     "description": "Lal Chila Baccha 2",
     "customer": "Siam's Dadi",
     "notes": "Sheet: SELL | Month: July",
-    "createdAt": "2026-09-24T15:33:28.559Z"
+    "createdAt": "2026-09-24T15:41:46.228Z"
   },
   {
     "_id": "txn_sheet_15",
@@ -177,7 +177,7 @@
     "description": "Khaki Baccha 2",
     "customer": "(Hamim's Mother)",
     "notes": "Sheet: SELL | Month: July",
-    "createdAt": "2026-09-24T15:33:28.559Z"
+    "createdAt": "2026-09-24T15:41:46.228Z"
   },
   {
     "_id": "txn_sheet_16",
@@ -189,7 +189,7 @@
     "description": "Khorgus",
     "customer": "Lokhai Bazar",
     "notes": "Sheet: SELL | Month: July",
-    "createdAt": "2026-09-24T15:33:28.559Z"
+    "createdAt": "2026-09-24T15:41:46.228Z"
   },
   {
     "_id": "txn_sheet_17",
@@ -201,7 +201,7 @@
     "description": "Medicine",
     "customer": "Lokhai Bazar",
     "notes": "Sheet: BUY | Month: July",
-    "createdAt": "2026-09-24T15:33:28.559Z"
+    "createdAt": "2026-09-24T15:41:46.228Z"
   },
   {
     "_id": "txn_sheet_18",
@@ -213,7 +213,7 @@
     "description": "Giribaz Baccha 2",
     "customer": "(Hamim's Mother)",
     "notes": "Sheet: SELL | Month: August",
-    "createdAt": "2026-09-24T15:33:28.559Z"
+    "createdAt": "2026-09-24T15:41:46.228Z"
   },
   {
     "_id": "txn_sheet_19",
@@ -225,7 +225,7 @@
     "description": "Feed",
     "customer": "CD Market",
     "notes": "Sheet: BUY | Month: August",
-    "createdAt": "2026-09-24T15:33:28.559Z"
+    "createdAt": "2026-09-24T15:41:46.228Z"
   },
   {
     "_id": "txn_sheet_20",
@@ -237,7 +237,7 @@
     "description": "Feed",
     "customer": "CD Market",
     "notes": "Sheet: BUY | Month: August",
-    "createdAt": "2026-09-24T15:33:28.559Z"
+    "createdAt": "2026-09-24T15:41:46.228Z"
   },
   {
     "_id": "txn_sheet_21",
@@ -249,7 +249,7 @@
     "description": "Vusi",
     "customer": "CD Market",
     "notes": "Sheet: BUY | Month: August",
-    "createdAt": "2026-09-24T15:33:28.559Z"
+    "createdAt": "2026-09-24T15:41:46.228Z"
   },
   {
     "_id": "txn_sheet_22",
@@ -261,7 +261,7 @@
     "description": "Medicine",
     "customer": "Joina Bazar",
     "notes": "Sheet: BUY | Month: August",
-    "createdAt": "2026-09-24T15:33:28.559Z"
+    "createdAt": "2026-09-24T15:41:46.228Z"
   },
   {
     "_id": "txn_sheet_23",
@@ -273,7 +273,7 @@
     "description": "Pankhi-1, Musaldom-1",
     "customer": "(Hamim's Mother)",
     "notes": "Sheet: SELL | Month: September",
-    "createdAt": "2026-09-24T15:33:28.559Z"
+    "createdAt": "2026-09-24T15:41:46.228Z"
   },
   {
     "_id": "txn_sheet_24",
@@ -285,7 +285,7 @@
     "description": "Musaldom-1",
     "customer": "Momo",
     "notes": "Sheet: SELL | Month: September",
-    "createdAt": "2026-09-24T15:33:28.559Z"
+    "createdAt": "2026-09-24T15:41:46.228Z"
   },
   {
     "_id": "txn_sheet_25",
@@ -297,7 +297,7 @@
     "description": "Mix Seeds",
     "customer": "Joina Bazar",
     "notes": "Sheet: Buy | Month: September",
-    "createdAt": "2026-09-24T15:33:28.559Z"
+    "createdAt": "2026-09-24T15:41:46.228Z"
   },
   {
     "_id": "txn_sheet_26",
@@ -309,7 +309,7 @@
     "description": "Vusi",
     "customer": "Joina Bazar",
     "notes": "Sheet: Buy | Month: September",
-    "createdAt": "2026-09-24T15:33:28.559Z"
+    "createdAt": "2026-09-24T15:41:46.228Z"
   },
   {
     "_id": "txn_sheet_27",
@@ -321,7 +321,7 @@
     "description": "Khaki",
     "customer": "Likhoner Ammu",
     "notes": "Sheet: SELL | Month: September",
-    "createdAt": "2026-09-24T15:33:28.559Z"
+    "createdAt": "2026-09-24T15:41:46.228Z"
   },
   {
     "_id": "txn_sheet_28",
@@ -333,7 +333,7 @@
     "description": "Chuina + Pankhi",
     "customer": "Likhoner Kaki",
     "notes": "Sheet: SELL | Month: September",
-    "createdAt": "2026-09-24T15:33:28.559Z"
+    "createdAt": "2026-09-24T15:41:46.228Z"
   },
   {
     "_id": "txn_sheet_29",
@@ -345,6 +345,6 @@
     "description": "Chuina",
     "customer": "Rabbir Ma",
     "notes": "Sheet: SELL | Month: September",
-    "createdAt": "2026-09-24T15:33:28.559Z"
+    "createdAt": "2026-09-24T15:41:46.228Z"
   }
 ]

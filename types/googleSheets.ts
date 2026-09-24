@@ -4,6 +4,9 @@ export const DEFAULT_PIGEONS_SHEET_URL =
 export const DEFAULT_FINANCE_SHEET_URL =
   "https://docs.google.com/spreadsheets/d/1yKxCzT1oji-wJJKuUG3OhyH1V-dAG3nwpSKNbwIwNOI/edit?usp=sharing";
 
+export const DEFAULT_MEDICINE_GUIDE_DOC_URL =
+  "https://docs.google.com/document/d/1ly7mM86pcpKNdR5IlxVJXY_zsssEpaHP7wy7CeFN1f0/edit?usp=sharing";
+
 export const DEFAULT_GOOGLE_SHEET_URL = DEFAULT_PIGEONS_SHEET_URL;
 
 export interface GoogleSheetPigeonRow {

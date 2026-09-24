@@ -7,6 +7,7 @@ import {
   fetchGoogleSheetFinanceData,
   DEFAULT_PIGEONS_SHEET_URL,
   DEFAULT_FINANCE_SHEET_URL,
+  DEFAULT_MEDICINE_GUIDE_DOC_URL,
   extractSpreadsheetId,
 } from "@/lib/services/googleSheetsSync";
 import { connectDB } from "@/lib/mongodb";
@@ -21,6 +22,7 @@ export async function GET(request: NextRequest) {
 
     let pigeonsUrl = searchParams.get("pigeonsUrl") || DEFAULT_PIGEONS_SHEET_URL;
     let financeUrl = searchParams.get("financeUrl") || DEFAULT_FINANCE_SHEET_URL;
+    let medicineDocUrl = searchParams.get("medicineDocUrl") || DEFAULT_MEDICINE_GUIDE_DOC_URL;
     let syncMeta: Record<string, unknown> = {};
 
     const db = await connectDB();
@@ -30,11 +32,13 @@ export async function GET(request: NextRequest) {
         syncMeta = configDoc.data as Record<string, unknown>;
         if (syncMeta.pigeonsSheetUrl) pigeonsUrl = String(syncMeta.pigeonsSheetUrl);
         if (syncMeta.financeSheetUrl) financeUrl = String(syncMeta.financeSheetUrl);
+        if (syncMeta.medicineDocUrl) medicineDocUrl = String(syncMeta.medicineDocUrl);
       }
     } else {
       const storeSettings = (fallbackStore.get().settings as Record<string, unknown>) || {};
       if (storeSettings.pigeonsSheetUrl) pigeonsUrl = String(storeSettings.pigeonsSheetUrl);
       if (storeSettings.financeSheetUrl) financeUrl = String(storeSettings.financeSheetUrl);
+      if (storeSettings.medicineDocUrl) medicineDocUrl = String(storeSettings.medicineDocUrl);
       syncMeta = storeSettings;
     }
 
@@ -50,8 +54,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       pigeonsSheetUrl: pigeonsUrl,
       financeSheetUrl: financeUrl,
+      medicineDocUrl,
       defaultPigeonsSheetUrl: DEFAULT_PIGEONS_SHEET_URL,
       defaultFinanceSheetUrl: DEFAULT_FINANCE_SHEET_URL,
+      defaultMedicineDocUrl: DEFAULT_MEDICINE_GUIDE_DOC_URL,
       lastSyncedAt: syncMeta.lastSyncedAt || null,
       lastSyncStatus: syncMeta.lastSyncStatus || null,
       lastSyncMessage: syncMeta.lastSyncMessage || null,

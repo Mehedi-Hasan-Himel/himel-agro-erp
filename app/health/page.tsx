@@ -27,6 +27,8 @@ import {
   Clock,
   PlusCircle,
   ShieldAlert,
+  FileText,
+  ExternalLink,
 } from "lucide-react";
 
 export default function HealthManagementPage() {
@@ -108,7 +110,18 @@ export default function HealthManagementPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-2.5">
+          <a
+            href="https://docs.google.com/document/d/1ly7mM86pcpKNdR5IlxVJXY_zsssEpaHP7wy7CeFN1f0/edit?usp=sharing"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-800 text-xs font-bold transition-all shadow-2xs"
+            title="Open Monthly Medicine Course Google Doc"
+          >
+            <FileText className="w-3.5 h-3.5 text-rose-600" />
+            <span>ঔষধ গাইডলাইন (Doc)</span>
+            <ExternalLink className="w-3 h-3 text-rose-500" />
+          </a>
           <Button
             variant="outline"
             size="sm"

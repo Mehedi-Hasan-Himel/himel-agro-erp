@@ -620,19 +620,18 @@ export default function SettingsPage() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div className="flex items-center gap-2">
               <FileSpreadsheet className="w-5 h-5 text-emerald-600" />
-              <CardTitle>2. Google Sheets Live Integration (Dual Sheets)</CardTitle>
+              <CardTitle>2. Google Sheets & Documents Live Integration</CardTitle>
             </div>
             <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200 self-start sm:self-auto">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              2 Live Sheets Connected
+              3 Connected Live Assets
             </span>
           </div>
         </CardHeader>
         <CardContent className="space-y-5">
           <p className="text-xs text-slate-600 leading-relaxed">
             Synchronize your <strong>Pigeon Flock Registry</strong> and <strong>Farm Finances & Accounts</strong> directly
-            from your 2 live Google Spreadsheets. Whenever you make edits in either spreadsheet, the app will update
-            automatically in the background or immediately when clicking <strong>Sync Both Sheets Now</strong>.
+            from your live Google Spreadsheets, and access your <strong>Monthly Medicine Guidelines Google Doc</strong> directly from the ERP.
           </p>
 
           {/* Sync Result Banner */}
@@ -753,12 +752,38 @@ export default function SettingsPage() {
             </div>
           </div>
 
-          {/* 3. Automatic 2-Way Sync: Insert Registered Pigeons into Google Sheet */}
+          {/* Document 3: Pigeon Monthly Medicine Course & Guidelines */}
+          <div className="p-4 bg-white rounded-xl border border-slate-200 space-y-2.5 shadow-2xs">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                <span>📋</span> 3. Monthly Medicine Course & Guidelines (Google Doc)
+              </span>
+              <span className="text-[10px] uppercase font-bold text-slate-400">Veterinary Protocol</span>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-2.5 items-center justify-between">
+              <div className="flex-1 w-full text-xs text-slate-600">
+                <span className="font-semibold text-slate-800">কবুতরের মাসিক ঔষধের কোর্স ও ব্যবহার বিধি:</span> Includes monthly saline, liver tonic, deworming (Acimec), multivitamin (Vitalamino), and vitamin B-complex regimens.
+              </div>
+              <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
+                <a
+                  href="https://docs.google.com/document/d/1ly7mM86pcpKNdR5IlxVJXY_zsssEpaHP7wy7CeFN1f0/edit?usp=sharing"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold shadow-2xs transition-all w-full sm:w-auto"
+                >
+                  <ExternalLink className="w-3.5 h-3.5 text-slate-500" />
+                  <span>Open Medicine Doc</span>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          {/* 4. Automatic 2-Way Sync: Insert Registered Pigeons into Google Sheet */}
           <div className="p-4 bg-emerald-50/50 rounded-xl border border-emerald-200/80 space-y-3 shadow-2xs">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
                 <Send className="w-3.5 h-3.5 text-emerald-600" />
-                <span>3. Automatic 2-Way Sync: Insert Registered Pigeons into Google Sheet</span>
+                <span>4. Automatic 2-Way Sync: Insert Registered Pigeons into Google Sheet</span>
               </span>
               <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">
                 ERP → Google Sheet
