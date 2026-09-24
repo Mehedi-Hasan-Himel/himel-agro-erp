@@ -12,7 +12,7 @@ import { SexBadge } from "./SexBadge";
 import { formatDate, calculateAge } from "@/lib/formatters/dateFormatter";
 import { formatCompactRing } from "@/lib/formatters/ringFormatter";
 import { SearchInput } from "../ui/SearchInput";
-import { Eye, GitFork, Edit, Trash2, Tag, Feather, AlertCircle } from "lucide-react";
+import { Eye, GitFork, Edit, Trash2, Tag, Feather, AlertCircle, Compass } from "lucide-react";
 import { DeletePigeonModal } from "./DeletePigeonModal";
 import { BulkDeletePigeonsModal } from "./BulkDeletePigeonsModal";
 import { SaleModal } from "./SaleModal";
@@ -60,19 +60,40 @@ const CATEGORY_OPTIONS = [
     badgeActive: "bg-emerald-100 text-emerald-800",
   },
   {
-    id: "LOST",
-    label: "Lost",
+    id: "RING_LOST",
+    label: "Ring Lost",
     icon: AlertCircle,
     iconClass: "text-amber-600",
     activeColor: "bg-white text-amber-800 shadow-2xs font-semibold",
     badgeActive: "bg-amber-100 text-amber-800",
   },
+  {
+    id: "PIGEON_LOST",
+    label: "Pigeon Lost",
+    icon: Compass,
+    iconClass: "text-orange-600",
+    activeColor: "bg-white text-orange-800 shadow-2xs font-semibold",
+    badgeActive: "bg-orange-100 text-orange-800",
+  },
 ] as const;
 
-export const isLostPigeon = (p: Pigeon) =>
-  p.status === "LOST" ||
+export const isRingLostPigeon = (p: Pigeon) =>
+  (p.breedSubtype || "").toLowerCase().includes("ring lost") ||
   (p.notes || "").toLowerCase().includes("ring lost") ||
-  (p.breedSubtype || "").toLowerCase().includes("ring lost");
+  (p.lostNotes || "").toLowerCase().includes("ring lost");
+
+export const isPigeonLostPigeon = (p: Pigeon) =>
+  !isRingLostPigeon(p) && (
+    p.status === "LOST" ||
+    (p.breedSubtype || "").toLowerCase().includes("pigeon lost") ||
+    (p.notes || "").toLowerCase().includes("pigeon lost") ||
+    (p.notes || "").toLowerCase().includes("lost in flight") ||
+    (p.lostNotes || "").toLowerCase().includes("pigeon lost") ||
+    (p.lostNotes || "").toLowerCase().includes("lost in flight")
+  );
+
+export const isAnyLostPigeon = (p: Pigeon) =>
+  isRingLostPigeon(p) || isPigeonLostPigeon(p);
 
 export function PigeonTable({
   pigeons,
@@ -83,7 +104,7 @@ export function PigeonTable({
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState(initialStatusFilter);
   const [categoryFilter, setCategoryFilter] = useState(
-    initialStatusFilter === "LOST" ? "LOST" : "ALL"
+    initialStatusFilter === "LOST" ? "RING_LOST" : "ALL"
   );
   const [breedFilter, setBreedFilter] = useState("ALL");
   const [yearFilter, setYearFilter] = useState("ALL");
@@ -147,11 +168,16 @@ export function PigeonTable({
     let male = 0;
     let female = 0;
     let baby = 0;
-    let lost = 0;
+    let ringLost = 0;
+    let pigeonLost = 0;
 
     pigeons.forEach((p) => {
-      if (isLostPigeon(p)) {
-        lost += 1;
+      if (isRingLostPigeon(p)) {
+        ringLost += 1;
+        return;
+      }
+      if (isPigeonLostPigeon(p)) {
+        pigeonLost += 1;
         return;
       }
       all += 1;
@@ -164,12 +190,19 @@ export function PigeonTable({
       }
     });
 
-    return { ALL: all, MALE: male, FEMALE: female, BABY: baby, LOST: lost };
+    return {
+      ALL: all,
+      MALE: male,
+      FEMALE: female,
+      BABY: baby,
+      RING_LOST: ringLost,
+      PIGEON_LOST: pigeonLost,
+    };
   }, [pigeons]);
 
   const handleCategoryClick = (cat: string) => {
     setCategoryFilter(cat);
-    if (cat === "LOST") {
+    if (cat === "RING_LOST" || cat === "PIGEON_LOST") {
       if (statusFilter !== "ALL" && statusFilter !== "LOST") {
         setStatusFilter("ALL");
       }
@@ -213,22 +246,24 @@ export function PigeonTable({
       if (statusFilter === "FOR_SALE") {
         if (!(p.status === "ACTIVE" && p.isForSale === true)) return false;
       } else if (statusFilter === "LOST") {
-        if (!isLostPigeon(p)) return false;
+        if (!isAnyLostPigeon(p)) return false;
       } else if (statusFilter !== "ALL" && p.status !== statusFilter) {
         return false;
       }
 
-      if (categoryFilter === "LOST") {
-        if (!isLostPigeon(p)) return false;
+      if (categoryFilter === "RING_LOST") {
+        if (!isRingLostPigeon(p)) return false;
+      } else if (categoryFilter === "PIGEON_LOST") {
+        if (!isPigeonLostPigeon(p)) return false;
       } else if (categoryFilter === "MALE") {
-        if (p.sex !== "MALE" || isLostPigeon(p)) return false;
+        if (p.sex !== "MALE" || isAnyLostPigeon(p)) return false;
       } else if (categoryFilter === "FEMALE") {
-        if (p.sex !== "FEMALE" || isLostPigeon(p)) return false;
+        if (p.sex !== "FEMALE" || isAnyLostPigeon(p)) return false;
       } else if (categoryFilter === "BABY") {
-        if (p.sex === "MALE" || p.sex === "FEMALE" || isLostPigeon(p)) return false;
+        if (p.sex === "MALE" || p.sex === "FEMALE" || isAnyLostPigeon(p)) return false;
       } else {
         // "ALL": only available pigeons (lost pigeon or lost ring should not be counted as all)
-        if (isLostPigeon(p)) return false;
+        if (isAnyLostPigeon(p)) return false;
       }
 
       if (breedFilter !== "ALL" && p.breed !== breedFilter) return false;
@@ -361,8 +396,10 @@ export function PigeonTable({
                 const val = e.target.value;
                 setStatusFilter(val);
                 if (val === "LOST") {
-                  setCategoryFilter("LOST");
-                } else if (categoryFilter === "LOST") {
+                  if (categoryFilter !== "RING_LOST" && categoryFilter !== "PIGEON_LOST") {
+                    setCategoryFilter(categoryCounts.RING_LOST > 0 ? "RING_LOST" : "PIGEON_LOST");
+                  }
+                } else if (categoryFilter === "RING_LOST" || categoryFilter === "PIGEON_LOST") {
                   setCategoryFilter("ALL");
                 }
               }}
