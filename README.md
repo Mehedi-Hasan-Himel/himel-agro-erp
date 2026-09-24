@@ -7,11 +7,12 @@
 [![React](https://img.shields.io/badge/React-19.2-61DAFB?style=for-the-badge&logo=react)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.0-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
-[![License](https://img.shields.io/badge/License-Proprietary-emerald?style=for-the-badge)](LICENSE)
+[![Vercel](https://img.shields.io/badge/Vercel-Deployed-success?style=for-the-badge&logo=vercel)](https://himel-agro-erp.vercel.app)
+[![Google Sheets](https://img.shields.io/badge/Google_Sheets-2--Way_Sync-34A853?style=for-the-badge&logo=googlesheets)](https://script.google.com)
 
-**A specialized, full-lifecycle Pigeon Farm ERP engineered for bloodline genealogy, multi-generational pedigree tracking, breeding round optimization, flock health schedules, feed inventory, and financial accounting.**
+**An enterprise-grade, full-lifecycle Pigeon Farm ERP engineered for bloodline genealogy, multi-generational pedigree tracking, real-time bidirectional Google Sheets synchronization, breeding optimization, flock health schedules, feed inventory, and financial accounting.**
 
-[Features](#-key-features) • [System Architecture](#-project-structure) • [Ring Specification](#-ring-number-specification) • [Getting Started](#-getting-started) • [Contact](#-loft-contact)
+[Live Production](https://himel-agro-erp.vercel.app) • [Key Features](#-key-features) • [Google Sheets Sync](#-2-way-google-sheets-sync-engine) • [Architecture](#-system-architecture) • [Getting Started](#-getting-started) • [Contact](#-loft-contact)
 
 ---
 
@@ -19,131 +20,187 @@
 
 ## 📌 Overview
 
-**Himel's Pet House ERP** is built to address the unique challenges of professional pigeon breeders and racing fanciers. From managing high-flyer lines (such as *Giribaz*) to maintaining tamper-proof genealogy and commercial sale records, Himel's Pet House ERP digitizes entire loft operations with modern web performance, responsive UI design, and automated PDF pedigree certificates.
+**Himel's Pet House ERP** is a full-featured management platform custom-built for professional pigeon fanciers and commercial breeders. From managing high-flyer bloodlines (such as *Giribaz* and *Racing Homers*) to tracking tamper-proof genealogy, physical ring records, and real-time ledger accounting, this ERP digitizes every facet of loft operations.
+
+The system features **2-way real-time Google Sheets synchronization** (full CRUD support with bidirectional deletion), **instant PDF pedigree dossiers**, **dynamic biological relationship calculation**, and a **responsive Skeleton UI**.
 
 ---
 
 ## 🚀 Key Features
 
-### 1. 🕊️ Pigeon Flock Registry & Organic Grid
-- **Dynamic Unique ID**: Prominent identifiers for every bird (e.g., `2026-01-G`).
-- **Reformed Physical Ring Format**: Green ring badge displaying `YYYY | SS | Farm | Contact` (e.g., `2026 | 01 | Himel's Pet House | 01560059954`).
-- **Responsive Organic Grid View**:
-  - 16:10 visual hero media banner with smooth hover zoom.
-  - Quick floating badges for sex, status, active breeding pair, and asking price (`৳`).
-  - Spec microgrid displaying Hatch Date, live calculated Age, Clutch ID, and Line Origin.
-  - Gender-coded Sire & Dam cards linking directly to biological parent profiles.
-  - Multi-breakpoint responsive grid layout (`1 col` mobile → `4 cols` 2XL displays).
-- **Tabular Registry**: Density-controlled table with multi-select bulk operations and CSV export readiness.
-- **Real-Time Search & Filtering**: Filter by Hatch Year, Breed, Status (Active, For Sale, Sold, Dead, Lost), Sex, or query by any ring, serial, or clutch keyword.
+### 1. 🕊️ Pigeon Flock Registry & Quick Category Filter
+- **Multi-Category Quick Selector**:
+  - Filter pigeons instantly by **All**, **Male**, **Female**, **Baby**, and **Lost** with live real-time count badges.
+  - Standardized terminology: biological sexes are strictly **Male (Cock)**, **Female (Hen)**, and **Baby (Squab)**.
+  - Dedicated **Lost** category displays birds marked as Lost or with notes indicating a lost ring.
+- **Physical Ring Numbering Standard**:
+  - Prominent badge showing `YYYY | SS | Farm | Contact` (e.g., `2026 | 01 | Himel's Pet House | 01560059954`).
+  - Canonical identifier generation (e.g., `2026-01-GS-M`).
+- **Dual Display Modes**:
+  - **Organic Grid View**: 16:10 visual hero cards with hover zoom, quick action menus, floating status badges, biological Sire & Dam links, and sale pricing.
+  - **Tabular Registry**: Density-controlled table with sorting, multi-select bulk deletion, and quick status actions.
+- **Search & Multi-Filter Toolbar**: Filter by Hatch Year, Breed, Status (Active, Available for Sale, Sold, Dead, Lost), Category, or free text search across ring numbers, parents, and notes.
 
-### 2. 🧬 Biological Family & Relationship System
-- **Deterministic Traversal Engine**: Computes authentic multi-generational relationships from authoritative `fatherId` and `motherId`:
-  - **Parents**: Biological Sire (Father) & Dam (Mother).
-  - **Twin Siblings**: Pigeons sharing the same parents, birth date, and clutch.
-  - **Full Siblings**: Pigeons sharing the same parents from different clutches/dates.
-  - **Half-Siblings**: Maternal (same Dam) and Paternal (same Sire) half-siblings.
-  - **Extended Bloodline**: Children, Grandchildren, Grandparents, Uncles, Aunts, Nephews, Nieces, and Cousins.
-- **Dedicated Family UI**: View direct biological kin in both the profile Overview and dedicated Family tab.
+### 2. ⚡ Bidirectional Real-Time Google Sheets Sync
+- **2-Way Real-Time CRUD Engine**:
+  - **Create**: Registering a pigeon or logging an income/expense in the ERP pushes a new row to Google Sheets instantly.
+  - **Update**: Editing details (breed, color, status, parents, prices) updates the corresponding row in Google Sheets via Google Apps Script.
+  - **Delete**: Deleting records from the ERP removes them from Google Sheets (`DELETE_PIGEON` / `DELETE_TRANSACTION`).
+  - **Remote Deletion Reconciliation**: If a record is deleted directly inside the Google Sheet, the ERP automatically purges it from the local JSON store and MongoDB upon sync.
+- **Auto-Sync & Manual Triggers**:
+  - Background polling hook keeps the UI synchronized.
+  - 1-click manual **Sync Sheet** button in the navigation header with detailed status notifications (added, updated, removed counts).
+  - Webhook endpoint (`/api/sync/google-sheets/push`) allows Google Sheets edit triggers to notify the ERP immediately.
 
-### 3. 📜 Official Pedigree & PDF Dossier Engine
-- **Visual Pedigree Bloodline Tree**: Multi-generation interactive lineage chart tracing ancestors back through generations.
-- **1-Click Official Pedigree PDF**: Exports an official landscape A4 bloodline certificate with certified seals and ancestor performance notes.
-- **1-Click Pigeon Info PDF**: Generates a comprehensive portrait A4 dossier covering identification, full family lineage summary, breeding stats, health logs, and authorized loft master signature area.
+### 3. 🧬 Biological Family & Pedigree Genealogy Engine
+- **Deterministic Kinship Traversal**: Computes relationships using biological `fatherId` and `motherId`:
+  - **Direct Parents**: Biological Sire (Father) and Dam (Mother).
+  - **Siblings**: Full brothers/sisters (same parents) and half-siblings (shared Sire or shared Dam).
+  - **Twin Siblings**: Pigeons sharing identical parents, birth date, and clutch identifier.
+  - **Extended Bloodline**: Grandparents, Grandchildren, Uncles, Aunts, Nephews, Nieces, and Cousins.
+- **Interactive Lineage Tree**: Multi-generational visual pedigree view.
+- **Official PDF Generation**:
+  - **Landscape Pedigree Certificate**: Official A4 pedigree document with certified loft seal and ancestor performance traits.
+  - **Portrait Comprehensive Dossier**: Full profile sheet containing physical metrics, family bloodline summary, health log, and loft master signature line.
 
-### 4. 📹 Multimedia Showcase
-- **Photo Gallery**: High-resolution image uploads with responsive thumbnails and lightbox preview.
-- **Video Showcase**: Embed video links directly (YouTube standard links, Shorts, Facebook video, and direct MP4/WebM files) with an in-app player modal.
+### 4. 🥚 Breeding Center & Pair Management
+- **Pair Mating**: Pair active Cocks and Hens with designated cage/loft numbers and pairing dates.
+- **Breeding Rounds Tracker**: Track clutches, egg laying dates, fertility, hatch dates, ring banding, and automated hatch rate calculations (`%`).
 
-### 5. 🥚 Breeding Center & Pair Management
-- **Pair Formation**: Manage active and past breeding pairs with cage numbers and mating dates.
-- **Breeding Rounds Tracker**: Log egg laying dates, hatch dates, baby pigeon IDs, and automatic hatching success rates (`%`).
+### 5. 💊 Health & Medication Protocol
+- **Treatment Courses**: Plan preventive vaccines, dewormers, multi-vitamins, and antibiotic treatments.
+- **Daily Due Reminders**: Visual alerts on the dashboard when treatments or booster doses are scheduled for today.
 
-### 6. 💊 Health & Medication Protocol
-- **Scheduled Treatments**: Track flock-wide preventive medicine (liver tonics, dewormers, multi-vitamins, electrolytes) and custom treatment courses.
-- **Daily Due Reminders**: Visual dashboard alerts for medications due today.
+### 6. 🌾 Feed Inventory & Stock Control
+- **Grain Stock Monitoring**: Track grain varieties (Millet/Bajra, Maize/Corn, Green Peas/Dabli, Wheat, Mineral Grit).
+- **Low Stock Threshold Warnings**: Dynamic warnings when grain reserves dip below minimum reorder levels.
 
-### 7. 🌾 Feed & Inventory Control
-- **Grain Inventory**: Monitor stock levels for Millet (Bajra), Corn/Maize, Green Peas (Dabli), Mineral Grit, and specialty feeds.
-- **Low Stock Threshold Alerts**: Automatic warnings when feed reserves fall below minimum thresholds.
+### 7. ৳ Finance & Accounts Ledger
+- **Income & Expense Tracking**: Pigeon sales, breeding services, grain purchases, ring orders, and accessories.
+- **Automated Profit Metrics**: Real-time calculation of Total Income, Total Expenses, and Net Margin (`৳`).
+- **Synchronized with Google Sheets**: Ledger transactions mirror the Google Sheet finance tab.
 
-### 8. ৳ Finance & Accounts Ledger
-- **Income Records**: Pigeon sales, breeding fees, and commercial transactions.
-- **Expense Records**: Feed purchases, ring orders, medications, loft accessories.
-- **Monthly Net Profit**: Automated calculation of profit margins (`Income - Expenses`).
+### 8. ⚡ Responsive Skeleton UI
+- Built with animated Tailwind CSS skeletons across all major views (**Dashboard**, **Pigeons Registry**, **Profile**, **Breeding**, **Health**, **Feed**, and **Finance**).
+- Zero layout shifting or blank screen states during initial loads or sheet re-synchronizations.
 
 ---
 
-## 🏗️ Project Structure
+## 📊 System Architecture
 
 ```text
 himel-agro-erp/
-├── app/                              # Next.js App Router
-│   ├── api/                          # REST API endpoints (pigeons, breeding, pairs)
-│   ├── breeding/                     # Breeding pairs & rounds dashboard
-│   ├── dashboard/                    # Primary ERP executive dashboard
-│   ├── feed/                         # Feed inventory & alert tracking
-│   ├── finance/                      # Financial ledger & income/expense reports
-│   ├── health/                       # Health protocol & medicine schedule
+├── app/                              # Next.js App Router (Turbopack)
+│   ├── api/                          # REST API Routes
+│   │   ├── breeding-rounds/          # Breeding rounds CRUD
+│   │   ├── dashboard/                # Live metrics & counts endpoint
+│   │   ├── feed-purchases/           # Feed purchase log
+│   │   ├── feed-usage/               # Daily grain consumption
+│   │   ├── flying-records/           # High-flyer flight logs
+│   │   ├── health-records/           # Disease & treatment logs
+│   │   ├── medicine-schedules/       # Medication calendar & reminders
+│   │   ├── pairs/                    # Active & past breeding pairs
+│   │   ├── pigeons/                  # Pigeon Registry API (with live sheet reconciliation)
+│   │   ├── sync/google-sheets/       # Google Sheets sync triggers & push webhooks
+│   │   └── transactions/             # Financial accounting ledger API
+│   ├── breeding/                     # Breeding pairs & clutch management UI
+│   ├── dashboard/                    # Executive overview & active flock widgets
+│   ├── feed/                         # Feed inventory tracker
+│   ├── finance/                      # Income & expense ledger
+│   ├── health/                       # Health schedules & vaccination logs
 │   ├── pigeons/                      # Flock Registry (Table & Organic Grid View)
-│   │   ├── [id]/                     # Dynamic Pigeon Profile
-│   │   │   ├── edit/                 # Edit pigeon profile
-│   │   │   ├── pedigree/             # Standalone interactive pedigree view
-│   │   │   └── page.tsx              # Comprehensive profile with tabs
-│   │   ├── new/                      # New pigeon registration form
-│   │   └── page.tsx                  # Registry list & search/filter interface
-│   ├── settings/                     # Loft settings & system configuration
-│   ├── layout.tsx                    # Root application layout
-│   └── page.tsx                      # Landing redirect to /dashboard
+│   │   ├── [id]/                     # Dynamic Pigeon Profile & Family Tree
+│   │   │   ├── edit/                 # Pigeon Edit Form
+│   │   │   └── pedigree/             # Standalone interactive pedigree certificate
+│   │   ├── new/                      # New Pigeon Registration Form
+│   │   └── page.tsx                  # Registry with Category (All, Male, Female, Baby, Lost)
+│   ├── settings/                     # Loft settings & Google Sheets integration config
+│   ├── layout.tsx                    # Root AppShell & layout wrapper
+│   └── page.tsx                      # Root redirect to /dashboard
 ├── components/
-│   ├── breeding/                     # Pair forms, round tables, mating cards
-│   ├── layout/                       # AppShell, Sidebar, Header, Breadcrumbs
-│   ├── pedigree/                     # Pedigree tree, PDF modal, printable templates
-│   ├── pigeons/                      # PigeonCard, PigeonGrid, PigeonTable, VideoGallery
-│   └── ui/                           # Badges, icons (Cock, Hen, Squab, Taka), SearchInput
-├── data/                             # Local database store (JSON fallbacks)
-│   ├── pairs.json                    # Breeding pairs and clutch history
-│   ├── pigeons.json                  # Flock records & genealogy data
-│   └── settings.json                 # Loft branding & farm parameters
+│   ├── breeding/                     # PairFormModal, BreedingRoundTable
+│   ├── dashboard/                    # LiveFlockRegistryWidget, FinancialSummary
+│   ├── layout/                       # Sidebar, Header, Breadcrumbs, Navigation
+│   ├── pedigree/                     # PedigreeNode, PrintablePedigree, PedigreePDFModal
+│   ├── pigeons/                      # PigeonTable, PigeonGrid, PigeonCard, SexBadge, StatusBadge
+│   └── ui/                           # Skeleton, SearchInput, Custom Icons (Cock, Hen, Squab, Taka)
+├── data/                             # File-based JSON fallback repository
+│   ├── pairs.json                    # Breeding pair data snapshot
+│   ├── pigeons.json                  # Active flock registry snapshot
+│   ├── settings.json                 # Loft configuration snapshot
+│   └── transactions.json             # Financial records snapshot
 ├── lib/
-│   ├── calculations/                 # Biological relationship & pedigree algorithms
-│   ├── config/                       # Site & loft metadata (siteConfig.ts)
-│   ├── formatters/                   # Currency (৳), date, and ring formatters
-│   ├── pedigree/                     # PDF export engine (jsPDF / html-to-image)
-│   └── repositories/                 # Data access layer (JSON & MongoDB sync)
-├── types/                            # TypeScript schemas (pigeon, breeding, pedigree)
-└── public/                           # Static assets, loft logos, and badges
+│   ├── calculations/                 # Kinship calculator & flock statistics
+│   ├── config/                       # Loft branding & site metadata
+│   ├── formatters/                   # Currency (৳), date, and physical ring formatters
+│   ├── hooks/                        # useGoogleSheetSync (auto-polling & sync triggers)
+│   ├── pedigree/                     # jsPDF & HTML canvas export engines
+│   ├── repositories/                 # Storage adapter (MongoDB + Local JSON Fallback)
+│   └── services/                     # Google Sheets sync & push services
+└── types/                            # TypeScript interfaces & domain types
+```
+
+---
+
+## 🔄 2-Way Google Sheets Sync Engine
+
+The ERP connects to a Google Sheets workbook via an authoritative Google Apps Script web app endpoint:
+
+| Action | HTTP Method | Payload / Response |
+| :--- | :--- | :--- |
+| **Fetch & Reconcile** | `GET` | Pulls all rows, parses columns (rings, breeds, sex, status), and purges ERP records missing from Sheet. |
+| **Insert Pigeon** | `POST` | `{ action: "INSERT_PIGEON", ringNumber, breed, gender, status, notes, ... }` |
+| **Update Pigeon** | `POST` | `{ action: "UPDATE_PIGEON", ringNumber, breed, gender, status, notes, ... }` |
+| **Delete Pigeon** | `POST` | `{ action: "DELETE_PIGEON", ringNumber: "01--2026" }` |
+| **Insert Transaction**| `POST` | `{ action: "INSERT_TRANSACTION", type: "SELL", amount: 1500, ... }` |
+| **Delete Transaction**| `POST` | `{ action: "DELETE_TRANSACTION", id: "txn_123" }` |
+
+### Environment Variables
+Configure your `.env.local` to connect Google Sheets and MongoDB:
+
+```env
+# Google Apps Script Web App Deployment URL
+NEXT_PUBLIC_GOOGLE_SHEETS_SCRIPT_URL="https://script.google.com/macros/s/AKfycbzU4871CsSjuimWX2oRG5pqpgWokFsK4Hhjd6EPr6YcsOwVA-knV9fexscWrRO-eofLTg/exec"
+
+# Target Google Spreadsheet URL (Pigeons & Finance Ledger)
+NEXT_PUBLIC_GOOGLE_SHEETS_URL="https://docs.google.com/spreadsheets/d/1w894o27P0eF4Sgt59l11_VfW995Y3pLwO77mB8Jk2sQ/edit"
+
+# MongoDB Database Connection String (Optional, falls back to data/*.json)
+MONGODB_URI="mongodb+srv://<username>:<password>@cluster.mongodb.net/himel-agro-erp?retryWrites=true&w=majority"
 ```
 
 ---
 
 ## 🏷️ Ring Number Specification
 
-Himel's Pet House ERP enforces an authoritative, standardized physical ring numbering system:
+Himel's Pet House ERP enforces a standardized physical ring numbering system:
 
-$$\text{Format:} \quad \mathbf{YYYY \mid SS \mid Farm \mid Contact}$$
+$$\text{Physical Ring Format:} \quad \mathbf{YYYY \mid SS \mid Farm \mid Contact}$$
 
-| Component | Description | Example |
+| Component | Meaning | Example |
 | :--- | :--- | :--- |
 | **YYYY** | Hatch / Registration Year | `2026` |
-| **SS** | 2-Digit Ring Serial | `01` |
+| **SS** | 2-Digit Serial Number | `01` |
 | **Farm** | Certified Farm Name | `Himel's Pet House` |
-| **Contact** | Official Loft Phone | `01560059954` |
+| **Contact** | Certified Loft Phone | `01560059954` |
 
-**Rendered Example:**
-$$\colorbox{#059669}{\color{white}\texttt{\textbf{ 2026 | 01 | Himel's Pet House | 01560059954 }}}$$
+**Physical Ring Badge:**
+```text
+[ 2026 | 01 | Himel's Pet House | 01560059954 ]
+```
 
 ---
 
 ## 🛠️ Tech Stack
 
-- **Framework**: [Next.js 16 (App Router)](https://nextjs.org/)
-- **Runtime & UI**: [React 19](https://react.dev/)
-- **Styling**: [Tailwind CSS 4](https://tailwindcss.com/)
-- **Language**: [TypeScript 5](https://www.typescriptlang.org/)
-- **Icons**: [Lucide React](https://lucide.dev/) + Handcrafted Pigeon Vector Icons
+- **Frontend & Fullstack**: [Next.js 16.3](https://nextjs.org/) (Turbopack, App Router)
+- **Runtime**: [React 19.2](https://react.dev/)
+- **Type Safety**: [TypeScript 5](https://www.typescriptlang.org/)
+- **Styling**: [Tailwind CSS 4.0](https://tailwindcss.com/)
+- **Icons**: [Lucide React](https://lucide.dev/) + Handcrafted Pigeon Domain Icons (`CockPigeonIcon`, `HenPigeonIcon`, `SquabIcon`, `TakaIcon`)
 - **PDF Generation**: [jsPDF](https://github.com/parallax/jsPDF) & [html-to-image](https://github.com/bubkoo/html-to-image)
-- **Database**: File-based JSON storage with optional [MongoDB / Mongoose](https://www.mongodb.com/) synchronization
+- **Database & Storage**: Dual Storage Adapter ([MongoDB Atlas / Mongoose](https://www.mongodb.com/) + file-backed JSON store in `data/`)
+- **Deployment**: [Vercel](https://vercel.com/)
 
 ---
 
@@ -153,7 +210,7 @@ $$\colorbox{#059669}{\color{white}\texttt{\textbf{ 2026 | 01 | Himel's Pet House
 - **Node.js**: v18.18.0 or higher (v20+ recommended)
 - **Package Manager**: `npm`, `pnpm`, or `yarn`
 
-### Installation
+### Installation & Run
 
 1. **Clone the repository**:
    ```bash
@@ -166,46 +223,43 @@ $$\colorbox{#059669}{\color{white}\texttt{\textbf{ 2026 | 01 | Himel's Pet House
    npm install
    ```
 
-3. **Configure Environment Variables (Optional)**:
-   Create a `.env.local` file if you wish to connect to a live MongoDB instance:
-   ```env
-   MONGODB_URI=mongodb://localhost:27017/himel-agro-erp
-   ```
-   *(If not set, the system automatically uses the bundled local JSON repository in `data/`).*
+3. **Configure Environment Variables**:
+   Copy `.env.example` to `.env.local` and add your Google Sheets and MongoDB credentials.
 
-4. **Start Development Server**:
+4. **Start the Development Server**:
    ```bash
    npm run dev
    ```
 
 5. **Open the Application**:
-   Navigate to [http://localhost:3000](http://localhost:3000) in your browser.
+   Navigate to [http://localhost:3000](http://localhost:3000).
 
 ---
 
 ## 🧪 Available Scripts
 
-| Command | Description |
+| Script | Purpose |
 | :--- | :--- |
-| `npm run dev` | Runs the Next.js development server with Fast Refresh |
-| `npm run build` | Compiles the production build |
-| `npm run start` | Launches the compiled production application |
-| `npm run lint` | Runs ESLint to inspect code quality |
-| `npx tsc --noEmit` | Runs the TypeScript compiler to verify zero type errors |
+| `npm run dev` | Runs the Next.js development server with Turbopack Fast Refresh |
+| `npm run build` | Compiles the production build with full static/dynamic route verification |
+| `npm run start` | Starts the optimized production server |
+| `npm run lint` | Runs Next.js ESLint checks |
+| `npx tsc --noEmit` | Runs the TypeScript compiler to ensure 0 type errors |
 
 ---
 
-## 📍 Loft Contact
+## 📍 Loft Contact & Socials
 
-- **Farm Name**: **Himel's Pet House**
+- **Farm / Loft Name**: **Himel's Pet House**
 - **Loft Master**: **Mehedi Hasan Himel**
-- **Phone / Loft Line**: `+880 1560059954`
+- **Official Loft Phone**: `+880 1560059954`
 - **WhatsApp**: [Chat on WhatsApp (+8801560059954)](https://wa.me/8801560059954)
 - **Facebook**: [facebook.com/Himel.Pet.House](https://www.facebook.com/Himel.Pet.House)
 - **Location**: [Loft Location on Google Maps](https://maps.app.goo.gl/rxvdsxq8ydnqfEKQ6)
+- **Live Production ERP**: [https://himel-agro-erp.vercel.app](https://himel-agro-erp.vercel.app)
 
 ---
 
 <div align="center">
-  <p>© 2026 Himel's Pet House. All rights reserved.</p>
+  <p>© 2026 Himel's Pet House. Built with pride for professional avian fanciers.</p>
 </div>
