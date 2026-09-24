@@ -106,7 +106,7 @@ export function PigeonGrid({
   }, [pigeons]);
 
   const categoryCounts = useMemo(() => {
-    let all = pigeons.length;
+    let all = 0;
     let male = 0;
     let female = 0;
     let baby = 0;
@@ -117,6 +117,7 @@ export function PigeonGrid({
         lost += 1;
         return;
       }
+      all += 1;
       if (p.sex === "MALE") {
         male += 1;
       } else if (p.sex === "FEMALE") {
@@ -135,7 +136,7 @@ export function PigeonGrid({
       if (statusFilter !== "ALL" && statusFilter !== "LOST") {
         setStatusFilter("ALL");
       }
-    } else if (cat !== "ALL") {
+    } else {
       if (statusFilter === "LOST") {
         setStatusFilter("ALL");
       }
@@ -196,6 +197,9 @@ export function PigeonGrid({
         if (p.sex !== "FEMALE" || isLostPigeon(p)) return false;
       } else if (categoryFilter === "BABY") {
         if (p.sex === "MALE" || p.sex === "FEMALE" || isLostPigeon(p)) return false;
+      } else {
+        // "ALL": only available pigeons (lost pigeon or lost ring should not be counted or shown as all)
+        if (isLostPigeon(p)) return false;
       }
 
       // Breed filter
