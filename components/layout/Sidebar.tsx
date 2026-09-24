@@ -16,8 +16,14 @@ import {
   X,
   PlusCircle,
   MapPin,
+  FileSpreadsheet,
+  ExternalLink,
 } from "lucide-react";
 import { TakaIcon } from "../ui/icons";
+import {
+  DEFAULT_PIGEONS_SHEET_URL,
+  DEFAULT_FINANCE_SHEET_URL,
+} from "@/types/googleSheets";
 
 export interface SidebarProps {
   isOpen?: boolean;
@@ -69,6 +75,18 @@ const navItems = [
 
 export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
   const pathname = usePathname();
+  const [pigeonsSheetUrl, setPigeonsSheetUrl] = React.useState(DEFAULT_PIGEONS_SHEET_URL);
+  const [financeSheetUrl, setFinanceSheetUrl] = React.useState(DEFAULT_FINANCE_SHEET_URL);
+
+  React.useEffect(() => {
+    fetch("/api/sync/google-sheets")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.pigeonsSheetUrl) setPigeonsSheetUrl(data.pigeonsSheetUrl);
+        if (data?.financeSheetUrl) setFinanceSheetUrl(data.financeSheetUrl);
+      })
+      .catch(() => {});
+  }, []);
 
   const sidebarContent = (
     <div className="flex flex-col h-full bg-slate-900 text-slate-300 border-r border-slate-800">
@@ -150,6 +168,64 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
             </Link>
           );
         })}
+
+        {/* Connected Google Sheets Links */}
+        <div className="pt-3.5 pb-1 border-t border-slate-800/80 mt-2.5">
+          <div className="px-2 pb-2 flex items-center justify-between">
+            <span className="text-[10px] font-bold tracking-wider uppercase text-slate-400 flex items-center gap-1.5">
+              <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Google Sheets</span>
+            </span>
+            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              2 Live
+            </span>
+          </div>
+
+          <div className="space-y-1">
+            <a
+              href={pigeonsSheetUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800/90 border border-transparent hover:border-slate-700/60 transition-all group"
+              title="Open Pigeon Flock Registry Google Sheet"
+            >
+              <div className="flex items-center gap-2.5 min-w-0">
+                <span className="text-sm shrink-0">🕊️</span>
+                <div className="truncate">
+                  <span className="block truncate text-slate-200 group-hover:text-emerald-300 transition-colors">
+                    Pigeon Registry Sheet
+                  </span>
+                  <span className="block text-[10px] font-normal text-slate-400 truncate">
+                    Flock & Ring Master
+                  </span>
+                </div>
+              </div>
+              <ExternalLink className="w-3.5 h-3.5 text-slate-500 group-hover:text-emerald-400 shrink-0 ml-1 transition-colors" />
+            </a>
+
+            <a
+              href={financeSheetUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800/90 border border-transparent hover:border-slate-700/60 transition-all group"
+              title="Open Farm Finances & Accounts Google Sheet"
+            >
+              <div className="flex items-center gap-2.5 min-w-0">
+                <span className="text-sm shrink-0">💰</span>
+                <div className="truncate">
+                  <span className="block truncate text-slate-200 group-hover:text-emerald-300 transition-colors">
+                    Finance & Accounts Sheet
+                  </span>
+                  <span className="block text-[10px] font-normal text-slate-400 truncate">
+                    Ledger & Expenses
+                  </span>
+                </div>
+              </div>
+              <ExternalLink className="w-3.5 h-3.5 text-slate-500 group-hover:text-emerald-400 shrink-0 ml-1 transition-colors" />
+            </a>
+          </div>
+        </div>
       </nav>
 
       {/* Social, WhatsApp & Location Quick Links */}
