@@ -16,6 +16,7 @@ import { formatCompactRing } from "@/lib/formatters/ringFormatter";
 import { MedicineDueCard } from "@/components/health/MedicineDueCard";
 import { HealthRecordModal } from "@/components/health/HealthRecordModal";
 import { MedicineScheduleModal } from "@/components/health/MedicineScheduleModal";
+import { LiveGoogleDocGuidelines } from "@/components/health/LiveGoogleDocGuidelines";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Tabs } from "@/components/ui/Tabs";
@@ -50,7 +51,7 @@ export default function HealthManagementPage() {
       const [records, scheds, due, allPigeons] = await Promise.all([
         getHealthRecords(),
         getMedicineSchedules(),
-        getDueMedicineSchedules("2026-08-25"),
+        getDueMedicineSchedules(),
         getPigeons(),
       ]);
       setHealthRecords(records);
@@ -86,6 +87,7 @@ export default function HealthManagementPage() {
 
   const tabsConfig = [
     { id: "schedules", label: "Planned Medicine Courses", icon: Calendar, count: schedules.length },
+    { id: "guidelines", label: "Google Doc Guidelines (Live Sync)", icon: FileText },
     { id: "treatments", label: "Treatment Logs", icon: HeartPulse, count: healthRecords.length },
   ];
 
@@ -111,17 +113,19 @@ export default function HealthManagementPage() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5">
-          <a
-            href="https://docs.google.com/document/d/1ly7mM86pcpKNdR5IlxVJXY_zsssEpaHP7wy7CeFN1f0/edit?usp=sharing"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-800 text-xs font-bold transition-all shadow-2xs"
-            title="Open Monthly Medicine Course Google Doc"
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setActiveTab("guidelines")}
+            className={`gap-1.5 text-xs font-bold ${
+              activeTab === "guidelines"
+                ? "bg-rose-600 text-white border-rose-600 shadow-xs"
+                : "border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-800"
+            }`}
           >
-            <FileText className="w-3.5 h-3.5 text-rose-600" />
-            <span>ঔষধ গাইডলাইন (Doc)</span>
-            <ExternalLink className="w-3 h-3 text-rose-500" />
-          </a>
+            <FileText className="w-3.5 h-3.5" />
+            <span>মাসিক ঔষধ গাইডলাইন (Doc)</span>
+          </Button>
           <Button
             variant="outline"
             size="sm"
@@ -187,6 +191,29 @@ export default function HealthManagementPage() {
                 Calendar courses for deworming, pest control, vaccine cycles, and vitamin therapies scheduled across the farm.
               </p>
             </div>
+          </div>
+
+          {/* Quick Real-Time Google Doc Alert */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 bg-rose-50/80 border border-rose-200/90 rounded-2xl text-xs">
+            <div className="flex items-center gap-2 text-rose-900">
+              <span className="p-1.5 bg-rose-100 rounded-lg text-rose-700">
+                <FileText className="w-4 h-4" />
+              </span>
+              <div>
+                <span className="font-bold">Google Doc Medicine Guidelines:</span>{" "}
+                <span className="text-slate-600">
+                  Real-time protocol connected for monthly courses and dosage regimens.
+                </span>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setActiveTab("guidelines")}
+              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-white border border-rose-200 text-rose-700 hover:bg-rose-100 font-bold shadow-2xs self-start sm:self-auto shrink-0 transition-all"
+            >
+              <span>View Live Doc Protocol</span>
+              <span>→</span>
+            </button>
           </div>
 
           <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
@@ -269,7 +296,14 @@ export default function HealthManagementPage() {
       </div>
       )}
 
-      {/* Tab 2: Treatment History Table */}
+      {/* Tab 2: Live Google Doc Guidelines */}
+      {activeTab === "guidelines" && (
+        <div className="space-y-3">
+          <LiveGoogleDocGuidelines onSchedulesUpdated={loadData} />
+        </div>
+      )}
+
+      {/* Tab 3: Treatment History Table */}
       {activeTab === "treatments" && (
         <div className="space-y-3">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">

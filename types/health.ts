@@ -45,3 +45,37 @@ export interface MedicineSchedule {
 
   createdAt: string;
 }
+
+export interface GoogleDocMedicineCourse {
+  id: string;
+  serial: number;
+  title: string;
+  durationDays: number;
+  dateRangeText: string;
+  startDay: number;
+  endDay: number;
+  medicine: string;
+  dose: string;
+  benefits?: string;
+  instructions?: string;
+  breakText?: string;
+}
+
+export interface GoogleDocMedicineGroup {
+  id: string;
+  groupNumber: number;
+  title: string;
+  applicableMonths: number[]; // 1-12
+  monthNamesText: string;
+  courses: GoogleDocMedicineCourse[];
+}
+
+export interface GoogleDocMedicineGuidelines {
+  title: string;
+  specialNotice: string;
+  documentUrl: string;
+  lastFetchedAt: string;
+  groups: GoogleDocMedicineGroup[];
+  activeGroup?: GoogleDocMedicineGroup;
+}
+

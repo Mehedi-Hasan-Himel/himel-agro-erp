@@ -50,5 +50,44 @@
     "status": "COMPLETED",
     "notes": "Completed successfully in July.",
     "createdAt": "2026-06-28T09:00:00Z"
+  },
+  {
+    "id": "sched_doc_2026_09_1",
+    "medicineName": "Calplex / ক্যালপ্লেক্স",
+    "targetType": "FLOCK",
+    "pigeonId": null,
+    "startDate": "2026-09-01",
+    "endDate": "2026-09-05",
+    "dose": "২.৫ মিলি ১ লিটার পানিতে।",
+    "purpose": "ডিমের খোসা ও হাড় শক্ত করে এবং রোগ প্রতিরোধ ক্ষমতা বাড়ায়।",
+    "status": "COMPLETED",
+    "notes": "বিরতি (৫ দিন): ০৬ থেকে ১০ তারিখ (সাধারণ পানি ও গোসলের পানি)। | Google Doc Source: ১. ভিটামিন ডি, ফসফরাস ও ক্যালসিয়াম কোর্স (৫ দিন)",
+    "createdAt": "2026-09-24T15:49:19.434Z"
+  },
+  {
+    "id": "sched_doc_2026_09_2",
+    "medicineName": "E-Sel / ই-সেল",
+    "targetType": "FLOCK",
+    "pigeonId": null,
+    "startDate": "2026-09-11",
+    "endDate": "2026-09-15",
+    "dose": "১ মিলি ৪ লিটার পানিতে।",
+    "purpose": "ডিম উৎপাদন ও বাচ্চা ফোটার হার বৃদ্ধি করে এবং প্রজননতন্ত্র সুস্থ রাখে।",
+    "status": "COMPLETED",
+    "notes": "বিরতি (৫ দিন): ১৬ থেকে ২০ তারিখ (সাধারণ পানি ও গোসলের পানি)। | Google Doc Source: ২. ভিটামিন ই কোর্স (৫ দিন)",
+    "createdAt": "2026-09-24T15:49:19.434Z"
+  },
+  {
+    "id": "sched_doc_2026_09_3",
+    "medicineName": "Hameco-PH / হেমিকো-পি এইচ",
+    "targetType": "FLOCK",
+    "pigeonId": null,
+    "startDate": "2026-09-21",
+    "endDate": "2026-09-25",
+    "dose": "১ মিলি ১ লিটার পানিতে।",
+    "purpose": "মৃত্যুহার হ্রাস করে, পাতলা পায়খানা প্রতিরোধ করে এবং উপকারী ব্যাকটেরিয়ার ভারসাম্য বজায় রাখে।",
+    "status": "IN_PROGRESS",
+    "notes": "বিরতি (৫ দিন): ২৬ থেকে ৩০ তারিখ (সাধারণ পানি ও গোসলের পানি)। | Google Doc Source: ৩. সালমোনেলোসিস ও পিএইচ কোর্স (৫ দিন)",
+    "createdAt": "2026-09-24T15:49:19.434Z"
   }
 ]

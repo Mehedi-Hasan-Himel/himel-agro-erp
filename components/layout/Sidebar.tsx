@@ -26,6 +26,7 @@ import {
   DEFAULT_FINANCE_SHEET_URL,
   DEFAULT_MEDICINE_GUIDE_DOC_URL,
 } from "@/types/googleSheets";
+import { PwaInstallButton } from "@/components/pwa/PwaInstallButton";
 
 export interface SidebarProps {
   isOpen?: boolean;
@@ -270,6 +271,11 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
           )}
         </div>
       </nav>
+
+      {/* PWA Install Button */}
+      <div className="px-3 pt-2">
+        <PwaInstallButton variant="sidebar" />
+      </div>
 
       {/* Social, WhatsApp & Location Quick Links */}
       <div className="p-3 border-t border-slate-800/80 space-y-2">
