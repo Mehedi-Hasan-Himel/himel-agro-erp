@@ -283,93 +283,65 @@ export function PigeonProfileSkeleton() {
  */
 export function DashboardSkeleton() {
   return (
-    <div className="space-y-6 sm:space-y-8">
-      {/* Top Header Skeleton */}
-      <div className="bg-white rounded-xl border border-slate-200/80 p-5 sm:p-6 shadow-xs space-y-4">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
-          <div className="flex items-center gap-4">
-            <Skeleton className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl shrink-0" />
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <Skeleton className="h-5 w-32 rounded-md" />
-                <Skeleton className="h-5 w-24 rounded-md" />
-              </div>
-              <Skeleton className="h-7 w-48 sm:w-64 rounded-lg" />
-              <Skeleton className="h-4 w-56 sm:w-72 rounded" />
+    <div className="space-y-7 sm:space-y-8">
+      {/* Top Welcome Banner Skeleton */}
+      <div className="bg-gradient-to-r from-emerald-900 via-slate-900 to-slate-900 rounded-3xl p-6 sm:p-8 shadow-sm">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          <div className="flex items-center gap-5">
+            <Skeleton className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-emerald-800/40 shrink-0" />
+            <div className="space-y-2.5">
+              <Skeleton className="h-6 sm:h-7 w-48 sm:w-64 rounded-lg bg-emerald-800/40" />
+              <Skeleton className="h-4 w-60 sm:w-80 rounded bg-emerald-800/30" />
             </div>
           </div>
-          <div className="flex items-center gap-2.5">
-            <Skeleton className="h-9 w-32 rounded-lg" />
-            <Skeleton className="h-9 w-24 rounded-lg" />
-            <Skeleton className="h-9 w-20 rounded-lg" />
+          <div className="flex items-center gap-3">
+            <Skeleton className="h-10 w-28 rounded-xl bg-emerald-800/40" />
+            <Skeleton className="h-10 w-36 rounded-xl bg-emerald-800/40" />
           </div>
-        </div>
-        <div className="pt-3.5 border-t border-slate-100 flex items-center justify-between">
-          <Skeleton className="h-4 w-96 rounded" />
-          <Skeleton className="h-4 w-40 rounded" />
         </div>
       </div>
 
-      {/* KPI Cards Row (6 Stat Cards) */}
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <Skeleton className="h-4 w-36 rounded" />
-          <Skeleton className="h-4 w-24 rounded" />
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div
-              key={i}
-              className="bg-white rounded-xl border border-slate-200/80 p-4 sm:p-5 shadow-xs space-y-2.5"
-            >
-              <div className="flex items-center justify-between">
-                <Skeleton className="h-3.5 w-16 rounded" />
-                <Skeleton className="w-7 h-7 rounded-lg" />
-              </div>
-              <Skeleton className="h-8 w-16 rounded-lg" />
-              <Skeleton className="h-3 w-28 rounded" />
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Flock Registry Table Widget Skeleton */}
-      <TableSkeleton rows={8} columns={8} />
-
-      {/* Financial Overview Skeletons (3 cards) */}
-      <div className="space-y-4">
-        {Array.from({ length: 3 }).map((_, i) => (
+      {/* KPI Cards Row (4 Stat Cards) */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        {Array.from({ length: 4 }).map((_, i) => (
           <div
             key={i}
-            className="bg-white rounded-xl border border-slate-200/80 shadow-xs p-5 sm:p-6 space-y-4"
+            className="bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-5 shadow-xs space-y-2.5"
           >
             <div className="flex items-center justify-between">
-              <div className="space-y-1.5">
-                <Skeleton className="h-5 w-64 rounded" />
-                <Skeleton className="h-3.5 w-96 rounded" />
-              </div>
-              <Skeleton className="h-4 w-28 rounded" />
+              <Skeleton className="h-3.5 w-20 rounded" />
+              <Skeleton className="w-8 h-8 rounded-xl" />
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-              <Skeleton className="h-20 rounded-lg" />
-              <Skeleton className="h-20 rounded-lg" />
-              <Skeleton className="h-20 rounded-lg" />
-            </div>
+            <Skeleton className="h-7 w-24 rounded-lg" />
+            <Skeleton className="h-3 w-32 rounded" />
           </div>
         ))}
       </div>
 
-      {/* Operational 2-Column Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-6">
-        <div className="bg-white rounded-xl border border-slate-200/80 p-5 shadow-xs space-y-4">
-          <Skeleton className="h-5 w-48 rounded" />
-          <Skeleton className="h-16 rounded-lg" />
-          <Skeleton className="h-16 rounded-lg" />
+      {/* Main 2-Column Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left Column: Flock Registry Table Widget */}
+        <div className="lg:col-span-2">
+          <TableSkeleton rows={6} columns={5} />
         </div>
-        <div className="bg-white rounded-xl border border-slate-200/80 p-5 shadow-xs space-y-4">
-          <Skeleton className="h-5 w-48 rounded" />
-          <Skeleton className="h-16 rounded-lg" />
-          <Skeleton className="h-16 rounded-lg" />
+
+        {/* Right Column: Quick Action & Breeding Cards */}
+        <div className="space-y-6">
+          <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs space-y-4">
+            <Skeleton className="h-5 w-32 rounded" />
+            <div className="grid grid-cols-2 gap-2.5">
+              <Skeleton className="h-16 rounded-xl" />
+              <Skeleton className="h-16 rounded-xl" />
+              <Skeleton className="h-16 rounded-xl" />
+              <Skeleton className="h-16 rounded-xl" />
+            </div>
+          </div>
+
+          <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs space-y-3">
+            <Skeleton className="h-5 w-40 rounded" />
+            <Skeleton className="h-14 rounded-xl" />
+            <Skeleton className="h-14 rounded-xl" />
+          </div>
         </div>
       </div>
     </div>

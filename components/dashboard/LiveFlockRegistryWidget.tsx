@@ -23,11 +23,11 @@ import {
   Award,
   Layers,
   Sparkles,
-  X,
 } from "lucide-react";
 import {
   CockPigeonIcon,
   HenPigeonIcon,
+  SquabIcon,
   FlockPigeonIcon,
 } from "@/components/ui/icons";
 
@@ -45,6 +45,9 @@ interface BloodlineTag {
   breed: "Racer" | "Giribaz";
   rings: string[];
   description: string;
+  badgeBg: string;
+  badgeText: string;
+  badgeBorder: string;
 }
 
 const BLOODLINES: BloodlineTag[] = [
@@ -54,6 +57,9 @@ const BLOODLINES: BloodlineTag[] = [
     breed: "Racer",
     rings: ["03", "12", "13"],
     description: "Dhaka origin foundation Homer stock",
+    badgeBg: "bg-sky-50",
+    badgeText: "text-sky-800",
+    badgeBorder: "border-sky-200",
   },
   {
     id: "sherpur-maxi",
@@ -61,6 +67,9 @@ const BLOODLINES: BloodlineTag[] = [
     breed: "Racer",
     rings: ["06", "09", "15"],
     description: "Sherpur origin speed & endurance stock",
+    badgeBg: "bg-indigo-50",
+    badgeText: "text-indigo-800",
+    badgeBorder: "border-indigo-200",
   },
   {
     id: "chuina-kajkora",
@@ -68,6 +77,9 @@ const BLOODLINES: BloodlineTag[] = [
     breed: "Giribaz",
     rings: ["01", "02"],
     description: "Pure white eye ring & kajkora highflyers",
+    badgeBg: "bg-emerald-50",
+    badgeText: "text-emerald-800",
+    badgeBorder: "border-emerald-200",
   },
   {
     id: "musaldom",
@@ -75,6 +87,9 @@ const BLOODLINES: BloodlineTag[] = [
     breed: "Giribaz",
     rings: ["10", "11"],
     description: "Full black & white tail endurance tumblers",
+    badgeBg: "bg-purple-50",
+    badgeText: "text-purple-800",
+    badgeBorder: "border-purple-200",
   },
   {
     id: "chila-gola",
@@ -82,6 +97,9 @@ const BLOODLINES: BloodlineTag[] = [
     breed: "Giribaz",
     rings: ["05", "07", "08"],
     description: "Lal Chila, Sobuj Gola & Khoyra Gola performers",
+    badgeBg: "bg-amber-50",
+    badgeText: "text-amber-800",
+    badgeBorder: "border-amber-200",
   },
 ];
 
@@ -203,50 +221,50 @@ export function LiveFlockRegistryWidget({
   }, [pigeons, activeTab, selectedBloodline, searchQuery]);
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200/80 shadow-xs overflow-hidden">
+    <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden transition-all">
       {/* 1. Live Header with Sheet Badge, Google Sheets Link & Manual Refresh */}
-      <div className="p-5 sm:p-6 border-b border-slate-100">
+      <div className="p-5 sm:p-6 border-b border-slate-100 bg-gradient-to-r from-slate-50/80 via-white to-emerald-50/30">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
             <div className="flex flex-wrap items-center gap-2 mb-1.5">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-medium border border-emerald-200/60">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-100/80 text-emerald-800 text-[11px] font-bold tracking-wide uppercase border border-emerald-200">
                 <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-600"></span>
                 </span>
                 Google Sheet Live Sync
               </span>
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 text-xs font-medium border border-slate-200/60">
-                <Layers className="w-3 h-3 text-slate-400" />
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[11px] font-medium border border-slate-200">
+                <Layers className="w-3 h-3 text-slate-500" />
                 Sheet 2: Flock Registry
               </span>
             </div>
-            <h2 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-              <FlockPigeonIcon className="w-5 h-5 text-emerald-600 shrink-0" />
+            <h2 className="text-lg sm:text-xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
+              <FlockPigeonIcon className="w-6 h-6 text-emerald-600 shrink-0" />
               <span>Flock Registry & Loft Roster</span>
             </h2>
-            <p className="text-xs text-slate-500 mt-1 max-w-2xl leading-relaxed">
+            <p className="text-xs text-slate-500 mt-1 max-w-2xl">
               Real-time synchronized roster of all banded birds (Rings 01–15) directly connected to the official Google Sheet.
             </p>
           </div>
 
-          {/* Action Buttons: Sheet Link + Instant Sync Button + Full Manager */}
+          {/* Action Buttons: Sheet Link + Instant Sync Button */}
           <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
             <a
               href={DEFAULT_PIGEONS_SHEET_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs font-medium transition-colors shadow-2xs"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200/80 text-xs font-bold transition-colors shadow-2xs"
               title="Open Google Sheet in new tab"
             >
-              <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
+              <ExternalLink className="w-3.5 h-3.5 text-emerald-600" />
               <span>Open Google Sheet</span>
             </a>
 
             <button
               onClick={handleManualSync}
               disabled={isSyncing || isLoading}
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 active:bg-slate-950 text-white text-xs font-medium transition-colors shadow-2xs disabled:opacity-50 cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 active:bg-slate-950 text-white text-xs font-bold transition-all shadow-2xs disabled:opacity-50 cursor-pointer"
               title="Sync live records from Google Sheet"
             >
               <RefreshCw
@@ -259,7 +277,7 @@ export function LiveFlockRegistryWidget({
 
             <Link
               href="/pigeons"
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs font-medium transition-colors shadow-2xs"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs font-semibold transition-colors shadow-2xs"
             >
               <span>Full Manager</span>
               <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
@@ -267,9 +285,9 @@ export function LiveFlockRegistryWidget({
           </div>
         </div>
 
-        {/* Sync Status Banner */}
+        {/* Sync Status Banner (if synced or errored) */}
         {syncResult && (
-          <div className="mt-3.5 flex items-center gap-2 text-xs font-medium text-emerald-800 bg-emerald-50 border border-emerald-200/80 rounded-lg px-3 py-2">
+          <div className="mt-3.5 flex items-center gap-2 text-xs font-medium text-emerald-700 bg-emerald-50/80 border border-emerald-200 rounded-xl px-3 py-1.5 animate-fadeIn">
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
             <span>
               {syncResult.message || "Synced successfully with Google Sheet"} ({counts.all} pigeons recorded)
@@ -277,7 +295,7 @@ export function LiveFlockRegistryWidget({
           </div>
         )}
         {error && (
-          <div className="mt-3.5 flex items-center gap-2 text-xs font-medium text-rose-800 bg-rose-50 border border-rose-200/80 rounded-lg px-3 py-2">
+          <div className="mt-3.5 flex items-center gap-2 text-xs font-medium text-rose-700 bg-rose-50 border border-rose-200 rounded-xl px-3 py-1.5">
             <AlertCircle className="w-3.5 h-3.5 text-rose-600 shrink-0" />
             <span>{error}</span>
           </div>
@@ -285,21 +303,20 @@ export function LiveFlockRegistryWidget({
       </div>
 
       {/* 2. Visual Bloodline Strip */}
-      <div className="px-5 py-2.5 bg-slate-50/60 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-2.5">
-        <div className="flex items-center gap-1.5 shrink-0">
-          <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-          <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+      <div className="px-5 py-3 bg-slate-50/60 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-2.5">
+        <div className="flex items-center gap-2 shrink-0">
+          <Sparkles className="w-4 h-4 text-emerald-600" />
+          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-700">
             Foundation Bloodlines:
           </span>
         </div>
-        <div className="flex flex-wrap items-center gap-1.5 flex-1 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
+        <div className="flex flex-wrap items-center gap-1.5 flex-1 overflow-x-auto pb-1 md:pb-0">
           {selectedBloodline && (
             <button
               onClick={() => setSelectedBloodline(null)}
-              className="inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-md bg-slate-200 hover:bg-slate-300 text-slate-700 transition-colors cursor-pointer"
+              className="text-[11px] font-bold px-2 py-1 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-700 transition-colors cursor-pointer"
             >
-              <X className="w-3 h-3" />
-              <span>Clear Filter</span>
+              Clear Filter
             </button>
           )}
           {BLOODLINES.map((bl) => {
@@ -311,16 +328,16 @@ export function LiveFlockRegistryWidget({
                   setSelectedBloodline(isSelected ? null : bl.id)
                 }
                 title={`${bl.description} (Rings: ${bl.rings.join(", ")})`}
-                className={`text-xs font-medium px-2.5 py-1 rounded-md border transition-colors cursor-pointer flex items-center gap-1.5 ${
+                className={`text-[11px] font-semibold px-2.5 py-1 rounded-lg border transition-all cursor-pointer flex items-center gap-1.5 ${
                   isSelected
-                    ? "bg-slate-900 text-white border-slate-900 shadow-2xs"
-                    : "bg-white text-slate-700 border-slate-200/80 hover:border-slate-300 hover:bg-slate-50"
+                    ? "bg-slate-900 text-white border-slate-900 shadow-2xs ring-2 ring-emerald-500/20"
+                    : `${bl.badgeBg} ${bl.badgeText} ${bl.badgeBorder} hover:brightness-95`
                 }`}
               >
                 <span>{bl.name}</span>
                 <span
-                  className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-semibold ${
-                    isSelected ? "bg-white/20 text-white" : "bg-slate-100 text-slate-600"
+                  className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold ${
+                    isSelected ? "bg-white/20 text-white" : "bg-white text-slate-700 shadow-2xs"
                   }`}
                 >
                   {bl.rings.length}
@@ -334,19 +351,19 @@ export function LiveFlockRegistryWidget({
       {/* 3. Filter Tabs & Search Bar */}
       <div className="p-4 sm:p-5 border-b border-slate-100 bg-white flex flex-col md:flex-row md:items-center justify-between gap-3">
         {/* Filter Tabs */}
-        <div className="flex items-center gap-1 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
           <button
             onClick={() => setActiveTab("ALL")}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer shrink-0 flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 flex items-center gap-1.5 ${
               activeTab === "ALL"
                 ? "bg-slate-900 text-white shadow-2xs"
-                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                : "text-slate-600 hover:bg-slate-100"
             }`}
           >
             <span>All Rings</span>
             <span
-              className={`text-[10px] px-1.5 py-0.2 rounded font-mono font-semibold ${
-                activeTab === "ALL" ? "bg-white/20 text-white" : "bg-slate-100 text-slate-600"
+              className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
+                activeTab === "ALL" ? "bg-white/20 text-white" : "bg-slate-200/80 text-slate-700"
               }`}
             >
               {counts.all}
@@ -355,16 +372,16 @@ export function LiveFlockRegistryWidget({
 
           <button
             onClick={() => setActiveTab("KEPT")}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer shrink-0 flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 flex items-center gap-1.5 ${
               activeTab === "KEPT"
-                ? "bg-emerald-600 text-white shadow-2xs"
-                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                ? "bg-emerald-700 text-white shadow-2xs"
+                : "text-slate-600 hover:bg-slate-100"
             }`}
           >
             <ShieldCheck className="w-3.5 h-3.5" />
             <span>Kept Birds</span>
             <span
-              className={`text-[10px] px-1.5 py-0.2 rounded font-mono font-semibold ${
+              className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
                 activeTab === "KEPT" ? "bg-white/20 text-white" : "bg-emerald-100 text-emerald-800"
               }`}
             >
@@ -374,16 +391,16 @@ export function LiveFlockRegistryWidget({
 
           <button
             onClick={() => setActiveTab("RACERS")}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer shrink-0 flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 flex items-center gap-1.5 ${
               activeTab === "RACERS"
-                ? "bg-sky-600 text-white shadow-2xs"
-                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                ? "bg-sky-700 text-white shadow-2xs"
+                : "text-slate-600 hover:bg-slate-100"
             }`}
           >
-            <Award className="w-3.5 h-3.5" />
+            <Award className="w-3.5 h-3.5 text-sky-300" />
             <span>Racers</span>
             <span
-              className={`text-[10px] px-1.5 py-0.2 rounded font-mono font-semibold ${
+              className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
                 activeTab === "RACERS" ? "bg-white/20 text-white" : "bg-sky-100 text-sky-800"
               }`}
             >
@@ -393,15 +410,15 @@ export function LiveFlockRegistryWidget({
 
           <button
             onClick={() => setActiveTab("GIRIBAZ")}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer shrink-0 flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 flex items-center gap-1.5 ${
               activeTab === "GIRIBAZ"
-                ? "bg-teal-600 text-white shadow-2xs"
-                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                ? "bg-teal-700 text-white shadow-2xs"
+                : "text-slate-600 hover:bg-slate-100"
             }`}
           >
             <span>Giribaz</span>
             <span
-              className={`text-[10px] px-1.5 py-0.2 rounded font-mono font-semibold ${
+              className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
                 activeTab === "GIRIBAZ" ? "bg-white/20 text-white" : "bg-teal-100 text-teal-800"
               }`}
             >
@@ -411,16 +428,16 @@ export function LiveFlockRegistryWidget({
 
           <button
             onClick={() => setActiveTab("HENS")}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer shrink-0 flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 flex items-center gap-1.5 ${
               activeTab === "HENS"
-                ? "bg-pink-600 text-white shadow-2xs"
-                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                ? "bg-pink-700 text-white shadow-2xs"
+                : "text-slate-600 hover:bg-slate-100"
             }`}
           >
             <HenPigeonIcon className="w-3.5 h-3.5" />
             <span>Hens</span>
             <span
-              className={`text-[10px] px-1.5 py-0.2 rounded font-mono font-semibold ${
+              className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
                 activeTab === "HENS" ? "bg-white/20 text-white" : "bg-pink-100 text-pink-800"
               }`}
             >
@@ -430,17 +447,17 @@ export function LiveFlockRegistryWidget({
 
           <button
             onClick={() => setActiveTab("COCKS")}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer shrink-0 flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 flex items-center gap-1.5 ${
               activeTab === "COCKS"
-                ? "bg-indigo-600 text-white shadow-2xs"
-                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                ? "bg-sky-800 text-white shadow-2xs"
+                : "text-slate-600 hover:bg-slate-100"
             }`}
           >
             <CockPigeonIcon className="w-3.5 h-3.5" />
             <span>Cocks</span>
             <span
-              className={`text-[10px] px-1.5 py-0.2 rounded font-mono font-semibold ${
-                activeTab === "COCKS" ? "bg-white/20 text-white" : "bg-indigo-100 text-indigo-800"
+              className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
+                activeTab === "COCKS" ? "bg-white/20 text-white" : "bg-sky-100 text-sky-800"
               }`}
             >
               {counts.cocks}
@@ -449,15 +466,15 @@ export function LiveFlockRegistryWidget({
 
           <button
             onClick={() => setActiveTab("LOST")}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer shrink-0 flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 flex items-center gap-1.5 ${
               activeTab === "LOST"
-                ? "bg-amber-600 text-white shadow-2xs"
-                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                ? "bg-amber-700 text-white shadow-2xs"
+                : "text-slate-600 hover:bg-slate-100"
             }`}
           >
             <span>Lost Rings</span>
             <span
-              className={`text-[10px] px-1.5 py-0.2 rounded font-mono font-semibold ${
+              className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
                 activeTab === "LOST" ? "bg-white/20 text-white" : "bg-amber-100 text-amber-800"
               }`}
             >
@@ -474,7 +491,7 @@ export function LiveFlockRegistryWidget({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search ring, breed, color..."
-            className="w-full pl-8.5 pr-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50/50 text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:border-emerald-600 focus:outline-hidden transition-colors shadow-2xs"
+            className="w-full pl-8.5 pr-3 py-1.5 rounded-xl border border-slate-300 bg-slate-50/50 text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:border-emerald-600 focus:outline-hidden transition-all shadow-2xs"
           />
         </div>
       </div>
@@ -483,13 +500,13 @@ export function LiveFlockRegistryWidget({
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse text-xs">
           <thead>
-            <tr className="bg-slate-50/80 border-b border-slate-200/80 text-slate-500 font-semibold uppercase tracking-wider text-[11px]">
+            <tr className="bg-slate-50/80 border-b border-slate-200/80 text-slate-600 font-bold uppercase tracking-wider text-[10px]">
               <th className="py-3 px-4 w-28">Ring #</th>
               <th className="py-3 px-4">Breed & Subtype</th>
               <th className="py-3 px-4">Color / Pattern</th>
               <th className="py-3 px-3">Sex</th>
               <th className="py-3 px-3">Status</th>
-              <th className="py-3 px-4">Hatch Date</th>
+              <th className="py-3 px-4">Hatch / Month</th>
               <th className="py-3 px-4">Lineage / Parent Notes</th>
               <th className="py-3 px-4 text-right">Actions</th>
             </tr>
@@ -510,26 +527,8 @@ export function LiveFlockRegistryWidget({
               ))
             ) : filteredPigeons.length === 0 ? (
               <tr>
-                <td colSpan={8} className="py-12 text-center">
-                  <div className="flex flex-col items-center justify-center text-slate-400">
-                    <Search className="w-8 h-8 text-slate-300 mb-2 stroke-1" />
-                    <p className="text-sm font-medium text-slate-600">No pigeons found</p>
-                    <p className="text-xs text-slate-400 mt-0.5">
-                      No records match the current filter or search criteria.
-                    </p>
-                    {(searchQuery || selectedBloodline || activeTab !== "ALL") && (
-                      <button
-                        onClick={() => {
-                          setSearchQuery("");
-                          setSelectedBloodline(null);
-                          setActiveTab("ALL");
-                        }}
-                        className="mt-3 text-xs text-emerald-600 hover:text-emerald-700 font-medium cursor-pointer"
-                      >
-                        Reset filters
-                      </button>
-                    )}
-                  </div>
+                <td colSpan={8} className="py-8 text-center text-slate-400">
+                  No pigeons match the selected filter or search query.
                 </td>
               </tr>
             ) : (
@@ -540,14 +539,14 @@ export function LiveFlockRegistryWidget({
                 return (
                   <tr
                     key={pigeon.id || pigeon.officialRingNumber || serial}
-                    className={`transition-colors hover:bg-slate-50/70 ${
-                      lost ? "bg-amber-50/20 opacity-80" : ""
+                    className={`transition-colors hover:bg-slate-50/80 ${
+                      lost ? "bg-amber-50/30 opacity-75" : ""
                     }`}
                   >
                     {/* Ring # */}
                     <td className="py-3 px-4 whitespace-nowrap">
                       <div className="flex items-center gap-2">
-                        <span className="font-mono text-xs font-semibold text-slate-700 bg-slate-100 px-2 py-0.5 rounded border border-slate-200/80">
+                        <span className="font-mono text-xs font-black text-slate-900 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200">
                           #{serial}
                         </span>
                         <RingBadge pigeon={pigeon} size="sm" clickable={!lost} />
@@ -556,26 +555,28 @@ export function LiveFlockRegistryWidget({
 
                     {/* Breed & Subtype */}
                     <td className="py-3 px-4">
-                      <div className="flex items-center gap-1.5">
-                        <span
-                          className={`font-semibold ${
-                            isRacer(pigeon) ? "text-sky-900" : "text-emerald-900"
-                          }`}
-                        >
-                          {pigeon.breed || "Giribaz"}
-                        </span>
-                        {pigeon.breedSubtype && (
-                          <span className="px-1.5 py-0.2 rounded text-[10px] font-medium bg-slate-100 text-slate-600 border border-slate-200/60">
-                            {pigeon.breedSubtype}
+                      <div className="flex flex-col">
+                        <div className="flex items-center gap-1.5">
+                          <span
+                            className={`font-bold ${
+                              isRacer(pigeon) ? "text-sky-900" : "text-emerald-900"
+                            }`}
+                          >
+                            {pigeon.breed || "Giribaz"}
                           </span>
-                        )}
+                          {pigeon.breedSubtype && (
+                            <span className="px-1.5 py-0.2 rounded text-[10px] font-semibold bg-slate-100 text-slate-700 border border-slate-200/80">
+                              {pigeon.breedSubtype}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </td>
 
                     {/* Color / Pattern */}
                     <td className="py-3 px-4">
                       {pigeon.colorPattern ? (
-                        <span className="text-slate-700 font-medium">
+                        <span className="text-slate-800 font-medium">
                           {pigeon.colorPattern}
                         </span>
                       ) : (
@@ -602,14 +603,14 @@ export function LiveFlockRegistryWidget({
                     <td className="py-3 px-4 max-w-xs truncate text-[11px] text-slate-500">
                       {pigeon.fatherDetails || pigeon.motherDetails ? (
                         <div className="truncate" title={`Sire: ${pigeon.fatherDetails || "—"} | Dam: ${pigeon.motherDetails || "—"}`}>
-                          <span className="font-medium text-slate-700">Parents:</span>{" "}
-                          {pigeon.fatherDetails ? pigeon.fatherDetails.slice(0, 24) : ""}
-                          {pigeon.motherDetails ? ` / ${pigeon.motherDetails.slice(0, 24)}` : ""}
+                          <span className="font-semibold text-slate-700">P:</span>{" "}
+                          {pigeon.fatherDetails ? pigeon.fatherDetails.slice(0, 28) : ""}
+                          {pigeon.motherDetails ? ` / ${pigeon.motherDetails.slice(0, 28)}` : ""}
                         </div>
                       ) : pigeon.notes ? (
                         <span className="truncate">{pigeon.notes}</span>
                       ) : (
-                        <span className="text-slate-400 italic">Pure loft line</span>
+                        <span className="text-slate-400 italic">Pure loft breeding</span>
                       )}
                     </td>
 
@@ -618,15 +619,15 @@ export function LiveFlockRegistryWidget({
                       <div className="inline-flex items-center gap-1.5">
                         <Link
                           href={`/pigeons/${pigeon.id}`}
-                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs font-medium transition-colors shadow-2xs"
+                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-[11px] font-semibold transition-colors shadow-2xs"
                           title="View Pigeon Dossier"
                         >
-                          <FileText className="w-3 h-3 text-slate-400" />
+                          <FileText className="w-3 h-3 text-slate-500" />
                           <span>Profile</span>
                         </Link>
                         <Link
                           href={`/pigeons/${pigeon.id}/pedigree`}
-                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200/80 text-xs font-medium transition-colors shadow-2xs"
+                          className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-[11px] font-semibold transition-colors shadow-2xs"
                           title="View Pedigree Tree"
                         >
                           <GitFork className="w-3 h-3 text-emerald-600" />
@@ -643,7 +644,7 @@ export function LiveFlockRegistryWidget({
       </div>
 
       {/* Table Footer */}
-      <div className="p-3.5 sm:p-4 bg-slate-50/60 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-slate-500">
+      <div className="p-3.5 sm:p-4 bg-slate-50 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-slate-500">
         <div>
           Showing <strong>{filteredPigeons.length}</strong> of <strong>{pigeons.length}</strong> rings allocated in 2026.
         </div>
