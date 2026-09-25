@@ -24,11 +24,7 @@ import { formatCurrency } from "@/lib/formatters/currencyFormatter";
 import { formatDate } from "@/lib/formatters/dateFormatter";
 import { DATA_CHANGE_EVENT } from "@/lib/repositories/storageAdapter";
 
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
-import { Button } from "@/components/ui/Button";
 import { RingBadge } from "@/components/pigeons/RingBadge";
-import { StatusBadge } from "@/components/pigeons/StatusBadge";
-import { MedicineDueCard } from "@/components/health/MedicineDueCard";
 import { LiveFlockRegistryWidget } from "@/components/dashboard/LiveFlockRegistryWidget";
 import { DashboardSkeleton } from "@/components/ui/Skeleton";
 
@@ -49,9 +45,12 @@ import {
   MapPin,
   ExternalLink,
   Award,
+  Pill,
+  CheckCircle2,
+  RefreshCw,
+  AlertCircle,
 } from "lucide-react";
 import {
-  SquabIcon,
   CockPigeonIcon,
   HenPigeonIcon,
   FlockPigeonIcon,
@@ -75,9 +74,11 @@ export default function DashboardPage() {
     []
   );
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   const loadDashboardData = async () => {
     try {
+      setLoadError(null);
       // Fast path: Try consolidated dashboard endpoint
       const dashRes = await fetch("/api/dashboard").catch(() => null);
       if (dashRes && dashRes.ok) {
@@ -128,8 +129,9 @@ export default function DashboardPage() {
       setDueMedicines(meds);
       setMonthlySummaries(financialMonths);
       setRecentTransactions(txns.slice(0, 5));
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error loading dashboard data:", err);
+      setLoadError(err?.message || "Failed to load dashboard data. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -228,265 +230,290 @@ export default function DashboardPage() {
   const recentBreedingRounds = rounds.slice(0, 3);
   const activeSerialMap = useMemo(() => getActivePairSerialMap(pairs), [pairs]);
 
+  // Error State Display
+  if (loadError && !stats) {
+    return (
+      <div className="bg-white rounded-xl border border-rose-200 p-8 text-center max-w-lg mx-auto my-12 shadow-xs">
+        <div className="w-12 h-12 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center mx-auto mb-3">
+          <AlertCircle className="w-6 h-6" />
+        </div>
+        <h3 className="text-base font-bold text-slate-900 mb-1">Unable to Load Dashboard</h3>
+        <p className="text-xs text-slate-500 mb-4">{loadError}</p>
+        <button
+          onClick={loadDashboardData}
+          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium transition-colors shadow-2xs cursor-pointer"
+        >
+          <RefreshCw className="w-3.5 h-3.5" />
+          <span>Retry Loading</span>
+        </button>
+      </div>
+    );
+  }
+
   if (isLoading || !stats) {
     return <DashboardSkeleton />;
   }
 
   return (
-    <div className="space-y-7 sm:space-y-8">
-      {/* Top Welcome Banner */}
-      <div className="bg-gradient-to-r from-emerald-800 via-emerald-900 to-slate-900 text-white rounded-2xl sm:rounded-3xl p-5 sm:p-7 lg:p-8 shadow-sm relative overflow-hidden w-full max-w-full min-w-0">
-        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6 sm:gap-8 min-w-0 w-full">
-          {/* Main Brand & Info Area */}
-          <div className="flex flex-col gap-3.5 sm:gap-4 min-w-0 flex-1 w-full">
-            {/* Top Row: Glowing Logo on Left, Live Title + Status on Right */}
-            <div className="flex items-center gap-4 sm:gap-6 min-w-0 w-full">
-              {/* Radiant Green Light Glowing Logo Container */}
-              <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-emerald-950/90 ring-4 ring-emerald-400 ring-offset-2 sm:ring-offset-4 ring-offset-emerald-950 shadow-xl sm:shadow-2xl shadow-emerald-400/50 flex items-center justify-center shrink-0 overflow-hidden">
-                <Image
-                  src={SITE_CONFIG.logoUrl}
-                  alt={SITE_CONFIG.farmName}
-                  width={240}
-                  height={240}
-                  className="w-full h-full object-cover"
-                  unoptimized
-                  priority
-                />
-              </div>
-
-              {/* Title & Live Status on Right of Logo */}
-              <div className="min-w-0 flex-1">
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-700/60 border border-emerald-500/30 text-emerald-300 text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider mb-1.5 shadow-2xs max-w-full">
-                  <span className="relative flex h-2 w-2 shrink-0">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
-                  </span>
-                  <span className="truncate">Live Loft • {stats.keptBirds} Kept Birds</span>
-                </div>
-                <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white tracking-tight leading-tight break-words">
-                  {SITE_CONFIG.farmName}
-                </h1>
-                <p className="text-emerald-200/90 text-xs sm:text-sm flex items-center gap-2 mt-1 truncate">
-                  <span>{SITE_CONFIG.ownerName}</span>
-                  <span>•</span>
-                  <span>{SITE_CONFIG.contactNumber}</span>
-                </p>
-              </div>
+    <div className="space-y-6 sm:space-y-8">
+      {/* 1. Modern Enterprise Dashboard Header */}
+      <div className="bg-white rounded-xl border border-slate-200/80 p-5 sm:p-6 shadow-xs">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+          {/* Farm Identity & Status */}
+          <div className="flex items-center gap-4 min-w-0">
+            <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-xl border border-slate-200/80 bg-slate-50/50 p-1 flex items-center justify-center shrink-0 overflow-hidden shadow-2xs">
+              <Image
+                src={SITE_CONFIG.logoUrl}
+                alt={SITE_CONFIG.farmName}
+                width={64}
+                height={64}
+                className="w-full h-full object-contain"
+                unoptimized
+                priority
+              />
             </div>
 
-            {/* Description */}
-            <p className="text-emerald-100/80 text-xs sm:text-sm leading-relaxed break-words mt-1 max-w-2xl">
-              Managing <strong>{stats.keptBirds} Kept Pigeons</strong> ({stats.racersCount} Racers,{" "}
-              {stats.giribazCount} Giribaz) across 15 allocated ring bands with full Google Sheet live sync and genealogy tracking.
-            </p>
-
-            {/* Quick Action Buttons */}
-            <div className="mt-2 sm:mt-3 flex flex-wrap items-center gap-2.5 sm:gap-3 w-full sm:w-auto">
-              <Link
-                href="/pigeons/new"
-                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 active:bg-emerald-600 text-slate-950 font-bold text-xs shadow-sm transition-all flex-1 sm:flex-initial text-center cursor-pointer"
-              >
-                <PlusCircle className="w-4 h-4 shrink-0" />
-                <span>Register Pigeon</span>
-              </Link>
-              <Link
-                href="/breeding/pairs"
-                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-xs border border-white/10 transition-all flex-1 sm:flex-initial text-center cursor-pointer"
-              >
-                <GitFork className="w-4 h-4 shrink-0" />
-                <span>Form Pair</span>
-              </Link>
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2 mb-1">
+                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 text-xs font-medium border border-emerald-200/60">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-600"></span>
+                  </span>
+                  Live Loft Census
+                </span>
+                <span className="text-xs text-slate-400">•</span>
+                <span className="text-xs text-slate-500 font-medium">
+                  {stats.keptBirds} Kept Birds
+                </span>
+              </div>
+              <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight leading-tight">
+                {SITE_CONFIG.farmName}
+              </h1>
+              <p className="text-xs text-slate-500 flex flex-wrap items-center gap-1.5 mt-0.5">
+                <span>{SITE_CONFIG.ownerName}</span>
+                <span>•</span>
+                <span>{SITE_CONFIG.contactNumber}</span>
+                <span className="hidden sm:inline">•</span>
+                <span className="hidden sm:inline text-slate-400">Racing Homer & Giribaz Highflyer Loft</span>
+              </p>
             </div>
           </div>
 
-          {/* Contact / Social Quick Links */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 lg:flex lg:flex-col gap-2.5 w-full lg:w-48 xl:w-56 shrink-0 pt-4 lg:pt-0 border-t border-emerald-700/40 lg:border-t-0 mt-2 lg:mt-0">
-            <a
-              href={SITE_CONFIG.whatsappUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold shadow-sm transition-all w-full text-center"
+          {/* Quick Actions & External Links */}
+          <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 pt-2 lg:pt-0 border-t border-slate-100 lg:border-t-0">
+            {/* Primary: Register Pigeon */}
+            <Link
+              href="/pigeons/new"
+              className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-medium text-xs shadow-xs transition-colors cursor-pointer"
             >
-              <span className="font-black text-sm">WA</span>
-              <span className="truncate">WhatsApp ({SITE_CONFIG.whatsappNumber})</span>
-              <ExternalLink className="w-3.5 h-3.5 opacity-80 shrink-0" />
-            </a>
-            <a
-              href={SITE_CONFIG.facebookUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-blue-600/90 hover:bg-blue-500 text-white text-xs font-bold shadow-sm transition-all border border-blue-400/30 w-full text-center"
+              <PlusCircle className="w-3.5 h-3.5" />
+              <span>Register Pigeon</span>
+            </Link>
+
+            {/* Secondary: Form Pair */}
+            <Link
+              href="/breeding/pairs"
+              className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-lg bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-700 font-medium text-xs border border-slate-200 shadow-2xs transition-colors cursor-pointer"
             >
-              <span className="font-black">f</span>
-              <span>Facebook Page</span>
-              <ExternalLink className="w-3.5 h-3.5 opacity-80 shrink-0" />
-            </a>
-            <a
-              href={SITE_CONFIG.googleMapUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold shadow-sm transition-all border border-white/10 w-full text-center"
-            >
-              <MapPin className="w-3.5 h-3.5 text-emerald-300 shrink-0" />
-              <span>Loft Location</span>
-              <ExternalLink className="w-3.5 h-3.5 opacity-80 shrink-0" />
-            </a>
+              <GitFork className="w-3.5 h-3.5 text-slate-400" />
+              <span>Form Pair</span>
+            </Link>
+
+            {/* Contact Channels */}
+            <div className="flex items-center gap-1.5">
+              <a
+                href={SITE_CONFIG.whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-2.5 py-2 rounded-lg bg-white hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-200 text-slate-600 text-xs font-medium border border-slate-200 shadow-2xs transition-colors"
+                title={`WhatsApp: ${SITE_CONFIG.whatsappNumber}`}
+              >
+                <span className="font-bold text-[10px] text-emerald-600 bg-emerald-100/70 px-1 py-0.2 rounded">WA</span>
+                <span className="hidden sm:inline">WhatsApp</span>
+                <ExternalLink className="w-3 h-3 text-slate-400" />
+              </a>
+
+              <a
+                href={SITE_CONFIG.facebookUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-2.5 py-2 rounded-lg bg-white hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 text-slate-600 text-xs font-medium border border-slate-200 shadow-2xs transition-colors"
+                title="Facebook Page"
+              >
+                <span className="font-bold text-[10px] text-blue-600 bg-blue-100/70 px-1 py-0.2 rounded">FB</span>
+                <span className="hidden sm:inline">Facebook</span>
+                <ExternalLink className="w-3 h-3 text-slate-400" />
+              </a>
+
+              <a
+                href={SITE_CONFIG.googleMapUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-2.5 py-2 rounded-lg bg-white hover:bg-slate-50 text-slate-600 text-xs font-medium border border-slate-200 shadow-2xs transition-colors"
+                title="Loft Location on Google Maps"
+              >
+                <MapPin className="w-3.5 h-3.5 text-slate-400" />
+                <span className="hidden sm:inline">Loft</span>
+                <ExternalLink className="w-3 h-3 text-slate-400" />
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {/* Sub-strip: Operational Scope Summary */}
+        <div className="pt-3.5 mt-4 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-slate-500">
+          <p className="leading-relaxed">
+            Managing <strong className="text-slate-800">{stats.keptBirds} Kept Pigeons</strong> ({stats.racersCount} Racing Homers, {stats.giribazCount} Giribaz Tumblers) across 15 allocated ring bands with 2-way Google Sheet live sync.
+          </p>
+          <div className="flex items-center gap-2 text-xs shrink-0">
+            <span className="inline-flex items-center gap-1 font-mono text-slate-600 bg-slate-100 px-2 py-0.5 rounded">
+              <span>{stats.activeFemales} Hens</span> • <span>{stats.activeMales} Cocks</span>
+            </span>
+            <span className="inline-flex items-center gap-1 font-mono text-amber-700 bg-amber-50 border border-amber-200/60 px-2 py-0.5 rounded">
+              <span>{stats.lostCount} Lost</span>
+            </span>
           </div>
         </div>
       </div>
 
-      {/* Pigeon KPI Cards Grid */}
-      <div>
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 mb-3">
-          <div>
-            <div className="flex items-center gap-2">
-              <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700">
-                Loft Metrics & Flock Summary (Google Sheet Live Sync)
-              </h2>
-              <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 rounded-full">
-                Live Registry
-              </span>
-            </div>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Live census of active kept pigeons, Racing Homer lines, Giribaz tumblers, breeding sex ratios, and allocated rings.
-            </p>
+      {/* 2. KPI / Overview Grid */}
+      <div className="space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+          <div className="flex items-center gap-2">
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+              Flock Registry Census
+            </h2>
+            <span className="text-[11px] font-medium text-emerald-700 bg-emerald-50 border border-emerald-200/60 px-2 py-0.5 rounded-full">
+              Live Registry
+            </span>
           </div>
           <Link
             href="/pigeons"
-            className="text-xs font-bold text-emerald-800 hover:text-emerald-900 hover:underline flex items-center gap-1 shrink-0"
+            className="text-xs font-medium text-emerald-600 hover:text-emerald-700 flex items-center gap-1 shrink-0"
           >
-            View All Pigeons <ArrowRight className="w-3.5 h-3.5" />
+            <span>View All Pigeons</span>
+            <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
           {/* 1. Kept Birds */}
-          <Card className="bg-white border-slate-200/80 hover:border-emerald-300 transition-all shadow-xs">
-            <CardContent className="p-4 sm:p-5">
-              <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
-                <span className="font-bold text-slate-700">Kept Birds</span>
-                <div className="w-8 h-8 rounded-xl bg-emerald-100/90 border border-emerald-200/70 flex items-center justify-center shadow-2xs">
-                  <FlockPigeonIcon className="w-5 h-5 text-emerald-700" />
-                </div>
+          <div className="bg-white rounded-xl border border-slate-200/80 p-4 sm:p-5 shadow-xs hover:border-slate-300 transition-colors">
+            <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
+              <span className="font-medium text-slate-600">Kept Birds</span>
+              <div className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center">
+                <FlockPigeonIcon className="w-4 h-4" />
               </div>
-              <div className="text-2xl sm:text-3xl font-black text-slate-900">
-                {stats.keptBirds}
-              </div>
-              <span className="text-[11px] text-slate-500 mt-1 block font-medium">
-                Active in loft • {stats.totalHistorical} rings
-              </span>
-            </CardContent>
-          </Card>
+            </div>
+            <div className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 tabular-nums">
+              {stats.keptBirds}
+            </div>
+            <span className="text-[11px] text-slate-400 mt-1 block truncate">
+              Active in loft • {stats.totalHistorical} rings
+            </span>
+          </div>
 
           {/* 2. Racers */}
-          <Card className="bg-white border-slate-200/80 hover:border-sky-300 transition-all shadow-xs">
-            <CardContent className="p-4 sm:p-5">
-              <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
-                <span className="font-bold text-slate-700">Racers</span>
-                <div className="w-8 h-8 rounded-xl bg-sky-100/90 border border-sky-200/70 flex items-center justify-center shadow-2xs">
-                  <Award className="w-4 h-4 text-sky-700" />
-                </div>
+          <div className="bg-white rounded-xl border border-slate-200/80 p-4 sm:p-5 shadow-xs hover:border-slate-300 transition-colors">
+            <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
+              <span className="font-medium text-slate-600">Racers</span>
+              <div className="w-7 h-7 rounded-lg bg-sky-50 text-sky-700 flex items-center justify-center">
+                <Award className="w-4 h-4" />
               </div>
-              <div className="text-2xl sm:text-3xl font-black text-sky-800">
-                {stats.racersCount}
-              </div>
-              <span className="text-[11px] text-slate-500 mt-1 block font-medium">
-                Racing Homer lines
-              </span>
-            </CardContent>
-          </Card>
+            </div>
+            <div className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 tabular-nums">
+              {stats.racersCount}
+            </div>
+            <span className="text-[11px] text-slate-400 mt-1 block truncate">
+              Racing Homer lines
+            </span>
+          </div>
 
           {/* 3. Giribaz */}
-          <Card className="bg-white border-slate-200/80 hover:border-teal-300 transition-all shadow-xs">
-            <CardContent className="p-4 sm:p-5">
-              <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
-                <span className="font-bold text-slate-700">Giribaz</span>
-                <div className="w-8 h-8 rounded-xl bg-teal-100/90 border border-teal-200/70 flex items-center justify-center shadow-2xs">
-                  <Feather className="w-4 h-4 text-teal-700" />
-                </div>
+          <div className="bg-white rounded-xl border border-slate-200/80 p-4 sm:p-5 shadow-xs hover:border-slate-300 transition-colors">
+            <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
+              <span className="font-medium text-slate-600">Giribaz</span>
+              <div className="w-7 h-7 rounded-lg bg-teal-50 text-teal-700 flex items-center justify-center">
+                <Feather className="w-4 h-4" />
               </div>
-              <div className="text-2xl sm:text-3xl font-black text-teal-800">
-                {stats.giribazCount}
-              </div>
-              <span className="text-[11px] text-slate-500 mt-1 block font-medium">
-                Highflyers & tumblers
-              </span>
-            </CardContent>
-          </Card>
+            </div>
+            <div className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 tabular-nums">
+              {stats.giribazCount}
+            </div>
+            <span className="text-[11px] text-slate-400 mt-1 block truncate">
+              Highflyers & tumblers
+            </span>
+          </div>
 
           {/* 4. Active Females */}
-          <Card className="bg-white border-slate-200/80 hover:border-pink-300 transition-all shadow-xs">
-            <CardContent className="p-4 sm:p-5">
-              <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
-                <span className="font-bold text-slate-700">Hens</span>
-                <div className="w-8 h-8 rounded-xl bg-pink-100/90 border border-pink-200/70 flex items-center justify-center shadow-2xs">
-                  <HenPigeonIcon className="w-5 h-5 text-pink-700" />
-                </div>
+          <div className="bg-white rounded-xl border border-slate-200/80 p-4 sm:p-5 shadow-xs hover:border-slate-300 transition-colors">
+            <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
+              <span className="font-medium text-slate-600">Hens</span>
+              <div className="w-7 h-7 rounded-lg bg-pink-50 text-pink-700 flex items-center justify-center">
+                <HenPigeonIcon className="w-4 h-4" />
               </div>
-              <div className="text-2xl sm:text-3xl font-black text-pink-800">
-                {stats.activeFemales}
-              </div>
-              <span className="text-[11px] text-slate-500 mt-1 block font-medium">
-                Breeding & racing hens
-              </span>
-            </CardContent>
-          </Card>
+            </div>
+            <div className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 tabular-nums">
+              {stats.activeFemales}
+            </div>
+            <span className="text-[11px] text-slate-400 mt-1 block truncate">
+              Breeding & racing hens
+            </span>
+          </div>
 
           {/* 5. Active Males */}
-          <Card className="bg-white border-slate-200/80 hover:border-sky-300 transition-all shadow-xs">
-            <CardContent className="p-4 sm:p-5">
-              <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
-                <span className="font-bold text-slate-700">Cocks</span>
-                <div className="w-8 h-8 rounded-xl bg-sky-100/90 border border-sky-200/70 flex items-center justify-center shadow-2xs">
-                  <CockPigeonIcon className="w-5 h-5 text-sky-700" />
-                </div>
+          <div className="bg-white rounded-xl border border-slate-200/80 p-4 sm:p-5 shadow-xs hover:border-slate-300 transition-colors">
+            <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
+              <span className="font-medium text-slate-600">Cocks</span>
+              <div className="w-7 h-7 rounded-lg bg-indigo-50 text-indigo-700 flex items-center justify-center">
+                <CockPigeonIcon className="w-4 h-4" />
               </div>
-              <div className="text-2xl sm:text-3xl font-black text-sky-800">
-                {stats.activeMales}
-              </div>
-              <span className="text-[11px] text-slate-500 mt-1 block font-medium">
-                Breeding & racing cocks
-              </span>
-            </CardContent>
-          </Card>
+            </div>
+            <div className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 tabular-nums">
+              {stats.activeMales}
+            </div>
+            <span className="text-[11px] text-slate-400 mt-1 block truncate">
+              Breeding & racing cocks
+            </span>
+          </div>
 
           {/* 6. Lost Rings */}
-          <Card className="bg-white border-slate-200/80 hover:border-amber-300 transition-all shadow-xs">
-            <CardContent className="p-4 sm:p-5">
-              <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
-                <span className="font-bold text-slate-700">Lost Rings</span>
-                <div className="w-8 h-8 rounded-xl bg-amber-100/90 border border-amber-200/70 flex items-center justify-center shadow-2xs">
-                  <AlertTriangle className="w-4 h-4 text-amber-700" />
-                </div>
+          <div className="bg-white rounded-xl border border-slate-200/80 p-4 sm:p-5 shadow-xs hover:border-slate-300 transition-colors">
+            <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
+              <span className="font-medium text-slate-600">Lost Rings</span>
+              <div className="w-7 h-7 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center">
+                <AlertTriangle className="w-4 h-4" />
               </div>
-              <div className="text-2xl sm:text-3xl font-black text-amber-800">
-                {stats.lostCount}
-              </div>
-              <span className="text-[11px] text-slate-500 mt-1 block font-medium">
-                Rings 04 & 14 allocated
-              </span>
-            </CardContent>
-          </Card>
+            </div>
+            <div className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 tabular-nums">
+              {stats.lostCount}
+            </div>
+            <span className="text-[11px] text-slate-400 mt-1 block truncate">
+              Rings 04 & 14 allocated
+            </span>
+          </div>
         </div>
       </div>
 
-      {/* Centerpiece: Live Google Sheet Flock Registry & Loft Roster Widget */}
+      {/* 3. Centerpiece Table: Live Google Sheet Flock Registry & Loft Roster Widget */}
       <LiveFlockRegistryWidget
         pigeons={pigeons}
         onRefresh={loadDashboardData}
         isLoading={isLoading}
       />
 
-      {/* 1. Current Monthly Financial Overview Section (Current Active Month) */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-xs p-5 space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+      {/* 4. Financial Analytics Suite: Three Sequenced Sections */}
+      {/* 4.1 Current Monthly Financial Overview */}
+      <div className="bg-white rounded-xl border border-slate-200/80 shadow-xs p-5 sm:p-6 space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
+              <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
                 <TakaIcon className="w-4 h-4 text-emerald-600 shrink-0" />
                 <span>Current Monthly Financial Overview ({currentMonthSummary.monthLabel})</span>
               </h3>
-              <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 rounded-full">
+              <span className="text-[11px] font-medium text-emerald-700 bg-emerald-50 border border-emerald-200/60 px-2 py-0.5 rounded-full">
                 Active Month
               </span>
             </div>
@@ -496,65 +523,66 @@ export default function DashboardPage() {
           </div>
           <Link
             href="/finance"
-            className="text-xs font-semibold text-emerald-700 hover:underline flex items-center gap-1 shrink-0"
+            className="text-xs font-medium text-emerald-600 hover:text-emerald-700 flex items-center gap-1 shrink-0"
           >
-            Financial Ledger <ArrowRight className="w-3.5 h-3.5" />
+            <span>Financial Ledger</span>
+            <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
           {/* Monthly Income */}
-          <div className="p-4 rounded-xl bg-emerald-50/50 border border-emerald-100 flex items-center justify-between shadow-2xs">
+          <div className="p-4 rounded-lg bg-slate-50/60 border border-slate-200/80 flex items-center justify-between">
             <div>
-              <span className="text-[11px] font-semibold text-slate-600 uppercase block">
+              <span className="text-xs font-medium text-slate-500 block">
                 Monthly Income
               </span>
-              <span className="text-xl sm:text-2xl font-black text-emerald-700">
+              <span className="text-xl sm:text-2xl font-bold tracking-tight text-emerald-700 tabular-nums">
                 {formatCurrency(currentMonthSummary.totalIncome)}
               </span>
-              <span className="text-[10px] text-slate-500 block mt-0.5">
+              <span className="text-[11px] text-slate-400 block mt-0.5">
                 From bird sales & services
               </span>
             </div>
-            <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
-              <ArrowUpRight className="w-5 h-5" />
+            <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
+              <ArrowUpRight className="w-4 h-4" />
             </div>
           </div>
 
           {/* Monthly Expense */}
-          <div className="p-4 rounded-xl bg-rose-50/50 border border-rose-100 flex items-center justify-between shadow-2xs">
+          <div className="p-4 rounded-lg bg-slate-50/60 border border-slate-200/80 flex items-center justify-between">
             <div>
-              <span className="text-[11px] font-semibold text-slate-600 uppercase block">
+              <span className="text-xs font-medium text-slate-500 block">
                 Monthly Expense
               </span>
-              <span className="text-xl sm:text-2xl font-black text-rose-700">
+              <span className="text-xl sm:text-2xl font-bold tracking-tight text-rose-700 tabular-nums">
                 {formatCurrency(currentMonthSummary.totalExpense)}
               </span>
-              <span className="text-[10px] text-slate-500 block mt-0.5">
+              <span className="text-[11px] text-slate-400 block mt-0.5">
                 Feed, medicine, flock care
               </span>
             </div>
-            <div className="w-10 h-10 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center shrink-0">
-              <ArrowDownRight className="w-5 h-5" />
+            <div className="w-8 h-8 rounded-lg bg-rose-50 text-rose-700 flex items-center justify-center shrink-0">
+              <ArrowDownRight className="w-4 h-4" />
             </div>
           </div>
 
           {/* Monthly Profit / Loss */}
           <div
-            className={`p-4 rounded-xl border flex items-center justify-between shadow-2xs ${
+            className={`p-4 rounded-lg border flex items-center justify-between ${
               currentMonthSummary.profitLoss >= 0
-                ? "bg-emerald-50 border-emerald-200"
-                : "bg-rose-50 border-rose-200"
+                ? "bg-emerald-50/40 border-emerald-200/80"
+                : "bg-rose-50/40 border-rose-200/80"
             }`}
           >
             <div>
-              <span className="text-[11px] font-bold uppercase block text-slate-700">
+              <span className="text-xs font-medium text-slate-600 block">
                 {currentMonthSummary.profitLoss >= 0
                   ? "Monthly Net Profit"
                   : "Monthly Net Loss"}
               </span>
               <span
-                className={`text-xl sm:text-2xl font-black ${
+                className={`text-xl sm:text-2xl font-bold tracking-tight tabular-nums ${
                   currentMonthSummary.profitLoss >= 0
                     ? "text-emerald-700"
                     : "text-rose-700"
@@ -562,105 +590,106 @@ export default function DashboardPage() {
               >
                 {formatCurrency(currentMonthSummary.profitLoss)}
               </span>
-              <span className="text-[10px] text-slate-600 block mt-0.5">
+              <span className="text-[11px] text-slate-400 block mt-0.5">
                 Net = Monthly Income - Monthly Expense
               </span>
             </div>
             <div
-              className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
+              className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
                 currentMonthSummary.profitLoss >= 0
-                  ? "bg-emerald-200 text-emerald-800"
-                  : "bg-rose-200 text-rose-800"
+                  ? "bg-emerald-100 text-emerald-800"
+                  : "bg-rose-100 text-rose-800"
               }`}
             >
               {currentMonthSummary.profitLoss >= 0 ? (
-                <TrendingUp className="w-5 h-5" />
+                <TrendingUp className="w-4 h-4" />
               ) : (
-                <TrendingDown className="w-5 h-5" />
+                <TrendingDown className="w-4 h-4" />
               )}
             </div>
           </div>
         </div>
       </div>
 
-      {/* 2. Current Year Financial Overview Section (Year 2026) */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-xs p-5 space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+      {/* 4.2 Current Year Financial Overview */}
+      <div className="bg-white rounded-xl border border-slate-200/80 shadow-xs p-5 sm:p-6 space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
+              <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
                 <TakaIcon className="w-4 h-4 text-emerald-600 shrink-0" />
                 <span>Current Year Financial Overview ({currentYearSummary.yearLabel})</span>
               </h3>
-              <span className="text-[10px] font-bold text-sky-700 bg-sky-50 border border-sky-200/80 px-2 py-0.5 rounded-full">
+              <span className="text-[11px] font-medium text-sky-700 bg-sky-50 border border-sky-200/60 px-2 py-0.5 rounded-full">
                 Calendar Year 2026
               </span>
             </div>
             <p className="text-xs text-slate-500 mt-0.5">
-              Annual operational summary tracking all bird sales revenue, flock feed, medication, and upkeep expenses across all {currentYearSummary.activeMonthsCount} operational months of {currentYearSummary.year} • {currentYearSummary.transactionCount} transactions recorded
+              Annual operational summary tracking all bird sales revenue, feed, medication, and upkeep expenses across {currentYearSummary.activeMonthsCount} operational months of {currentYearSummary.year} • {currentYearSummary.transactionCount} transactions recorded
             </p>
           </div>
           <Link
             href="/finance"
-            className="text-xs font-semibold text-emerald-700 hover:underline flex items-center gap-1 shrink-0"
+            className="text-xs font-medium text-emerald-600 hover:text-emerald-700 flex items-center gap-1 shrink-0"
           >
-            2026 Financial Logs <ArrowRight className="w-3.5 h-3.5" />
+            <span>2026 Financial Logs</span>
+            <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
           {/* Yearly Income */}
-          <div className="p-4 rounded-xl bg-emerald-50/50 border border-emerald-100 flex items-center justify-between shadow-2xs">
+          <div className="p-4 rounded-lg bg-slate-50/60 border border-slate-200/80 flex items-center justify-between">
             <div>
-              <span className="text-[11px] font-semibold text-slate-600 uppercase block">
+              <span className="text-xs font-medium text-slate-500 block">
                 Year-to-Date Revenue
               </span>
-              <span className="text-xl sm:text-2xl font-black text-emerald-700">
+              <span className="text-xl sm:text-2xl font-bold tracking-tight text-emerald-700 tabular-nums">
                 {formatCurrency(currentYearSummary.totalIncome)}
               </span>
-              <span className="text-[10px] text-slate-500 block mt-0.5">
+              <span className="text-[11px] text-slate-400 block mt-0.5">
                 Total 2026 bird sales & earnings
               </span>
             </div>
-            <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
-              <ArrowUpRight className="w-5 h-5" />
+            <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
+              <ArrowUpRight className="w-4 h-4" />
             </div>
           </div>
 
           {/* Yearly Expense */}
-          <div className="p-4 rounded-xl bg-rose-50/50 border border-rose-100 flex items-center justify-between shadow-2xs">
+          <div className="p-4 rounded-lg bg-slate-50/60 border border-slate-200/80 flex items-center justify-between">
             <div>
-              <span className="text-[11px] font-semibold text-slate-600 uppercase block">
+              <span className="text-xs font-medium text-slate-500 block">
                 Year-to-Date Operational Expenses
               </span>
-              <span className="text-xl sm:text-2xl font-black text-rose-700">
+              <span className="text-xl sm:text-2xl font-bold tracking-tight text-rose-700 tabular-nums">
                 {formatCurrency(currentYearSummary.totalExpense)}
               </span>
-              <span className="text-[10px] text-slate-500 block mt-0.5">
+              <span className="text-[11px] text-slate-400 block mt-0.5">
                 2026 feeding, health, loft upkeep
               </span>
             </div>
-            <div className="w-10 h-10 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center shrink-0">
-              <ArrowDownRight className="w-5 h-5" />
+            <div className="w-8 h-8 rounded-lg bg-rose-50 text-rose-700 flex items-center justify-center shrink-0">
+              <ArrowDownRight className="w-4 h-4" />
             </div>
           </div>
 
           {/* Yearly Profit / Loss */}
           <div
-            className={`p-4 rounded-xl border flex items-center justify-between shadow-2xs ${
+            className={`p-4 rounded-lg border flex items-center justify-between ${
               currentYearSummary.profitLoss >= 0
-                ? "bg-emerald-50 border-emerald-200"
-                : "bg-rose-50 border-rose-200"
+                ? "bg-emerald-50/40 border-emerald-200/80"
+                : "bg-rose-50/40 border-rose-200/80"
             }`}
           >
             <div>
-              <span className="text-[11px] font-bold uppercase block text-slate-700">
+              <span className="text-xs font-medium text-slate-600 block">
                 {currentYearSummary.profitLoss >= 0
                   ? "2026 Operating Net Profit"
                   : "2026 Operating Net Balance"}
               </span>
               <span
-                className={`text-xl sm:text-2xl font-black ${
+                className={`text-xl sm:text-2xl font-bold tracking-tight tabular-nums ${
                   currentYearSummary.profitLoss >= 0
                     ? "text-emerald-700"
                     : "text-rose-700"
@@ -668,21 +697,21 @@ export default function DashboardPage() {
               >
                 {formatCurrency(currentYearSummary.profitLoss)}
               </span>
-              <span className="text-[10px] text-slate-600 block mt-0.5">
+              <span className="text-[11px] text-slate-400 block mt-0.5">
                 Annual Balance = 2026 Sales - 2026 Ops
               </span>
             </div>
             <div
-              className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
+              className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
                 currentYearSummary.profitLoss >= 0
-                  ? "bg-emerald-200 text-emerald-800"
-                  : "bg-rose-200 text-rose-800"
+                  ? "bg-emerald-100 text-emerald-800"
+                  : "bg-rose-100 text-rose-800"
               }`}
             >
               {currentYearSummary.profitLoss >= 0 ? (
-                <TrendingUp className="w-5 h-5" />
+                <TrendingUp className="w-4 h-4" />
               ) : (
-                <TrendingDown className="w-5 h-5" />
+                <TrendingDown className="w-4 h-4" />
               )}
             </div>
           </div>
@@ -690,35 +719,35 @@ export default function DashboardPage() {
 
         {/* 2026 Operations Sub-strip */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-2 border-t border-slate-100 text-xs">
-          <div className="p-2.5 rounded-xl bg-slate-50/80 border border-slate-100 flex items-center justify-between">
+          <div className="p-2.5 rounded-lg bg-slate-50/80 border border-slate-200/60 flex items-center justify-between">
             <span className="text-slate-500 font-medium">Active Operational Months:</span>
-            <span className="font-mono font-bold text-slate-700">{currentYearSummary.activeMonthsCount} Months (Jan – Sep 2026)</span>
+            <span className="font-mono font-semibold text-slate-700">{currentYearSummary.activeMonthsCount} Months (Jan – Sep 2026)</span>
           </div>
-          <div className="p-2.5 rounded-xl bg-slate-50/80 border border-slate-100 flex items-center justify-between">
-            <span className="text-slate-500 font-medium">Monthly Average Operational Cost:</span>
-            <span className="font-mono font-bold text-rose-600">
+          <div className="p-2.5 rounded-lg bg-slate-50/80 border border-slate-200/60 flex items-center justify-between">
+            <span className="text-slate-500 font-medium">Monthly Avg Operational Cost:</span>
+            <span className="font-mono font-semibold text-rose-700">
               {formatCurrency(Math.round(currentYearSummary.totalExpense / (currentYearSummary.activeMonthsCount || 1)))} / mo
             </span>
           </div>
-          <div className="p-2.5 rounded-xl bg-slate-50/80 border border-slate-100 flex items-center justify-between">
+          <div className="p-2.5 rounded-lg bg-slate-50/80 border border-slate-200/60 flex items-center justify-between">
             <span className="text-slate-500 font-medium">2026 Operating Cash Margin:</span>
-            <span className={`font-mono font-bold ${currentYearSummary.profitLoss >= 0 ? "text-emerald-600" : "text-rose-600"}`}>
+            <span className={`font-mono font-semibold ${currentYearSummary.profitLoss >= 0 ? "text-emerald-700" : "text-rose-700"}`}>
               {formatCurrency(currentYearSummary.profitLoss)}
             </span>
           </div>
         </div>
       </div>
 
-      {/* 3. From Beginning to Today Date Financial Overview Section (Cumulative 2019 – Present) */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-xs p-5 space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+      {/* 4.3 From Beginning to Today Date Financial Overview */}
+      <div className="bg-white rounded-xl border border-slate-200/80 shadow-xs p-5 sm:p-6 space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
+              <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
                 <TakaIcon className="w-4 h-4 text-emerald-600 shrink-0" />
                 <span>From Beginning to Today Date Financial Overview (Cumulative 2019 – Present)</span>
               </h3>
-              <span className="text-[10px] font-bold text-indigo-700 bg-indigo-50 border border-indigo-200/80 px-2 py-0.5 rounded-full">
+              <span className="text-[11px] font-medium text-indigo-700 bg-indigo-50 border border-indigo-200/60 px-2 py-0.5 rounded-full">
                 2019 – Present
               </span>
             </div>
@@ -728,65 +757,66 @@ export default function DashboardPage() {
           </div>
           <Link
             href="/finance"
-            className="text-xs font-semibold text-emerald-700 hover:underline flex items-center gap-1 shrink-0"
+            className="text-xs font-medium text-emerald-600 hover:text-emerald-700 flex items-center gap-1 shrink-0"
           >
-            Full Financial Ledger <ArrowRight className="w-3.5 h-3.5" />
+            <span>Full Financial Ledger</span>
+            <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
           {/* Total Cumulative Income */}
-          <div className="p-4 rounded-xl bg-emerald-50/50 border border-emerald-100 flex items-center justify-between shadow-2xs">
+          <div className="p-4 rounded-lg bg-slate-50/60 border border-slate-200/80 flex items-center justify-between">
             <div>
-              <span className="text-[11px] font-semibold text-slate-600 uppercase block">
+              <span className="text-xs font-medium text-slate-500 block">
                 Total Cumulative Income
               </span>
-              <span className="text-xl sm:text-2xl font-black text-emerald-700">
+              <span className="text-xl sm:text-2xl font-bold tracking-tight text-emerald-700 tabular-nums">
                 {formatCurrency(totalFinancialSummary.totalIncome)}
               </span>
-              <span className="text-[10px] text-slate-500 block mt-0.5">
+              <span className="text-[11px] text-slate-400 block mt-0.5">
                 All bird sales & farm earnings
               </span>
             </div>
-            <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
-              <ArrowUpRight className="w-5 h-5" />
+            <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
+              <ArrowUpRight className="w-4 h-4" />
             </div>
           </div>
 
           {/* Total Cumulative Expenses */}
-          <div className="p-4 rounded-xl bg-rose-50/50 border border-rose-100 flex items-center justify-between shadow-2xs">
+          <div className="p-4 rounded-lg bg-slate-50/60 border border-slate-200/80 flex items-center justify-between">
             <div>
-              <span className="text-[11px] font-semibold text-slate-600 uppercase block">
+              <span className="text-xs font-medium text-slate-500 block">
                 Total Farm Expenses
               </span>
-              <span className="text-xl sm:text-2xl font-black text-rose-700">
+              <span className="text-xl sm:text-2xl font-bold tracking-tight text-rose-700 tabular-nums">
                 {formatCurrency(totalFinancialSummary.totalExpense)}
               </span>
-              <span className="text-[10px] text-slate-500 block mt-0.5">
+              <span className="text-[11px] text-slate-400 block mt-0.5">
                 Setup ({formatCurrency(historicalExpense)}) + 2026 Ops ({formatCurrency(operationalExpense2026)})
               </span>
             </div>
-            <div className="w-10 h-10 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center shrink-0">
-              <ArrowDownRight className="w-5 h-5" />
+            <div className="w-8 h-8 rounded-lg bg-rose-50 text-rose-700 flex items-center justify-center shrink-0">
+              <ArrowDownRight className="w-4 h-4" />
             </div>
           </div>
 
           {/* Cumulative Net Position */}
           <div
-            className={`p-4 rounded-xl border flex items-center justify-between shadow-2xs ${
+            className={`p-4 rounded-lg border flex items-center justify-between ${
               totalFinancialSummary.profitLoss >= 0
-                ? "bg-emerald-50 border-emerald-200"
-                : "bg-rose-50 border-rose-200"
+                ? "bg-emerald-50/40 border-emerald-200/80"
+                : "bg-rose-50/40 border-rose-200/80"
             }`}
           >
             <div>
-              <span className="text-[11px] font-bold uppercase block text-slate-700">
+              <span className="text-xs font-medium text-slate-600 block">
                 {totalFinancialSummary.profitLoss >= 0
                   ? "Total Net Profit"
                   : "Cumulative Net Position"}
               </span>
               <span
-                className={`text-xl sm:text-2xl font-black ${
+                className={`text-xl sm:text-2xl font-bold tracking-tight tabular-nums ${
                   totalFinancialSummary.profitLoss >= 0
                     ? "text-emerald-700"
                     : "text-rose-700"
@@ -794,21 +824,21 @@ export default function DashboardPage() {
               >
                 {formatCurrency(totalFinancialSummary.profitLoss)}
               </span>
-              <span className="text-[10px] text-slate-600 block mt-0.5">
+              <span className="text-[11px] text-slate-400 block mt-0.5">
                 Total Balance = Lifetime Income - All Expenses
               </span>
             </div>
             <div
-              className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
+              className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
                 totalFinancialSummary.profitLoss >= 0
-                  ? "bg-emerald-200 text-emerald-800"
-                  : "bg-rose-200 text-rose-800"
+                  ? "bg-emerald-100 text-emerald-800"
+                  : "bg-rose-100 text-rose-800"
               }`}
             >
               {totalFinancialSummary.profitLoss >= 0 ? (
-                <TrendingUp className="w-5 h-5" />
+                <TrendingUp className="w-4 h-4" />
               ) : (
-                <TrendingDown className="w-5 h-5" />
+                <TrendingDown className="w-4 h-4" />
               )}
             </div>
           </div>
@@ -816,71 +846,164 @@ export default function DashboardPage() {
 
         {/* Breakdown Sub-strip */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-2 border-t border-slate-100 text-xs">
-          <div className="p-2.5 rounded-xl bg-slate-50/80 border border-slate-100 flex items-center justify-between">
+          <div className="p-2.5 rounded-lg bg-slate-50/80 border border-slate-200/60 flex items-center justify-between">
             <span className="text-slate-500 font-medium">Historical Setup (2019–2025):</span>
-            <span className="font-mono font-bold text-slate-700">{formatCurrency(historicalExpense)}</span>
+            <span className="font-mono font-semibold text-slate-700">{formatCurrency(historicalExpense)}</span>
           </div>
-          <div className="p-2.5 rounded-xl bg-slate-50/80 border border-slate-100 flex items-center justify-between">
+          <div className="p-2.5 rounded-lg bg-slate-50/80 border border-slate-200/60 flex items-center justify-between">
             <span className="text-slate-500 font-medium">2026 Operational Expenses:</span>
-            <span className="font-mono font-bold text-rose-600">{formatCurrency(operationalExpense2026)}</span>
+            <span className="font-mono font-semibold text-rose-700">{formatCurrency(operationalExpense2026)}</span>
           </div>
-          <div className="p-2.5 rounded-xl bg-slate-50/80 border border-slate-100 flex items-center justify-between">
+          <div className="p-2.5 rounded-lg bg-slate-50/80 border border-slate-200/60 flex items-center justify-between">
             <span className="text-slate-500 font-medium">2026 Operating Net (Sales - Ops):</span>
-            <span className={`font-mono font-bold ${operationalNet2026 >= 0 ? "text-emerald-600" : "text-rose-600"}`}>
+            <span className={`font-mono font-semibold ${operationalNet2026 >= 0 ? "text-emerald-700" : "text-rose-700"}`}>
               {formatCurrency(operationalNet2026)}
             </span>
           </div>
         </div>
       </div>
 
-      {/* Operational Grid: Medicine Due & Low Feed Stock */}
+      {/* 5. Daily Operations & Inventory Management */}
       <div className="space-y-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-          <div>
-            <div className="flex items-center gap-2">
-              <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700">
-                Daily Operations & Inventory Management
-              </h2>
-              <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 rounded-full">
-                Loft Care
-              </span>
-            </div>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Critical daily health protocols, due medication doses, vaccine schedules, and warehouse grain inventory thresholds.
-            </p>
+          <div className="flex items-center gap-2">
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+              Daily Operations & Inventory Management
+            </h2>
+            <span className="text-[11px] font-medium text-emerald-700 bg-emerald-50 border border-emerald-200/60 px-2 py-0.5 rounded-full">
+              Loft Care
+            </span>
           </div>
+          <p className="text-xs text-slate-400">
+            Critical daily health protocols, due medication doses, vaccine schedules, and warehouse grain inventory thresholds.
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Medicine Due Widget */}
-          <MedicineDueCard
-            dueToday={dueMedicines.dueToday}
-            upcoming={dueMedicines.upcoming}
-          />
-
-          {/* Feed Stock & Inventory Alerts Widget */}
-          <Card className="border-slate-200/80 shadow-xs">
-            <CardHeader className="bg-slate-50/50">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-6">
+          {/* Medicine & Treatment Protocol */}
+          <div className="bg-white rounded-xl border border-slate-200/80 shadow-xs overflow-hidden">
+            <div className="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between">
               <div>
-                <CardTitle className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
+                  <Pill className="w-4 h-4 text-emerald-600" />
+                  <span>Medicine & Treatment Protocol</span>
+                </h3>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Active healthcare courses and pending doses.
+                </p>
+              </div>
+              <Link
+                href="/health"
+                className="text-xs font-medium text-emerald-600 hover:text-emerald-700 flex items-center gap-1"
+              >
+                <span>Health Center</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+
+            <div className="p-4 sm:p-5 space-y-4">
+              {/* Due Today */}
+              <div>
+                <div className="flex items-center gap-1.5 text-xs font-medium text-amber-800 bg-amber-50 border border-amber-200/70 px-2.5 py-1 rounded-md mb-2.5 inline-flex">
+                  <Clock className="w-3.5 h-3.5 text-amber-600" />
+                  <span>Due Today for Administration</span>
+                </div>
+
+                {dueMedicines.dueToday.length === 0 ? (
+                  <div className="p-3 bg-emerald-50/50 rounded-lg border border-emerald-100 text-xs text-emerald-800 flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>No medications due today. Flock is in healthy state!</span>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {dueMedicines.dueToday.map((item) => (
+                      <div
+                        key={item.id}
+                        className="p-3 bg-amber-50/30 rounded-lg border border-amber-200/60 text-xs space-y-1"
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <h5 className="font-semibold text-slate-900 text-xs">
+                            {item.medicineName}
+                          </h5>
+                          <span className="text-[10px] font-medium px-2 py-0.5 rounded bg-amber-100 text-amber-800">
+                            {item.targetType === "FLOCK"
+                              ? "Whole Flock"
+                              : `Pigeon ${item.pigeonId}`}
+                          </span>
+                        </div>
+                        {item.dose && (
+                          <p className="text-[11px] text-slate-600">
+                            <span className="font-medium text-slate-700">Dose:</span> {item.dose}
+                          </p>
+                        )}
+                        {item.purpose && (
+                          <p className="text-[11px] text-slate-500">
+                            <span className="font-medium text-slate-700">Purpose:</span> {item.purpose}
+                          </p>
+                        )}
+                        <p className="text-[10px] text-slate-400 font-mono">
+                          Schedule: {formatDate(item.startDate)} – {formatDate(item.endDate)}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Upcoming Courses */}
+              {dueMedicines.upcoming.length > 0 && (
+                <div className="pt-3 border-t border-slate-100">
+                  <span className="text-[11px] uppercase font-semibold text-slate-400 tracking-wider block mb-2">
+                    Upcoming Planned Courses
+                  </span>
+                  <div className="space-y-2">
+                    {dueMedicines.upcoming.slice(0, 2).map((item) => (
+                      <div
+                        key={item.id}
+                        className="p-2.5 bg-slate-50 rounded-lg border border-slate-200/60 text-xs flex items-center justify-between"
+                      >
+                        <div>
+                          <span className="font-medium text-slate-900">{item.medicineName}</span>
+                          <span className="text-[11px] text-slate-500 block">
+                            Starts {formatDate(item.startDate)}
+                          </span>
+                        </div>
+                        <span className="text-[10px] font-medium px-2 py-0.5 rounded bg-slate-200/70 text-slate-700">
+                          {item.targetType === "FLOCK" ? "Flock" : "Single Bird"}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Feed Stock & Inventory Alerts */}
+          <div className="bg-white rounded-xl border border-slate-200/80 shadow-xs overflow-hidden">
+            <div className="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
                   <Wheat className="w-4 h-4 text-emerald-600" />
                   <span>Feed Inventory & Low Stock Alerts</span>
-                </CardTitle>
-                <p className="text-[11px] text-slate-500 font-normal mt-0.5">
-                  Warehouse grain levels, low-quantity reorder warnings, and consumption velocity.
+                </h3>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Warehouse grain levels, reorder warnings, and usage velocity.
                 </p>
               </div>
               <Link
                 href="/feed"
-                className="text-xs font-semibold text-emerald-700 hover:underline shrink-0"
+                className="text-xs font-medium text-emerald-600 hover:text-emerald-700 flex items-center gap-1"
               >
-                Manage Feed →
+                <span>Manage Feed</span>
+                <ArrowRight className="w-3.5 h-3.5" />
               </Link>
-            </CardHeader>
-            <CardContent className="p-5 space-y-4">
+            </div>
+
+            <div className="p-4 sm:p-5 space-y-4">
               {lowFeedItems.length > 0 && (
-                <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 text-xs space-y-2">
-                  <div className="flex items-center gap-1.5 font-bold text-amber-800">
+                <div className="p-3 bg-amber-50/70 rounded-lg border border-amber-200 text-xs space-y-1.5">
+                  <div className="flex items-center gap-1.5 font-semibold text-amber-800">
                     <AlertTriangle className="w-4 h-4 text-amber-600" />
                     <span>Low Feed Stock Alert:</span>
                   </div>
@@ -890,7 +1013,7 @@ export default function DashboardPage() {
                       className="flex items-center justify-between text-xs text-amber-900"
                     >
                       <span>{item.feedType}</span>
-                      <span className="font-bold">
+                      <span className="font-semibold font-mono">
                         Only {item.currentStockKg}kg left in stock!
                       </span>
                     </div>
@@ -898,148 +1021,161 @@ export default function DashboardPage() {
                 </div>
               )}
 
-              {/* Quick stock status list */}
+              {/* Feed Stock Status List */}
               <div className="space-y-2">
                 {feedSummaries.slice(0, 4).map((f) => (
                   <div
                     key={f.feedType}
-                    className="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl text-xs"
+                    className="flex items-center justify-between p-3 bg-slate-50 rounded-lg text-xs border border-slate-100"
                   >
-                    <div className="flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                      <span className="font-semibold text-slate-800">
-                        {f.feedType}
-                      </span>
+                    <div className="flex items-center gap-2.5">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+                      <div>
+                        <span className="font-medium text-slate-800 block">
+                          {f.feedType}
+                        </span>
+                        <span className="text-[11px] text-slate-400">
+                          Total used: {f.totalUsedKg}kg
+                        </span>
+                      </div>
                     </div>
                     <div className="text-right">
-                      <span className="font-bold text-slate-900">
+                      <span className="font-bold text-slate-900 font-mono text-sm block">
                         {f.currentStockKg} kg
                       </span>
-                      <span className="text-[10px] text-slate-400 block">
-                        Used: {f.totalUsedKg}kg
+                      <span className="text-[10px] text-emerald-700 font-medium">
+                        In Warehouse
                       </span>
                     </div>
                   </div>
                 ))}
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Recent Activity Grid: Breeding & Sales */}
+      {/* 6. Recent Activity & Commercial Records */}
       <div className="space-y-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-          <div>
-            <div className="flex items-center gap-2">
-              <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700">
-                Recent Activity & Commercial Records
-              </h2>
-              <span className="text-[10px] font-bold text-blue-700 bg-blue-50 border border-blue-200/80 px-2 py-0.5 rounded-full">
-                Loft History
-              </span>
-            </div>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Active egg clutches, incubation milestones, squab hatchings, and verified buyer sales records.
-            </p>
+          <div className="flex items-center gap-2">
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+              Recent Activity & Commercial Records
+            </h2>
+            <span className="text-[11px] font-medium text-blue-700 bg-blue-50 border border-blue-200/60 px-2 py-0.5 rounded-full">
+              Loft History
+            </span>
           </div>
+          <p className="text-xs text-slate-400">
+            Active egg clutches, incubation milestones, squab hatchings, and verified buyer sales records.
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-6">
           {/* Recent Breeding Activity */}
-          <Card className="border-slate-200/80 shadow-xs">
-            <CardHeader className="bg-slate-50/50">
+          <div className="bg-white rounded-xl border border-slate-200/80 shadow-xs overflow-hidden">
+            <div className="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between">
               <div>
-                <CardTitle className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
                   <Egg className="w-4 h-4 text-emerald-600" />
                   <span>Recent Breeding Clutches & Hatching Activity</span>
-                </CardTitle>
-                <p className="text-[11px] text-slate-500 font-normal mt-0.5">
-                  Active nesting rounds, clutch fertility rates, and newly hatched squabs awaiting banding.
+                </h3>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Active nesting rounds, clutch fertility rates, and hatchings.
                 </p>
               </div>
               <Link
                 href="/breeding"
-                className="text-xs font-semibold text-emerald-700 hover:underline shrink-0"
+                className="text-xs font-medium text-emerald-600 hover:text-emerald-700 flex items-center gap-1"
               >
-                Breeding Center →
+                <span>Breeding Center</span>
+                <ArrowRight className="w-3.5 h-3.5" />
               </Link>
-            </CardHeader>
-            <CardContent className="p-5 space-y-3">
-              {recentBreedingRounds.map((rnd) => (
-                <div
-                  key={rnd.id}
-                  className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between text-xs"
-                >
-                  <div>
-                    <div className="flex items-center gap-1.5 font-mono font-bold text-slate-900">
-                      {activeSerialMap.get(rnd.pairId) && (
-                        <span className="font-mono text-[10px] bg-emerald-600 text-white px-1.5 py-0.2 rounded font-black shadow-2xs">
-                          #{activeSerialMap.get(rnd.pairId)}
-                        </span>
-                      )}
-                      <span>{rnd.pairId}</span>
-                      <span className="text-slate-400 font-normal font-sans text-xs">— Round #{rnd.roundNumber}</span>
-                    </div>
-                    <span className="text-[11px] text-slate-500">
-                      Laid: {formatDate(rnd.date)} • Hatched:{" "}
-                      {formatDate(rnd.hatchDate)}
-                    </span>
-                  </div>
-                  <div className="text-right">
-                    <span className="font-bold text-emerald-700 block">
-                      {rnd.babiesHatched} / {rnd.eggsLaid} Hatched
-                    </span>
-                    <span className="text-[10px] text-slate-400">
-                      {rnd.babyPigeonIds.length > 0
-                        ? `${rnd.babyPigeonIds.length} Ringed`
-                        : "Pending registration"}
-                    </span>
-                  </div>
+            </div>
+
+            <div className="p-4 sm:p-5 space-y-3">
+              {recentBreedingRounds.length === 0 ? (
+                <div className="py-8 text-center text-slate-400 text-xs">
+                  No recent breeding clutches recorded.
                 </div>
-              ))}
-            </CardContent>
-          </Card>
+              ) : (
+                recentBreedingRounds.map((rnd) => (
+                  <div
+                    key={rnd.id}
+                    className="p-3 bg-slate-50/70 rounded-lg border border-slate-200/60 flex items-center justify-between text-xs"
+                  >
+                    <div>
+                      <div className="flex items-center gap-1.5 font-semibold text-slate-900">
+                        {activeSerialMap.get(rnd.pairId) && (
+                          <span className="font-mono text-[10px] bg-slate-800 text-white px-1.5 py-0.2 rounded font-semibold">
+                            #{activeSerialMap.get(rnd.pairId)}
+                          </span>
+                        )}
+                        <span className="font-mono">{rnd.pairId}</span>
+                        <span className="text-slate-400 font-normal text-xs">— Round #{rnd.roundNumber}</span>
+                      </div>
+                      <span className="text-[11px] text-slate-500 mt-0.5 block">
+                        Laid: {formatDate(rnd.date)} • Hatched:{" "}
+                        {formatDate(rnd.hatchDate)}
+                      </span>
+                    </div>
+                    <div className="text-right">
+                      <span className="font-semibold text-emerald-700 block font-mono">
+                        {rnd.babiesHatched} / {rnd.eggsLaid} Hatched
+                      </span>
+                      <span className="text-[10px] text-slate-400">
+                        {rnd.babyPigeonIds.length > 0
+                          ? `${rnd.babyPigeonIds.length} Ringed`
+                          : "Pending registration"}
+                      </span>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
 
           {/* Recent Pigeon Sales */}
-          <Card className="border-slate-200/80 shadow-xs">
-            <CardHeader className="bg-slate-50/50">
+          <div className="bg-white rounded-xl border border-slate-200/80 shadow-xs overflow-hidden">
+            <div className="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between">
               <div>
-                <CardTitle className="text-sm font-bold text-slate-800 flex items-center gap-2">
-                  <TakaIcon className="w-4 h-4 text-blue-600" />
+                <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
+                  <TakaIcon className="w-4 h-4 text-emerald-600" />
                   <span>Preserved Pigeon Sale Records</span>
-                </CardTitle>
-                <p className="text-[11px] text-slate-500 font-normal mt-0.5">
-                  Commercial sale archives with prices, buyer identities, and full pedigree preservation.
+                </h3>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Commercial sales with buyer identities and preserved history.
                 </p>
               </div>
               <Link
                 href="/pigeons?status=SOLD"
-                className="text-xs font-semibold text-emerald-700 hover:underline shrink-0"
+                className="text-xs font-medium text-emerald-600 hover:text-emerald-700 flex items-center gap-1"
               >
-                All Sold Birds →
+                <span>All Sold Birds</span>
+                <ArrowRight className="w-3.5 h-3.5" />
               </Link>
-            </CardHeader>
-            <CardContent className="p-5 space-y-3">
+            </div>
+
+            <div className="p-4 sm:p-5 space-y-3">
               {recentSales.length === 0 ? (
-                <p className="text-xs text-slate-400 text-center py-6">
+                <div className="py-8 text-center text-slate-400 text-xs">
                   No sold pigeons recorded yet.
-                </p>
+                </div>
               ) : (
                 recentSales.map((s) => (
                   <div
                     key={s.id}
-                    className="p-3 bg-blue-50/30 rounded-xl border border-blue-100 flex items-center justify-between text-xs"
+                    className="p-3 bg-slate-50/70 rounded-lg border border-slate-200/60 flex items-center justify-between text-xs"
                   >
                     <div>
                       <div className="flex items-center gap-2">
                         <RingBadge pigeon={s} size="sm" />
-                        <span className="font-bold text-slate-900">
+                        <span className="font-semibold text-slate-900">
                           {s.breedSubtype || s.breed}
                         </span>
                       </div>
                       <span className="text-[11px] text-slate-500 mt-1 block">
-                        Sold to: <strong>{s.buyer || "Enthusiast"}</strong> on{" "}
+                        Sold to: <strong className="text-slate-700">{s.buyer || "Enthusiast"}</strong> on{" "}
                         {formatDate(s.saleDate)}
                       </span>
                     </div>
@@ -1047,15 +1183,15 @@ export default function DashboardPage() {
                       <span className="font-mono font-bold text-emerald-700 text-sm block">
                         +{formatCurrency(s.salePrice || 0)}
                       </span>
-                      <span className="text-[10px] text-blue-700 font-semibold">
-                        Full History Preserved
+                      <span className="text-[10px] text-slate-500 font-medium">
+                        Preserved History
                       </span>
                     </div>
                   </div>
                 ))
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       </div>
     </div>
