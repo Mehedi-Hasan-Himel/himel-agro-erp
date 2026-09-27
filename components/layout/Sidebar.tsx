@@ -9,6 +9,7 @@ import { useSector } from "@/components/context/SectorContext";
 import { AnimalSectorConfig } from "@/types/sector";
 import {
   LayoutDashboard,
+  Sprout,
   Feather,
   GitFork,
   HeartHandshake,
@@ -22,7 +23,6 @@ import {
   ExternalLink,
   ChevronDown,
   Layers,
-  Sparkles,
 } from "lucide-react";
 import { TakaIcon } from "../ui/icons";
 import {
@@ -40,7 +40,6 @@ export interface SidebarProps {
 export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
   const pathname = usePathname();
   const {
-    activeSectors,
     isSectorActive,
     toggleSector,
     setAllSectors,
@@ -51,7 +50,33 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
   const [pigeonsSheetUrl, setPigeonsSheetUrl] = React.useState(DEFAULT_PIGEONS_SHEET_URL);
   const [financeSheetUrl, setFinanceSheetUrl] = React.useState(DEFAULT_FINANCE_SHEET_URL);
   const [medicineDocUrl, setMedicineDocUrl] = React.useState(DEFAULT_MEDICINE_GUIDE_DOC_URL);
+
+  // Dropdown states
+  const [isFarmingSectorOpen, setIsFarmingSectorOpen] = React.useState(true);
+  const [isPigeonSectorOpen, setIsPigeonSectorOpen] = React.useState(true);
+  const [isGoatSectorOpen, setIsGoatSectorOpen] = React.useState(true);
   const [isDocsDropdownOpen, setIsDocsDropdownOpen] = React.useState(true);
+
+  // Active route detection
+  const isPigeonActive =
+    pathname.startsWith("/pigeons") ||
+    pathname.startsWith("/breeding") ||
+    pathname.startsWith("/health") ||
+    pathname.startsWith("/feed");
+
+  const isGoatActive = pathname.startsWith("/goats");
+  const isFarmingSectorActive = isPigeonActive || isGoatActive;
+
+  // Auto-expand relevant dropdown if user navigates to a nested page
+  React.useEffect(() => {
+    if (isPigeonActive) {
+      setIsFarmingSectorOpen(true);
+      setIsPigeonSectorOpen(true);
+    } else if (isGoatActive) {
+      setIsFarmingSectorOpen(true);
+      setIsGoatSectorOpen(true);
+    }
+  }, [pathname, isPigeonActive, isGoatActive]);
 
   React.useEffect(() => {
     fetch("/api/sync/google-sheets")
@@ -63,9 +88,6 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
       })
       .catch(() => {});
   }, []);
-
-  const showPigeon = isSectorActive("PIGEON");
-  const showGoat = isSectorActive("GOAT");
 
   const sidebarContent = (
     <div className="flex flex-col h-full bg-slate-900 text-slate-300 border-r border-slate-800">
@@ -107,104 +129,32 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
         )}
       </div>
 
-      {/* Global Farming Sector Selector */}
-      <div className="p-3 border-b border-slate-800/80 bg-slate-950/40">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-[10px] uppercase tracking-wider font-extrabold text-slate-400">
-            Farming Sectors
-          </span>
-          <button
-            type="button"
-            onClick={setAllSectors}
-            className={`text-[10px] font-bold px-2 py-0.5 rounded transition-colors cursor-pointer ${
-              isCombinedMode
-                ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"
-                : "text-slate-400 hover:text-white"
-            }`}
-          >
-            Combined View
-          </button>
-        </div>
-
+      {/* Quick Action Buttons */}
+      <div className="p-3 border-b border-slate-800/70">
         <div className="grid grid-cols-2 gap-1.5">
-          {allConfigs
-            .filter((c: AnimalSectorConfig) => c.enabled)
-            .map((cfg: AnimalSectorConfig) => {
-              const active = isSectorActive(cfg.id);
-              return (
-                <button
-                  key={cfg.id}
-                  type="button"
-                  onClick={() => toggleSector(cfg.id)}
-                  className={`flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-semibold transition-all border cursor-pointer ${
-                    active
-                      ? "bg-emerald-950/70 text-emerald-300 border-emerald-500/60 shadow-xs"
-                      : "bg-slate-800/40 text-slate-400 border-slate-700/60 hover:text-slate-200 hover:bg-slate-800"
-                  }`}
-                  title={`Toggle ${cfg.name} sector`}
-                >
-                  <div className="flex items-center gap-1.5 truncate">
-                    <span className="text-sm shrink-0">{cfg.icon}</span>
-                    <span className="truncate font-bold">{cfg.name}</span>
-                  </div>
-                  <input
-                    type="checkbox"
-                    checked={active}
-                    readOnly
-                    className="w-3.5 h-3.5 rounded accent-emerald-500 shrink-0 pointer-events-none"
-                  />
-                </button>
-              );
-            })}
-        </div>
-      </div>
-
-      {/* Quick Action Button */}
-      <div className="p-3 space-y-1.5">
-        {showPigeon && !showGoat && (
           <Link
             href="/pigeons/new"
             onClick={onClose}
-            className="flex items-center justify-center gap-2 w-full py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-semibold text-xs tracking-wide shadow-sm transition-all"
+            className="flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-semibold text-[11px] shadow-xs transition-all"
+            title="Register a new Pigeon"
           >
-            <PlusCircle className="w-4 h-4" />
-            <span>Register New Pigeon</span>
+            <PlusCircle className="w-3.5 h-3.5 shrink-0" />
+            <span className="truncate">+ Pigeon</span>
           </Link>
-        )}
-
-        {showGoat && !showPigeon && (
           <Link
             href="/goats/new"
             onClick={onClose}
-            className="flex items-center justify-center gap-2 w-full py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-semibold text-xs tracking-wide shadow-sm transition-all"
+            className="flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-xl bg-emerald-700 hover:bg-emerald-600 active:bg-emerald-800 text-white font-semibold text-[11px] shadow-xs transition-all"
+            title="Register a new Goat"
           >
-            <PlusCircle className="w-4 h-4" />
-            <span>Register New Goat</span>
+            <PlusCircle className="w-3.5 h-3.5 shrink-0" />
+            <span className="truncate">+ Goat</span>
           </Link>
-        )}
-
-        {showPigeon && showGoat && (
-          <div className="grid grid-cols-2 gap-1.5">
-            <Link
-              href="/pigeons/new"
-              onClick={onClose}
-              className="flex items-center justify-center gap-1 py-2 px-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-[11px] shadow-sm transition-all"
-            >
-              <span>+ 🕊️ Pigeon</span>
-            </Link>
-            <Link
-              href="/goats/new"
-              onClick={onClose}
-              className="flex items-center justify-center gap-1 py-2 px-2 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white font-semibold text-[11px] shadow-sm transition-all"
-            >
-              <span>+ 🐐 Goat</span>
-            </Link>
-          </div>
-        )}
+        </div>
       </div>
 
       {/* Navigation Links */}
-      <nav className="flex-1 px-3 py-1 space-y-3 overflow-y-auto">
+      <nav className="flex-1 px-3 py-2 space-y-2.5 overflow-y-auto">
         {/* Core Executive Dashboard */}
         <div className="space-y-0.5">
           <Link
@@ -221,88 +171,231 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
           </Link>
         </div>
 
-        {/* Pigeon Sector Section */}
-        {showPigeon && (
-          <div className="space-y-0.5">
-            <div className="px-3 py-1 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-              <span>🕊️</span>
-              <span>Pigeon Sector</span>
+        {/* 🌾 Farming Sector (Main Dropdown) */}
+        <div className="space-y-1">
+          <button
+            type="button"
+            onClick={() => setIsFarmingSectorOpen((prev) => !prev)}
+            aria-expanded={isFarmingSectorOpen}
+            className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer group ${
+              isFarmingSectorActive
+                ? "bg-slate-800/90 text-white border border-slate-700/80 shadow-xs"
+                : "text-slate-300 hover:text-white hover:bg-slate-800/80"
+            }`}
+          >
+            <div className="flex items-center gap-2.5 min-w-0">
+              <Sprout className="w-4 h-4 text-emerald-400 group-hover:text-emerald-300 transition-colors shrink-0" />
+              <span className="truncate font-bold text-slate-200 group-hover:text-white">
+                Farming Sector
+              </span>
             </div>
-            {[
-              { href: "/pigeons", label: "Pigeon Registry", icon: Feather },
-              { href: "/breeding/pairs", label: "Breeding Pairs", icon: GitFork },
-              { href: "/breeding", label: "Breeding Rounds", icon: HeartHandshake },
-              { href: "/health", label: "Health & Medicine", icon: Activity },
-              { href: "/feed", label: "Feed & Inventory", icon: Wheat },
-            ].map((item) => {
-              const isActive =
-                pathname === item.href ||
-                (item.href !== "/dashboard" && pathname.startsWith(item.href));
-              const Icon = item.icon;
+            <div className="flex items-center gap-1.5 shrink-0">
+              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                2 Sectors
+              </span>
+              <ChevronDown
+                className={`w-3.5 h-3.5 text-slate-400 group-hover:text-white transition-transform duration-200 ${
+                  isFarmingSectorOpen ? "rotate-180 text-emerald-400" : ""
+                }`}
+              />
+            </div>
+          </button>
 
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={onClose}
-                  className={`flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
-                    isActive
-                      ? "bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 shadow-xs font-bold"
-                      : "text-slate-300 hover:text-white hover:bg-slate-800/80"
+          {/* Farming Sector Collapsible Container */}
+          {isFarmingSectorOpen && (
+            <div className="mt-1 pl-2 space-y-2 ml-2 border-l-2 border-slate-800 animate-in fade-in slide-in-from-top-1 duration-150">
+              {/* Sector Mode & Filter Switcher */}
+              <div className="p-2 rounded-xl bg-slate-950/60 border border-slate-800/80 space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[9px] uppercase tracking-wider font-extrabold text-slate-400">
+                    Dashboard View
+                  </span>
+                  <button
+                    type="button"
+                    onClick={setAllSectors}
+                    className={`text-[9px] font-bold px-1.5 py-0.5 rounded transition-colors cursor-pointer ${
+                      isCombinedMode
+                        ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"
+                        : "text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    Combined
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-2 gap-1">
+                  {allConfigs
+                    .filter((c: AnimalSectorConfig) => c.enabled)
+                    .map((cfg: AnimalSectorConfig) => {
+                      const active = isSectorActive(cfg.id);
+                      return (
+                        <button
+                          key={cfg.id}
+                          type="button"
+                          onClick={() => toggleSector(cfg.id)}
+                          className={`flex items-center justify-between px-2 py-1 rounded-lg text-[11px] font-semibold transition-all border cursor-pointer ${
+                            active
+                              ? "bg-emerald-950/70 text-emerald-300 border-emerald-500/60 shadow-xs"
+                              : "bg-slate-800/40 text-slate-400 border-slate-700/60 hover:text-slate-200 hover:bg-slate-800"
+                          }`}
+                          title={`Toggle ${cfg.name} in dashboard`}
+                        >
+                          <div className="flex items-center gap-1 truncate">
+                            <span className="text-xs shrink-0">{cfg.icon}</span>
+                            <span className="truncate">{cfg.name}</span>
+                          </div>
+                          <input
+                            type="checkbox"
+                            checked={active}
+                            readOnly
+                            className="w-3 h-3 rounded accent-emerald-500 shrink-0 pointer-events-none"
+                          />
+                        </button>
+                      );
+                    })}
+                </div>
+              </div>
+
+              {/* 🕊️ Pigeon Sector (Sub-Dropdown) */}
+              <div className="space-y-1">
+                <button
+                  type="button"
+                  onClick={() => setIsPigeonSectorOpen((prev) => !prev)}
+                  aria-expanded={isPigeonSectorOpen}
+                  className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer group ${
+                    isPigeonActive
+                      ? "bg-emerald-500/15 text-emerald-300 border border-emerald-500/30"
+                      : "text-slate-300 hover:text-white hover:bg-slate-800/70"
                   }`}
                 >
-                  <Icon
-                    className={`w-4 h-4 transition-colors ${
-                      isActive ? "text-emerald-300" : "text-slate-400"
-                    }`}
-                  />
-                  <span>{item.label}</span>
-                </Link>
-              );
-            })}
-          </div>
-        )}
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="text-sm shrink-0">🕊️</span>
+                    <span className="truncate font-bold text-slate-200 group-hover:text-white">
+                      Pigeon Sector
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <span className="inline-flex items-center px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-slate-800 text-slate-300 border border-slate-700">
+                      5
+                    </span>
+                    <ChevronDown
+                      className={`w-3.5 h-3.5 text-slate-400 group-hover:text-white transition-transform duration-200 ${
+                        isPigeonSectorOpen ? "rotate-180 text-emerald-400" : ""
+                      }`}
+                    />
+                  </div>
+                </button>
 
-        {/* Goat Sector Section */}
-        {showGoat && (
-          <div className="space-y-0.5">
-            <div className="px-3 py-1 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-              <span>🐐</span>
-              <span>Goat Sector</span>
-            </div>
-            {[
-              { href: "/goats", label: "Goat Herd Registry", icon: Layers },
-              { href: "/goats/breeding", label: "Breeding & Mating", icon: GitFork },
-              { href: "/goats/health", label: "Health & Vaccines", icon: Activity },
-              { href: "/goats/feed", label: "Feed & Forage", icon: Wheat },
-            ].map((item) => {
-              const isActive =
-                pathname === item.href ||
-                (item.href !== "/goats" && pathname.startsWith(item.href));
-              const Icon = item.icon;
+                {/* Pigeon Sector Links */}
+                {isPigeonSectorOpen && (
+                  <div className="pl-2 space-y-0.5 ml-2 border-l-2 border-emerald-500/30 animate-in fade-in slide-in-from-top-1 duration-150">
+                    {[
+                      { href: "/pigeons", label: "Pigeon Registry", icon: Feather },
+                      { href: "/breeding/pairs", label: "Breeding Pairs", icon: GitFork },
+                      { href: "/breeding", label: "Breeding Rounds", icon: HeartHandshake },
+                      { href: "/health", label: "Health & Medicine", icon: Activity },
+                      { href: "/feed", label: "Feed & Inventory", icon: Wheat },
+                    ].map((item) => {
+                      const isActive =
+                        pathname === item.href ||
+                        (item.href !== "/dashboard" && pathname.startsWith(item.href));
+                      const Icon = item.icon;
 
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={onClose}
-                  className={`flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
-                    isActive
-                      ? "bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 shadow-xs font-bold"
-                      : "text-slate-300 hover:text-white hover:bg-slate-800/80"
+                      return (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          onClick={onClose}
+                          className={`flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                            isActive
+                              ? "bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 font-bold"
+                              : "text-slate-300 hover:text-white hover:bg-slate-800/80"
+                          }`}
+                        >
+                          <Icon
+                            className={`w-3.5 h-3.5 transition-colors ${
+                              isActive ? "text-emerald-300" : "text-slate-400"
+                            }`}
+                          />
+                          <span className="truncate">{item.label}</span>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              {/* 🐐 Goat Sector (Sub-Dropdown) */}
+              <div className="space-y-1">
+                <button
+                  type="button"
+                  onClick={() => setIsGoatSectorOpen((prev) => !prev)}
+                  aria-expanded={isGoatSectorOpen}
+                  className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer group ${
+                    isGoatActive
+                      ? "bg-emerald-500/15 text-emerald-300 border border-emerald-500/30"
+                      : "text-slate-300 hover:text-white hover:bg-slate-800/70"
                   }`}
                 >
-                  <Icon
-                    className={`w-4 h-4 transition-colors ${
-                      isActive ? "text-emerald-300" : "text-slate-400"
-                    }`}
-                  />
-                  <span>{item.label}</span>
-                </Link>
-              );
-            })}
-          </div>
-        )}
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="text-sm shrink-0">🐐</span>
+                    <span className="truncate font-bold text-slate-200 group-hover:text-white">
+                      Goat Sector
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <span className="inline-flex items-center px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-slate-800 text-slate-300 border border-slate-700">
+                      4
+                    </span>
+                    <ChevronDown
+                      className={`w-3.5 h-3.5 text-slate-400 group-hover:text-white transition-transform duration-200 ${
+                        isGoatSectorOpen ? "rotate-180 text-emerald-400" : ""
+                      }`}
+                    />
+                  </div>
+                </button>
+
+                {/* Goat Sector Links */}
+                {isGoatSectorOpen && (
+                  <div className="pl-2 space-y-0.5 ml-2 border-l-2 border-emerald-500/30 animate-in fade-in slide-in-from-top-1 duration-150">
+                    {[
+                      { href: "/goats", label: "Goat Herd Registry", icon: Layers },
+                      { href: "/goats/breeding", label: "Breeding & Mating", icon: GitFork },
+                      { href: "/goats/health", label: "Health & Vaccines", icon: Activity },
+                      { href: "/goats/feed", label: "Feed & Forage", icon: Wheat },
+                    ].map((item) => {
+                      const isActive =
+                        pathname === item.href ||
+                        (item.href !== "/goats" && pathname.startsWith(item.href));
+                      const Icon = item.icon;
+
+                      return (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          onClick={onClose}
+                          className={`flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                            isActive
+                              ? "bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 font-bold"
+                              : "text-slate-300 hover:text-white hover:bg-slate-800/80"
+                          }`}
+                        >
+                          <Icon
+                            className={`w-3.5 h-3.5 transition-colors ${
+                              isActive ? "text-emerald-300" : "text-slate-400"
+                            }`}
+                          />
+                          <span className="truncate">{item.label}</span>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* Shared Operations */}
         <div className="space-y-0.5 pt-2 border-t border-slate-800/80">
@@ -344,7 +437,7 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
               type="button"
               onClick={() => setIsDocsDropdownOpen((prev) => !prev)}
               aria-expanded={isDocsDropdownOpen}
-              className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800/80 transition-all group"
+              className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800/80 transition-all group cursor-pointer"
             >
               <div className="flex items-center gap-2.5 min-w-0">
                 <FileSpreadsheet className="w-4 h-4 text-emerald-400 group-hover:text-emerald-300 transition-colors shrink-0" />
