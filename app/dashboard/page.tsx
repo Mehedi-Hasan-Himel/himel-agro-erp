@@ -57,6 +57,12 @@ import {
   FlockPigeonIcon,
   TakaIcon,
 } from "@/components/ui/icons";
+import { useSector } from "@/components/context/SectorContext";
+import { GoatDashboardView } from "@/components/dashboard/GoatDashboardView";
+import { MultiSectorExecutiveBanner } from "@/components/dashboard/MultiSectorExecutiveBanner";
+import { getFarmGoatStats } from "@/lib/repositories/goatRepository";
+import { FarmGoatStats } from "@/types/goat";
+import { useGoogleSheetSync } from "@/lib/hooks/useGoogleSheetSync";
 
 export default function DashboardPage() {
   const [pigeons, setPigeons] = useState<Pigeon[]>([]);
@@ -71,6 +77,9 @@ export default function DashboardPage() {
   const [monthlySummaries, setMonthlySummaries] = useState<
     MonthlyFinancialSummary[]
   >([]);
+  const { isSectorActive, isCombinedMode } = useSector();
+  const { isSyncing, syncNow } = useGoogleSheetSync();
+  const [goatStats, setGoatStats] = useState<FarmGoatStats | null>(null);
   const [recentTransactions, setRecentTransactions] = useState<Transaction[]>(
     []
   );
@@ -78,6 +87,8 @@ export default function DashboardPage() {
 
   const loadDashboardData = async () => {
     try {
+      getFarmGoatStats().then(setGoatStats).catch(() => {});
+
       // Fast path: Try consolidated dashboard endpoint
       const dashRes = await fetch("/api/dashboard").catch(() => null);
       if (dashRes && dashRes.ok) {
@@ -232,8 +243,30 @@ export default function DashboardPage() {
     return <DashboardSkeleton />;
   }
 
+  const showPigeon = isSectorActive("PIGEON");
+  const showGoat = isSectorActive("GOAT");
+
+  if (showGoat && !showPigeon) {
+    return <GoatDashboardView />;
+  }
+
   return (
     <div className="space-y-7 sm:space-y-8">
+      {/* Combined Executive Banner when both Pigeon & Goat are active */}
+      {showPigeon && showGoat && (
+        <MultiSectorExecutiveBanner
+          totalPigeons={stats.totalHistorical}
+          activePigeons={stats.totalActive}
+          pigeonPairsCount={pairs.length}
+          totalGoats={goatStats?.totalGoats || 8}
+          activeGoats={goatStats?.activeHerd || 7}
+          pregnantGoatsCount={goatStats?.pregnantCount || 1}
+          operationalProfit={operationalNet2026}
+          onSyncClick={syncNow}
+          isSyncing={isSyncing}
+        />
+      )}
+
       {/* Top Welcome Banner */}
       <div className="bg-gradient-to-r from-emerald-800 via-emerald-900 to-slate-900 text-white rounded-2xl sm:rounded-3xl p-5 sm:p-7 lg:p-8 shadow-sm relative overflow-hidden w-full max-w-full min-w-0">
         <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6 sm:gap-8 min-w-0 w-full">
@@ -1058,6 +1091,13 @@ export default function DashboardPage() {
           </Card>
         </div>
       </div>
+
+      {/* When in Combined Mode: Render Goat Operations Dashboard Section */}
+      {showPigeon && showGoat && (
+        <div className="pt-8 border-t-2 border-slate-200">
+          <GoatDashboardView />
+        </div>
+      )}
     </div>
   );
 }

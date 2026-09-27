@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AppShell } from "@/components/layout/AppShell";
 import { PwaProvider } from "@/components/pwa/PwaProvider";
+import { SectorProvider } from "@/components/context/SectorContext";
 import { SITE_CONFIG } from "@/lib/config/siteConfig";
 
 const geistSans = Geist({
@@ -59,7 +60,9 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <PwaProvider>
-          <AppShell>{children}</AppShell>
+          <SectorProvider>
+            <AppShell>{children}</AppShell>
+          </SectorProvider>
         </PwaProvider>
       </body>
     </html>

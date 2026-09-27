@@ -1,20 +1,21 @@
 <div align="center">
 
-# 🕊️ Himel's Pet House ERP
-### Enterprise Pigeon Farm, Loft & Genetic Genealogy Management System
+# 🌾 Himel's Pet House ERP
+### Scalable Multi-Animal Farming & Livestock Genetics Management System
 
 [![Next.js](https://img.shields.io/badge/Next.js-16.3-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19.2-61DAFB?style=for-the-badge&logo=react)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.0-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
 [![PWA](https://img.shields.io/badge/PWA-Installable-purple?style=for-the-badge&logo=pwa)](https://himel-agro-erp.vercel.app)
+[![Sectors](https://img.shields.io/badge/Sectors-Pigeon_%7C_Goat_%7C_Scalable-success?style=for-the-badge)](#-multi-animal-sector-architecture)
 [![Google Sheets](https://img.shields.io/badge/Google_Sheets-2--Way_Live_Sync-34A853?style=for-the-badge&logo=googlesheets)](https://docs.google.com)
 [![Google Docs](https://img.shields.io/badge/Google_Docs-Real--Time_Sync-4285F4?style=for-the-badge&logo=googledocs)](https://docs.google.com)
 [![Vercel](https://img.shields.io/badge/Vercel-Production_Deployed-success?style=for-the-badge&logo=vercel)](https://himel-agro-erp.vercel.app)
 
-**A mission-critical, enterprise-grade avian ERP engineered for bloodline genealogy, multi-generational pedigree tracking, bidirectional Google Sheets & Google Docs synchronization, Progressive Web App (PWA) offline operation, breeding pair optimization, health schedules, feed inventory, and lifetime financial accounting.**
+**A mission-critical, enterprise-grade multi-animal agricultural ERP engineered for livestock bloodline genealogy, multi-generational pedigree tracking, gestation monitoring, bidirectional Google Cloud synchronization, Progressive Web App (PWA) offline operation, health protocols, feed warehouse management, and multi-sector financial accounting.**
 
-[Live Production ERP](https://himel-agro-erp.vercel.app) • [Architecture](#-system-architecture) • [Google Cloud Sync](#-connected-google-cloud-ecosystem-2-sheets--1-doc) • [PWA Capabilities](#-progressive-web-app-pwa-features) • [Module Guide](#-module-by-module-walkthrough) • [Getting Started](#-getting-started) • [Contact](#-certified-loft-contact)
+[Live Production ERP](https://himel-agro-erp.vercel.app) • [Multi-Sector Architecture](#-multi-animal-sector-architecture) • [Module Guide](#-module-by-module-walkthrough) • [Kinship Engine](#-deterministic-kinship--pedigree-engine) • [Google Cloud Sync](#-connected-google-cloud-ecosystem-2-sheets--1-doc) • [Developer Guide: Adding Sectors](#-developer-guide-adding-new-animal-sectors) • [Contact](#-certified-farm-contact)
 
 ---
 
@@ -23,341 +24,360 @@
 ## 📑 Table of Contents
 
 - [📌 Overview](#-overview)
-- [✨ Key Capabilities](#-key-capabilities)
-- [☁️ Connected Google Cloud Ecosystem (2 Sheets + 1 Doc)](#-connected-google-cloud-ecosystem-2-sheets--1-doc)
-- [📱 Progressive Web App (PWA) Features](#-progressive-web-app-pwa-features)
+- [✨ Key Enterprise Capabilities](#-key-enterprise-capabilities)
+- [🐐 Multi-Animal Sector Architecture](#-multi-animal-sector-architecture)
+  - [Central Sector Registry (`lib/config/sectors.ts`)](#central-sector-registry-libconfigsectorsts)
+  - [Global Sector Selector & Context (`SectorContext.tsx`)](#global-sector-selector--context-sectorcontexttsx)
+  - [Dynamic Navigation Bar](#dynamic-navigation-bar)
 - [📦 Module-by-Module Walkthrough](#-module-by-module-walkthrough)
   - [1. Executive Dashboard](#1-executive-dashboard-dashboard)
-  - [2. Pigeon Flock Registry](#2-pigeon-flock-registry-pigeons)
-  - [3. Pigeon Dossier & Pedigree Engine](#3-pigeon-dossier--pedigree-engine-pigeonsid)
-  - [4. Breeding Center & Pair Management](#4-breeding-center--pair-management-breeding)
-  - [5. Health & Medical Protocol](#5-health--medical-protocol-health)
-  - [6. Feed Inventory & Warehouse Stock](#6-feed-inventory--warehouse-stock-feed)
-  - [7. Financial Accounting & Accounts Ledger](#7-financial-accounting--accounts-ledger-finance)
-  - [8. System Settings & Cloud Integrations](#8-system-settings--cloud-integrations-settings)
-- [🧬 Deterministic Kinship & Pedigree Calculation](#-deterministic-kinship--pedigree-calculation)
-- [🏷️ Physical Ring Standard & Identifiers](#-physical-ring-standard--identifiers)
-- [🏗️ System Architecture & Data Flow](#-system-architecture--data-flow)
+  - [2. Pigeon Farming Sector (Loft & Genetics)](#2-pigeon-farming-sector-loft--genetics)
+  - [3. Goat Farming Sector (Herd & Dairy/Meat)](#3-goat-farming-sector-herd--dairymeat)
+  - [4. Multi-Sector Financial Accounting](#4-multi-sector-financial-accounting-finance)
+  - [5. System Settings & Cloud Integrations](#5-system-settings--cloud-integrations-settings)
+- [🧬 Deterministic Kinship & Pedigree Engine](#-deterministic-kinship--pedigree-engine)
+- [🏷️ Animal Identification Standards](#-animal-identification-standards)
+- [☁️ Connected Google Cloud Ecosystem (2 Sheets + 1 Doc)](#-connected-google-cloud-ecosystem-2-sheets--1-doc)
+- [📱 Progressive Web App (PWA) Features](#-progressive-web-app-pwa-features)
 - [🔌 API Routes Reference](#-api-routes-reference)
+- [🚀 Developer Guide: Adding New Animal Sectors](#-developer-guide-adding-new-animal-sectors)
 - [⚙️ Environment Variables](#-environment-variables)
 - [💻 Getting Started & Local Development](#-getting-started--local-development)
-- [📍 Certified Loft Contact](#-certified-loft-contact)
+- [📍 Certified Farm Contact](#-certified-farm-contact)
 
 ---
 
 ## 📌 Overview
 
-**Himel's Pet House ERP** is a full-featured avian resource planning and loft genetics platform custom-built for high-performance pigeon lofts, commercial breeders, and racing enthusiasts. Managing champion bloodlines (such as **Giribaz highflyers & tumblers** and **Racing Homers**) requires precise recordkeeping across bloodlines, physical band allocations, breeding clutches, medical doses, feeding velocity, and finances.
+**Himel's Pet House ERP** is a full-featured agricultural and livestock resource planning system. Originally built as an elite pigeon genetics and loft management platform, the system has been architecturally evolved into a **modular, multi-animal farming ERP**.
 
-This ERP connects directly with **Google Sheets** (2 separate workbooks for finances and pigeons) and **Google Docs** (live medical guidelines) via automated 2-way real-time synchronization, while providing a fully installable **Progressive Web App (PWA)** that operates offline in the loft with zero data loss.
+The system natively supports two active farming sectors:
+1. **🕊️ Pigeon Farming Sector**: Racing Homers, Giribaz highflyers, ring band numbering (`01`–`15`), clutch incubation, and loft genetics.
+2. **🐐 Goat Farming Sector**: Black Bengal, Jamunapari, Boer, and Sirohi herds, ear tag identification (`HA-GT-XX`), weight trajectories, gestation milestones, kidding logs, and forage feed management.
+
+### Extensible Design
+The system's core architecture avoids brittle, hard-coded species conditionals. All sector terminology, navigation, capabilities, and metrics are driven by a centralized configuration engine. New livestock sectors—such as **🐄 Cow / Cattle**, **🐔 Chicken / Poultry**, **🐃 Buffalo**, **🐑 Sheep**, and **🐟 Fish / Aquaculture**—can be plugged in seamlessly with zero refactoring to core shared services.
 
 ---
 
-## ✨ Key Capabilities
+## ✨ Key Enterprise Capabilities
 
 | Capability | Description |
 | :--- | :--- |
-| **Bidirectional Google Sheets Sync** | Full 2-way CRUD: creates, updates, and deletes in ERP mirror immediately in Google Sheets; edits/deletions in Sheets automatically reconcile into the ERP upon sync. |
-| **Real-Time Google Docs Sync** | Dedicated real-time sync engine auto-polling health and medicine protocols from Google Docs every 30 seconds. |
-| **Progressive Web App (PWA)** | 1-click install on Android, iOS Safari, macOS, and Windows. Offline service worker precaching with dedicated offline fallback page. |
-| **3-Tier Financial Intelligence** | Sequenced financial overviews: **Current Active Month** $\rightarrow$ **Current Calendar Year (2026)** $\rightarrow$ **From Beginning to Today Date (2019–Present)**. |
-| **Genetic Kinship Traversal** | Deterministic calculations resolving parents, full siblings, half-siblings, twins, grandparents, and extended family without circular loop vulnerabilities. |
-| **Official PDF Pedigrees** | Instant browser-generated landscape A4 pedigree certificates and portrait comprehensive dossiers with certified loft seal. |
-| **Dual Storage Fallback** | Production-ready MongoDB Atlas database paired with transparent local JSON storage (`data/*.json`) for complete offline resilience. |
-| **Zero Layout Shift (CLS)** | Custom Tailwind CSS Skeleton UI mirroring all page layouts during background revalidation and synchronization. |
+| **Config-Driven Sectors** | Switch between individual animal sectors or operate in **Combined View Mode** to run macro-level farm analytics across all animals. |
+| **Generic Kinship Engine** | High-performance graph traversal calculating Sires, Dams, Full Siblings, Maternal/Paternal Half-Siblings, Twins/Littermates, Grandparents, and Offspring without circular recursion. |
+| **Multi-Sector Finance** | Every transaction is attributed to a specific sector (`PIGEON`, `GOAT`, or `SHARED`). Features interactive Cross-Sector Performance Comparison and period filtering. |
+| **Gestation & Clutches** | Sector-specific reproductive tracking: egg candling & clutch incubation for birds, ultrasound & 150-day gestation countdowns for ruminants. |
+| **Official PDF Pedigrees** | Instant browser-rendered landscape A4 pedigree certificates and portrait comprehensive dossiers with certified farm branding. |
+| **Bidirectional Google Sheets Sync** | 2-way live sync with Google Sheets (Finance Ledger and Flock Census) via webhook events and reconciliation engines. |
+| **Real-Time Google Docs Sync** | Auto-polling medical guidelines from Google Docs with hash-based change detection. |
+| **Progressive Web App (PWA)** | Offline service worker precaching (`himel-agro-erp-v2`) with network-first fallback, local JSON persistence fallback, and standalone installation. |
 
 ---
 
-## ☁️ Connected Google Cloud Ecosystem (2 Sheets + 1 Doc)
+## 🐐 Multi-Animal Sector Architecture
 
-The application integrates with **three distinct Google Cloud documents** grouped neatly inside a collapsible **"Google Sheets & Docs"** dropdown in the navigation sidebar:
+The application is structured around a central separation between **Animal Sectors** and **Shared Farm Systems**:
 
 ```text
-Sidebar Navigation
-└── 📁 Google Sheets & Docs (Collapsible Dropdown)
-    ├── 📊 Sheet 1: Finance Ledger (Google Sheets)
-    ├── 🕊️ Sheet 2: Flock Registry (Google Sheets)
-    └── 📄 Medical Guidelines (Google Docs)
+                             HIMEL'S PET HOUSE ERP
+                                       │
+                    ┌──────────────────┴──────────────────┐
+                    │                                     │
+             Animal Sectors                         Shared Systems
+                    │                                     │
+         ┌──────────┴──────────┐            ┌─────────────┼─────────────┐
+         │                     │            │             │             │
+      🕊️ Pigeon             🐐 Goat      💰 Finance    ☁️ Cloud Sync  ⚙️ Settings
+         │                     │
+   (Loft & Bands)       (Herd & Tags)
+         │                     │
+         ▼                     ▼
+   Future Animals        Future Animals
+ (Cow, Chicken, etc.)  (Sheep, Buffalo, etc.)
 ```
 
-### 1. Sheet 1: Finance & Accounts Ledger
-- **URL**: [Open Google Sheet 1: Finance Ledger](https://docs.google.com/spreadsheets/d/1w894o27P0eF4Sgt59l11_VfW995Y3pLwO77mB8Jk2sQ/edit)
-- **Tabs**: `BUY` (expenses), `SELL` (sales income), `Exchange`, and monthly summary sheets (`2019-2025`, `May`, `June`, `July`, `August`, `September`).
-- **Functionality**:
-  - Pushes newly registered transactions (bird sales, feed purchases, medicine orders).
-  - Synchronizes historical setup costs (2019–2025 foundation capital: `৳100,000`).
-  - Auto-calculates active calendar year operating profit and cumulative lifetime position.
+### Central Sector Registry (`lib/config/sectors.ts`)
+Each sector is defined by an `AnimalSectorConfig` declaration specifying:
+- **Identification & Branding**: `id`, `key`, `name`, `displayName`, `icon`, `color`, `badgeClass`.
+- **Terminology Mapping**: Specific names for animals (`bird`/`goat`), males (`Cock`/`Buck`), females (`Hen`/`Doe`), offspring (`Squab`/`Kid`), tags (`Ring Band`/`Ear Tag`), housings (`Loft`/`Barn`), and lineage (`Pedigree`/`Ancestry Tree`).
+- **Feature Capabilities**: Toggles for `pedigree`, `kinship`, `breedingRounds`, `gestationTracking`, `eggTracking`, `weights`, `milkProduction`, and `flightRecords`.
+- **Navigation Items**: Dynamically generated sidebar routes matching the sector's active capabilities.
 
-### 2. Sheet 2: Pigeon Flock Registry
-- **URL**: [Open Google Sheet 2: Flock Registry](https://docs.google.com/spreadsheets/d/1B3Nn_t2E18w80F53gYnIqYfB7n1Y0wK9_tZt5F9N4_U/edit)
-- **Target Data**: Official flock census for allocated physical ring bands (Rings `01` through `15`).
-- **Bidirectional Deletion Parity**:
-  - When a pigeon is deleted in the ERP, a `DELETE_PIGEON` webhook permanently removes that row in Google Sheet.
-  - When rows are deleted directly inside Google Sheet, the ERP sync engine detects the missing rows and purges them from MongoDB and local storage, ending active breeding pairs associated with the deleted birds.
+```typescript
+// Example snippet from lib/config/sectors.ts
+export const ANIMAL_SECTORS: Record<AnimalSectorId, AnimalSectorConfig> = {
+  PIGEON: {
+    id: 'PIGEON',
+    displayName: 'Pigeon',
+    icon: '🕊️',
+    enabled: true,
+    capabilities: { pedigree: true, kinship: true, eggTracking: true, ... },
+    // ...
+  },
+  GOAT: {
+    id: 'GOAT',
+    displayName: 'Goat',
+    icon: '🐐',
+    enabled: true,
+    capabilities: { pedigree: true, kinship: true, gestationTracking: true, weights: true, ... },
+    // ...
+  },
+  // Placeholders ready for immediate activation:
+  COW: { id: 'COW', displayName: 'Cow / Cattle', icon: '🐄', enabled: false, ... },
+  CHICKEN: { id: 'CHICKEN', displayName: 'Chicken / Poultry', icon: '🐔', enabled: false, ... },
+};
+```
 
-### 3. Google Doc: Live Medicine & Health Guidelines
-- **URL**: [Open Google Doc: Medicine Guidelines](https://docs.google.com/document/d/1ly7mM86pcpKNdR5IlxVJXY_zsssEpaHP7wy7CeFN1f0/edit?usp=sharing)
-- **Live Sync Engine (`/api/sync/google-docs`)**:
-  - The ERP periodically pulls exported plaintext from Google Docs every 30 seconds.
-  - Changes made in the Google Doc are detected via hash comparison and updated in real time.
-  - Embedded in the `/health` module with a live status indicator, last-synced timestamp, and manual "Sync Now" button.
+### Global Sector Selector & Context (`SectorContext.tsx`)
+The `SectorContext` provider wraps the entire application:
+- **State Persistence**: Persists user sector preferences in browser `localStorage`.
+- **Single Sector Mode**: Focus on one species (e.g., only Pigeon or only Goat).
+- **Combined View Mode**: Toggle all sectors at once for full executive oversight.
+- **SSR-Safe Hydration**: Seamlessly renders on the server and synchronizes on client hydration with zero layout shift.
 
----
-
-## 📱 Progressive Web App (PWA) Features
-
-Himel's Pet House ERP is a fully compliant Progressive Web App meeting all Google Chrome, Edge, and Apple Web App standards:
-
-1. **Standalone Installation**:
-   - **Desktop**: Click **"Install App"** in the sidebar or the address bar install icon.
-   - **Android**: 1-click install prompt from the sidebar button.
-   - **iOS Safari**: Native banner explaining `Share` $\rightarrow$ `Add to Home Screen`.
-2. **Service Worker (`public/sw.js`)**:
-   - **Pre-Caching Shell**: Pre-caches key application navigation routes (`/`, `/dashboard`, `/pigeons`, `/breeding`, `/health`, `/feed`, `/finance`, `/settings`, `/offline`, logo, and icons).
-   - **Network-First Navigation with Offline Fallback**: In the event of network disruption in the loft, navigation requests serve cached shells or the dedicated offline page (`/offline`).
-   - **Stale-While-Revalidate**: Instant page loads for static assets, scripts, stylesheets, and images.
-3. **Multi-Resolution Responsive Icons (`public/icons/`)**:
-   - High-density square and maskable icons: `72x72`, `96x96`, `128x128`, `144x144`, `152x152`, `192x192`, `384x384`, `512x512`.
-   - Android adaptive maskable icon: `icon-maskable-512x512.png`.
-   - Apple Touch Icon (`180x180`): `apple-touch-icon.png`.
-4. **PWA Context & Online/Offline Toasts**:
-   - `components/pwa/PwaProvider.tsx` listens to browser network connectivity events (`online`/`offline`) and renders notification banners.
+### Dynamic Navigation Bar
+The sidebar (`components/layout/Sidebar.tsx`) automatically adapts:
+1. **Farming Sector Switcher**: Interactive checkboxes for `🕊️ Pigeon` and `🐐 Goat`, plus a `Combined View` toggle.
+2. **Dynamic Quick Actions**: Quick buttons (`+ Pigeon`, `+ Goat`) based on active sectors.
+3. **Sector-Grouped Menus**: Dedicated navigation sections for **Pigeon Sector** and **Goat Sector**, dynamically expanding or contracting depending on the active sector filters.
+4. **Shared Operations**: Unified links for **Finance & Ledger**, **Google Sheets & Docs** dropdown, and **Settings**.
 
 ---
 
 ## 📦 Module-by-Module Walkthrough
 
 ### 1. Executive Dashboard (`/dashboard`)
-The central command console for loft operations:
-- **Loft Master Welcome Banner**: Displays certified farm emblem, owner details (`Mehedi Hasan Himel`), primary contact number, and live census badge (`Live Loft • 22 Kept Birds`).
-- **Quick Action Buttons**: Instant access to `+ Register Pigeon`, `Form Pair`, and official contact channels (WhatsApp, Facebook Page, Google Maps Loft Location).
-- **Flock Census KPI Grid (6 Cards)**:
-  1. **Kept Birds**: Active birds residing in the loft (`22` active / `24` total historical).
-  2. **Racers**: Racing Homer lines count (`10`).
-  3. **Giribaz**: Highflyers and tumblers count (`12`).
-  4. **Hens**: Active breeding and racing females (`11`).
-  5. **Cocks**: Active breeding and racing males (`11`).
-  6. **Lost Rings**: Allocated rings recorded as lost (Rings `04` and `14`).
-- **Live Flock Registry Centerpiece Widget**:
-  - Real-time synchronized roster of banded pigeons (Rings `01` to `15`).
-  - **Foundation Bloodline Filter**: Quick filtering by *Dhaka Blue Bar Line*, *Sherpur Maxi Line*, *Chuina Kajkora Line*, *Musaldom Highflyer Line*, and *Chila & Gola Line*.
-  - **Category Tabs**: Filter between *All Rings*, *Kept Birds*, *Racers*, *Giribaz*, *Hens*, *Cocks*, and *Lost Rings*.
-  - Instant live search by ring, breed, pattern, parent notes, and color.
-  - In-row navigation to single pigeon dossier (`Profile`) and lineage tree (`Tree`).
-- **3-Tier Sequenced Financial Intelligence**:
-  1. **Current Monthly Financial Overview**: Highlights current active month (`September 2026`), operating income from bird sales, ongoing feed/medicine costs, and monthly net margin (`৳`).
-  2. **Current Year Financial Overview**: Calendar year `2026` operational overview, tracking YTD revenue, YTD expenses, operating margin across active operational months (`Jan – Sep 2026`), and monthly average cost (`৳`).
-  3. **From Beginning to Today Date Financial Overview**: Lifetime financial overview capturing initial infrastructure setup investment (`৳100,000` from 2019–2025) alongside 2026 operational expenses to show total lifetime balance.
-- **Daily Operations & Inventory Management**:
-  - **Medicine Due Widget**: Medication doses and vaccines scheduled for today, plus upcoming treatment courses.
-  - **Feed Stock Alerts Widget**: Grain warehouse inventory levels (kg) with low-stock warnings when inventory drops below safety thresholds.
-- **Recent Activity & Commercial Records**:
-  - **Recent Breeding Clutches**: Clutches, pair IDs, round numbers, lay dates, hatch dates, and egg/hatch ratio badges.
-  - **Preserved Pigeon Sales**: Commercial sale history with buyer names, dates, ring badges, and prices in BDT.
+The central operations console dynamically renders according to the active sector selection:
+- **Combined View Mode**: Displays the **Multi-Sector Executive Header** with macro farm inventory (total combined livestock, monthly farm revenue, active breeding dams/clutches, and feed alerts) plus cross-sector performance cards.
+- **Pigeon Mode**: Renders the complete Pigeon Command Center with 6-card flock census (Kept Birds, Racers, Giribaz, Hens, Cocks, Lost Rings), Foundation Bloodline roster, incubation clutches, and feed alerts.
+- **Goat Mode**: Renders the **Goat Operational Dashboard** with herd census (Bucks, Does, Kids, Castrated Wethers), gestation countdowns for pregnant does, daily forage inventory (Napier grass, Straw, Mash), and immunization schedules.
 
 ---
 
-### 2. Pigeon Flock Registry (`/pigeons`)
-The complete registry of all birds registered in the system:
-- **Category Filter Tabs**:
-  - **All**: Displays all recorded pigeons.
-  - **Male (Cock)**: Filters strictly to active males.
-  - **Female (Hen)**: Filters strictly to active females.
-  - **Baby (Squab)**: Filters young unweaned/weaned squabs.
-  - **Ring Lost**: Specifically tracks pigeons where physical band tags were lost or compromised.
-  - **Pigeon Lost**: Specifically tracks pigeons lost during flight, training, or racing.
-- **Dual Display Modes**:
-  - **Organic Grid View**: 16:10 visual cards showing photos, ring badges, breed, color, sex badge, Sire/Dam shortcuts, and sale price.
-  - **Tabular View**: Data-dense table with sorting, multi-select checkboxes for bulk deletion, status badges, and quick action menus.
-- **Search & Advanced Filtering**: Filter by hatch year, breed type, status, or search free text across ring numbers, parents, and color patterns.
+### 2. Pigeon Farming Sector (Loft & Genetics)
+
+- **Flock Registry (`/pigeons`)**:
+  - Filter by status, sex (Cock/Hen), squabs, lost rings, and flight loss.
+  - Organic grid view with high-res photos and tabular view with multi-select bulk operations.
+  - Search by ring number, foundation strain, pattern, and color.
+- **Dossier & Genealogy (`/pigeons/[id]`)**:
+  - Ring band metadata, eye sign, plumage, physical characteristics, and commercial valuation.
+  - Deterministic kinship resolution (Sire, Dam, Full Siblings, Half-Siblings, Clutch Twins).
+- **4-Generation Pedigree Tree (`/pigeons/[id]/pedigree`)**:
+  - Interactive multi-generational lineage chart.
+  - Print-ready certified A4 PDF exports (Landscape Certificate and Portrait Dossier).
+- **Breeding Center (`/breeding`, `/breeding/pairs`)**:
+  - Deterministic pair serial numbers (`#01`, `#02`, `#03`...).
+  - Incubation milestones, fertility candling, hatch rate calculations, and direct squab band allocation.
+- **Avian Health Protocol (`/health`)**:
+  - Treatment schedule planner (Paramyxovirus, Canker, Deworming, Respiratory, Vitamins).
+  - Real-time synchronization with the official Google Doc medical guide.
+- **Grain Inventory (`/feed`)**:
+  - Warehouse stock management for mixed grain, bajra, corn, wheat, dabli peas, and mineral grit.
 
 ---
 
-### 3. Pigeon Dossier & Pedigree Engine (`/pigeons/[id]`)
-Comprehensive single-pigeon dossier and bloodline analysis:
-- **Hero Identification Header**: Physical ring band badge, status badge, sex badge, hatch date, and age calculation.
-- **Physical Characteristics**: Eye sign, color pattern, strain, loft location, and commercial pricing.
-- **Deterministic Biological Kinship Traversal**:
-  - **Biological Sire (Father)** & **Biological Dam (Mother)** with direct profile navigation.
-  - **Full Siblings** (same father & mother).
-  - **Half Siblings** (shared father or shared mother).
-  - **Twin Siblings** (same parents, identical clutch date).
-  - **Grandparents & Extended Relatives**.
-- **Interactive Multi-Generational Pedigree Tree (`/pigeons/[id]/pedigree`)**:
-  - Visual 4-generation pedigree tree with lineage pathways.
-- **Official Export & Printing Engine**:
-  - **Landscape Pedigree Certificate (A4 PDF)**: Official certified pedigree document with watermark, certified loft seal, ancestor traits, and QR verification link.
-  - **Portrait Comprehensive Dossier (A4 PDF)**: Complete dossier with physical metrics, pedigree ancestry table, vaccination history, and loft master signature line.
+### 3. Goat Farming Sector (Herd & Dairy/Meat)
+
+- **Herd Registry (`/goats`)**:
+  - Comprehensive herd census filtering across *All*, *Bucks (Breeding Males)*, *Does (Breeding Females)*, *Kids (Young)*, *Wethers (Meat/Castrated)*, and *Sold/Archived*.
+  - Dual view modes: Visual card grid with ear tags, breed, sex, weight, and status; or data-dense tabular view.
+- **New Goat Registration (`/goats/new`)**:
+  - Smart form with auto-generated ear tag numbers (`HA-GT-XX`).
+  - Fields for microchip/RFID, breed (Black Bengal, Jamunapari, Boer, Sirohi, Cross), horn status (Horned, Polled, Disbudded), coat color, birth type (Single, Twin, Triplet), birth weight, current weight, and parental assignment.
+- **Goat Dossier & Kinship (`/goats/[id]`)**:
+  - Complete profile displaying ear tag hero badge, production purpose (Breeding, Meat, Dairy), weight history, and maternal/paternal biological pedigree.
+  - Deterministic kinship traversal identifying biological sire, dam, twin siblings/littermates, full siblings, and offspring.
+- **Ancestry Tree & Pedigree Certificate (`/goats/[id]/pedigree`)**:
+  - Multi-generational genealogical tree diagram tracking ancestry lines.
+  - Official printable A4 certificate with farm seal and pedigree certification details.
+- **Reproductive Center & Gestation Countdown (`/goats/breeding`)**:
+  - Mating logs pairing bucks and does with targeted breeding dates.
+  - **150-Day Gestation Tracker**: Real-time progress bar, days elapsed, days remaining, and estimated kidding due date.
+  - Kidding outcome logging: birth counts, live kids born, birth weights, and litter registration.
+- **Herd Immunization & Veterinary Protocol (`/goats/health`)**:
+  - Protocols for Peste des Petits Ruminants (PPR), Enterotoxemia (ET), Tetanus, Goat Pox, Foot and Mouth Disease (FMD), and quarterly Ivermectin deworming.
+  - Quarantine management, withdrawal periods, and treatment cost tracking.
+- **Forage & Concentrate Inventory (`/goats/feed`)**:
+  - Stock levels for Green Forage (Napier, Para grass), Dry Roughage (Rice Straw), Concentrate Mash, and Mineral Salt Lick blocks.
+  - Minimum stock threshold monitoring with real-time depletion warnings.
 
 ---
 
-### 4. Breeding Center & Pair Management (`/breeding`, `/breeding/pairs`)
-Genetic pairing and incubation management:
-- **Active Pair Serial Numbering**: Active pairs are allocated clean, deterministic serial numbers (`#01`, `#02`, `#03`...) that stay consistent throughout the app.
-- **Pair Formation Modal**: Pair compatible Cocks and Hens with loft/cage numbering, target pairing purpose, and pairing dates.
-- **Breeding Rounds Tracker**:
-  - Clutch dates (Egg 1 laid, Egg 2 laid).
-  - Incubation milestones & fertility candling.
-  - Hatch date and hatched baby count.
-  - Squab ring banding: Assign newly hatched babies to physical rings directly from the round.
-  - Automated hatch rate calculation (`%`).
+### 4. Multi-Sector Financial Accounting (`/finance`)
+
+Unified commercial double-entry ledger with multi-sector intelligence:
+- **Sector Attribution**: Every transaction is tagged with its origin:
+  - `🕊️ Pigeon`: Bird sales, squab bookings, pigeon feed, loft accessories, and bands.
+  - `🐐 Goat`: Goat meat/live sales, kid bookings, Napier/fodder purchases, and goat veterinary costs.
+  - `🏡 Shared Farm`: Electricity, farm land rent, general labor, and infrastructure maintenance.
+- **Sector Filter Bar**: Instant ledger filtering by *All Sectors*, *Pigeon Only*, *Goat Only*, or *Shared Only*.
+- **Cross-Sector Performance Comparison**: Live comparative analytics displaying total income, operational expenses, and net margin side-by-side for each sector.
+- **3-Tier Financial Sequenced Overview**:
+  1. **Current Month Overview**: Real-time monthly revenue, operating cost, and net profit.
+  2. **Active Calendar Year Overview**: Year-to-date operating performance and monthly burn rates.
+  3. **Cumulative Lifetime Position**: Captures historical farm setup capital (`৳100,000` foundation investment) alongside ongoing operations.
+- **Transaction Modal with Sector Selector**: Easy modal for creating transactions with pre-configured category options matching the chosen sector.
 
 ---
 
-### 5. Health & Medical Protocol (`/health`)
-Preventive health care and flock treatment:
-- **Live Google Doc Medical Guidelines Integration**:
-  - Embedded live guidelines widget pulling directly from the official Google Doc.
-  - Displays last sync timestamp, connection status, and manual sync button.
-- **Treatment Course Manager**:
-  - Plan medication schedules for whole loft flock or individual pigeons.
-  - Record medicine name, purpose (e.g. Paramyxovirus vaccine, Worming, Canker/Trichomoniasis, Respiratory, Vitamins), dosage, and treatment period.
-- **Daily Due Reminders**: Automated alerts flagging doses due today.
+### 5. System Settings & Cloud Integrations (`/settings`)
+
+- **Farm & Brand Identity**: Configure farm brand name, owner name (`Mehedi Hasan Himel`), primary contact phone, WhatsApp link, Facebook page URL, and physical farm address.
+- **Google Cloud Endpoints**: Inspect and update Google Apps Script web app URL, Google Sheets URLs, and Google Docs guidelines URL.
+- **Manual Cloud Sync**: One-click manual synchronization forcing bidirectional data parity with remote Google Sheets.
 
 ---
 
-### 6. Feed Inventory & Warehouse Stock (`/feed`)
-Feed stock monitoring and grain consumption:
-- **Grain Inventory Ledger**: Monitor stock levels for Mixed Grain, Millet (Bajra), Corn/Maize, Green Peas (Dabli), Wheat, and Mineral Grit.
-- **Purchase Logs**: Log incoming feed purchases with quantity (kg), supplier, and cost.
-- **Daily Usage Tracking**: Log daily consumption across loft sections.
-- **Low Stock Warnings**: Threshold alerts highlighting grains that require immediate replenishment.
+## 🧬 Deterministic Kinship & Pedigree Engine
 
----
-
-### 7. Financial Accounting & Accounts Ledger (`/finance`)
-Complete double-entry commercial and operational accounting:
-- **Transaction Types**: `INCOME` (pigeon sales, breeding fees), `EXPENSE` (feed, medicine, loft maintenance, ring bands), and `EXCHANGE`.
-- **Monthly Financial Summaries**: Auto-aggregated revenue, operational expense, and profit/loss by calendar month.
-- **Historical Capital Setup Accounting**: Maintains foundation setup investment (`৳100,000` for 2019–2025) separate from active operational margins.
-- **Direct Synchrony with Google Sheet 1**: All transactions sync with the `BUY` and `SELL` tabs in Google Sheets.
-
----
-
-### 8. System Settings & Cloud Integrations (`/settings`)
-Administrative controls and cloud connections:
-- **Certified Loft Branding**: Edit farm name, loft master name, phone number, WhatsApp, Facebook URL, and Google Maps link.
-- **Google Sheets & Docs Integrations**:
-  - Manage Google Apps Script deployment URL.
-  - Manage Google Sheets spreadsheet URLs.
-  - Manage Google Docs guidelines URL.
-- **Manual Data Resynchronization**: Force cloud synchronization across all endpoints.
-
----
-
-## 🧬 Deterministic Kinship & Pedigree Calculation
-
-Kinship relationships are calculated deterministically in [`lib/calculations/kinshipCalculator.ts`](file:///Users/macbookair/Documents/projects%20/himel-agro-erp/lib/calculations/kinshipCalculator.ts):
+All animal lineage traversal is powered by the unified generic kinship engine in [`lib/calculations/genericKinshipCalculator.ts`](file:///Users/macbookair/Documents/projects%20/himel-agro-erp/lib/calculations/genericKinshipCalculator.ts):
 
 ```mermaid
 flowchart TD
-    Target["Target Pigeon (ID)"]
-    Sire["Biological Sire (fatherId)"]
-    Dam["Biological Dam (motherId)"]
+    Target["Target Animal (Tag / Ring / ID)"]
+    Sire["Biological Sire (Father)"]
+    Dam["Biological Dam (Mother)"]
     
-    Target -->|Sire Link| Sire
-    Target -->|Dam Link| Dam
+    Target -->|Sire ID / Tag| Sire
+    Target -->|Dam ID / Tag| Dam
     
     Sire --> SireParents["Paternal Grandparents"]
     Dam --> DamParents["Maternal Grandparents"]
     
-    Sire --> SiblingsA["Shared Sire: Half Siblings"]
-    Dam --> SiblingsB["Shared Dam: Half Siblings"]
+    Sire --> HalfSibA["Shared Sire: Paternal Half-Siblings"]
+    Dam --> HalfSibB["Shared Dam: Maternal Half-Siblings"]
     
-    Sire & Dam --> FullSiblings["Shared Sire + Dam: Full Siblings"]
-    FullSiblings --> Twins["Same Parents + Same Clutch Date: Twin Siblings"]
+    Sire & Dam --> FullSiblings["Shared Both Parents: Full Siblings"]
+    FullSiblings --> Twins["Same Parents + Same Birth/Clutch Date: Twins / Littermates"]
+    
+    Target --> Offspring["Recorded Offspring (Children)"]
 ```
 
-- **Loop Prevention**: Ancestry graph resolution tracks visited IDs in a `Set<string>` to prevent recursive loops.
-- **Graceful Unregistered Handling**: If a parent is cited by physical ring string rather than database ID, the engine resolves the parent by ring number matching.
+### Key Engine Guarantees:
+- **Zero Circular Recursion**: Uses `Set<string>` cycle detection to protect against accidental circular parental references in user data.
+- **Dual Identifier Resolution**: Resolves parents by either internal database `id` or physical ring band / ear tag string.
+- **Twin & Littermate Intelligence**: Automatically flags siblings sharing both parents and an identical birth/clutch date as twins or littermates.
+- **Polymorphic Compatibility**: Implements `BaseAnimal`, allowing the same engine to calculate pedigrees for pigeons, goats, cattle, or any future livestock.
 
 ---
 
-## 🏷️ Physical Ring Standard & Identifiers
+## 🏷️ Animal Identification Standards
 
-Himel's Pet House ERP enforces a certified physical ring structure:
+| Sector | Identifier Format | Physical Marking | Example |
+| :--- | :--- | :--- | :--- |
+| **🕊️ Pigeon** | `YYYY-SS-BreedCode-SexCode` | Seamless aluminum ring band (`01`–`15`) | `2026-01-GSM` (Year 2026, Ring 01) |
+| **🐐 Goat** | `HA-GT-XX` | Visual ear tag + RFID/Microchip | `HA-GT-01` (Sultan, Black Bengal Buck) |
+| **🐄 Cow (Planned)** | `HA-CW-XX` | Large double ear tag + RFID button | `HA-CW-01` |
+| **🐔 Chicken (Planned)** | `HA-CK-XX` | Wing band / Spiral leg band | `HA-CK-01` |
 
-$$\mathbf{YYYY \mid SS \mid Farm \mid Contact}$$
+---
+
+## ☁️ Connected Google Cloud Ecosystem (2 Sheets + 1 Doc)
+
+The application communicates with Google Cloud services grouped under the **"Google Sheets & Docs"** dropdown in the navigation sidebar:
 
 ```text
-┌─────────────────────────────────────────────────────────────┐
-│ 2026 | 01 | Himel's Pet House | 01560059954                │
-└─────────────────────────────────────────────────────────────┘
-  │      │    │                   │
-  │      │    │                   └─ Primary Loft Contact
-  │      │    └───────────────────── Certified Loft Brand Name
-  │      └────────────────────────── 2-Digit Serial Ring Number (01–15)
-  └───────────────────────────────── Hatch / Registration Year
+Sidebar Navigation
+└── 📁 Google Sheets & Docs (Dropdown)
+    ├── 📊 Sheet 1: Finance Ledger (Google Sheets)
+    ├── 🕊️ Sheet 2: Flock Registry (Google Sheets)
+    └── 📄 Medical Guidelines (Google Docs)
 ```
 
-- **Canonical Database Identifier**: Generated automatically as `YYYY-SS-BreedCode-SexCode` (e.g., `2026-01-GSM` for Year 2026, Ring 01, Giribaz Sabuj Gola, Male).
+1. **Google Sheet 1: Finance Ledger**:
+   - [Open Google Sheet 1: Finance Ledger](https://docs.google.com/spreadsheets/d/1w894o27P0eF4Sgt59l11_VfW995Y3pLwO77mB8Jk2sQ/edit)
+   - Synchronizes `BUY`, `SELL`, `Exchange`, and monthly summary sheets (`2019-2025`, `May`, `June`, `July`, `August`, `September`).
+   - Automatically attributes transactions with their proper sector tags.
+2. **Google Sheet 2: Flock Registry**:
+   - [Open Google Sheet 2: Flock Registry](https://docs.google.com/spreadsheets/d/1B3Nn_t2E18w80F53gYnIqYfB7n1Y0wK9_tZt5F9N4_U/edit)
+   - Official census for physical ring bands (`01` through `15`).
+   - Full 2-way deletion parity: deletions in the ERP trigger Google Sheet row deletions; deletions in Google Sheet automatically purge from the ERP on sync.
+3. **Google Doc: Medical & Health Guidelines**:
+   - [Open Google Doc: Medicine Guidelines](https://docs.google.com/document/d/1ly7mM86pcpKNdR5IlxVJXY_zsssEpaHP7wy7CeFN1f0/edit?usp=sharing)
+   - Real-time polling engine (`/api/sync/google-docs`) checks for guideline updates every 30 seconds via hash comparison.
 
 ---
 
-## 🏗️ System Architecture & Data Flow
+## 📱 Progressive Web App (PWA) Features
 
-```mermaid
-flowchart LR
-    subgraph Client["PWA Client (Browser / Mobile / Desktop)"]
-        UI["React 19 App Router UI"]
-        SW["Service Worker (sw.js)"]
-        Cache["Cache Storage (Pre-cached Shell)"]
-        SyncHook["useGoogleSheetSync Hook"]
-    end
-
-    subgraph Backend["Next.js 16 API Layer"]
-        API_Pigeons["/api/pigeons"]
-        API_Finance["/api/transactions"]
-        API_Docs["/api/sync/google-docs"]
-        API_Sheets["/api/sync/google-sheets"]
-    end
-
-    subgraph Storage["Dual Storage Layer"]
-        Mongo[("MongoDB Atlas Cloud")]
-        JSON[("Local JSON Files data/*.json")]
-    end
-
-    subgraph GoogleCloud["Google Cloud Ecosystem"]
-        GSheet1["Google Sheet 1: Finance Ledger"]
-        GSheet2["Google Sheet 2: Flock Registry"]
-        GDoc["Google Doc: Medical Guidelines"]
-        GAS["Google Apps Script Web App"]
-    end
-
-    UI <--> SW
-    SW <--> Cache
-    UI <--> Backend
-    Backend <--> Mongo
-    Mongo -.->|Fallback on Disconnect| JSON
-    Backend <--> GAS
-    GAS <--> GSheet1 & GSheet2
-    API_Docs <--> GDoc
-```
+The application is an installable Progressive Web App engineered for harsh, low-connectivity farm environments:
+- **Service Worker (`public/sw.js`)**: Upgraded to cache version `himel-agro-erp-v2`. Pre-caches core routes for both Pigeon and Goat sectors (`/`, `/dashboard`, `/pigeons`, `/goats`, `/breeding`, `/health`, `/feed`, `/finance`, `/settings`, `/offline`).
+- **Offline Storage Resilience**: Dual-layer architecture: MongoDB Atlas in the cloud with an automatic, transparent fallback to local JSON stores (`data/*.json`).
+- **Standalone Mode**: 1-click installation on Android, iOS Safari (via Add to Home Screen), macOS, and Windows.
+- **Connectivity Detection**: Real-time toast notifications alerting users when network drops or reconnects.
 
 ---
 
 ## 🔌 API Routes Reference
 
+### Pigeon & Breeding APIs
 | Endpoint | Methods | Description |
 | :--- | :--- | :--- |
-| `/api/dashboard` | `GET` | Consolidated metrics, flock statistics, active pairs, and recent transactions |
-| `/api/pigeons` | `GET`, `POST` | List all pigeons (with category filters) / Register new pigeon |
-| `/api/pigeons/[id]` | `GET`, `PUT`, `DELETE` | View pigeon dossier / Update details / Delete pigeon with remote sheet sync |
-| `/api/pairs` | `GET`, `POST` | List active & past breeding pairs / Create mating pair |
-| `/api/pairs/[id]` | `GET`, `PUT`, `DELETE` | View pair details / Update pair status / End pair |
-| `/api/breeding-rounds` | `GET`, `POST` | List breeding rounds / Log new clutch and incubation milestones |
-| `/api/breeding-rounds/[id]`| `GET`, `PUT`, `DELETE`| Update round / Delete round |
-| `/api/health-records` | `GET`, `POST` | Disease and treatment log entries |
-| `/api/medicine-schedules` | `GET`, `POST` | List medication schedules / Create new medical course |
-| `/api/medicine-schedules/[id]`| `GET`, `PUT`, `DELETE`| Update / Delete medication schedule |
-| `/api/feed-purchases` | `GET`, `POST` | Feed inventory purchase logs |
-| `/api/feed-usage` | `GET`, `POST` | Daily feed consumption logs |
-| `/api/transactions` | `GET`, `POST` | Financial ledger list (with month/type filter) / Create transaction |
+| `/api/pigeons` | `GET`, `POST` | List pigeons with filtering / Register new pigeon |
+| `/api/pigeons/[id]` | `GET`, `PUT`, `DELETE` | View dossier / Update pigeon / Delete with remote sync |
+| `/api/pairs` | `GET`, `POST` | List breeding pairs / Create mating pair |
+| `/api/pairs/[id]` | `GET`, `PUT`, `DELETE` | View pair / Update status / End pair |
+| `/api/breeding-rounds` | `GET`, `POST` | List rounds / Log new clutch and incubation milestones |
+| `/api/breeding-rounds/[id]` | `GET`, `PUT`, `DELETE` | Update / Delete breeding round |
+
+### Goat Sector APIs
+| Endpoint | Methods | Description |
+| :--- | :--- | :--- |
+| `/api/goats` | `GET`, `POST` | List goats with status/sex/breed filters / Register new goat |
+| `/api/goats/[id]` | `GET`, `PUT`, `DELETE` | View goat dossier / Update goat profile / Archive goat |
+| `/api/goats/breeding` | `GET`, `POST` | List gestation and mating logs / Record new breeding log |
+| `/api/goats/health` | `GET`, `POST` | List vaccination and treatment records / Log health event |
+| `/api/goats/feed` | `GET` | List goat forage and concentrate inventory levels |
+
+### Shared Operations & Cloud APIs
+| Endpoint | Methods | Description |
+| :--- | :--- | :--- |
+| `/api/dashboard` | `GET` | Consolidated executive metrics, census, and alerts |
+| `/api/transactions` | `GET`, `POST` | Multi-sector financial ledger (supports `?sector=PIGEON\|GOAT\|SHARED`) |
 | `/api/transactions/[id]` | `GET`, `PUT`, `DELETE` | Update / Delete transaction with remote sheet sync |
-| `/api/sync/google-sheets` | `POST` | Triggers bidirectional Google Sheets synchronization |
-| `/api/sync/google-sheets/push` | `POST` | Webhook endpoint receiving remote Google Sheet edit notifications |
-| `/api/sync/google-docs` | `GET`, `POST` | Fetches live Google Doc guidelines / Forces re-sync |
-| `/api/settings` | `GET`, `PUT` | View loft settings / Update branding & integration endpoints |
+| `/api/health-records` | `GET`, `POST` | Avian health treatment log entries |
+| `/api/medicine-schedules` | `GET`, `POST` | Avian medication schedule manager |
+| `/api/feed-purchases` | `GET`, `POST` | Feed warehouse purchase records |
+| `/api/feed-usage` | `GET`, `POST` | Daily feed consumption logs |
+| `/api/sync/google-sheets` | `POST` | Triggers bidirectional Google Sheets sync |
+| `/api/sync/google-sheets/push` | `POST` | Webhook receiver for Google Sheets edits |
+| `/api/sync/google-docs` | `GET`, `POST` | Real-time Google Doc guidelines sync |
+| `/api/settings` | `GET`, `PUT` | View / update farm branding and integration endpoints |
+
+---
+
+## 🚀 Developer Guide: Adding New Animal Sectors
+
+Adding a new farming sector (e.g. **🐄 Cow / Cattle** or **🐔 Chicken / Poultry**) requires zero changes to core shared engines:
+
+### Step 1: Update Sector Configuration
+Open [`lib/config/sectors.ts`](file:///Users/macbookair/Documents/projects%20/himel-agro-erp/lib/config/sectors.ts) and set `enabled: true`:
+
+```typescript
+COW: {
+  id: "COW",
+  key: "cow",
+  name: "Cow / Cattle",
+  displayName: "Cow",
+  icon: "🐄",
+  enabled: true, // <-- Flip to true
+  // customize terminology, capabilities, and navigation links as desired
+}
+```
+
+### Step 2: Define Data Model & Storage
+1. Create `types/cow.ts` extending `BaseAnimal` from [`types/animal.ts`](file:///Users/macbookair/Documents/projects%20/himel-agro-erp/types/animal.ts).
+2. Create MongoDB Mongoose model in `models/Cow.ts`.
+3. Add initial seed data in `data/cows.json`.
+
+### Step 3: Add API Route & UI
+1. Create `app/api/cows/route.ts` and `app/api/cows/[id]/route.ts`.
+2. Create UI pages in `app/cows/page.tsx` and `app/cows/[id]/page.tsx`.
+3. Add `"COW"` to `FinanceSector` in [`types/finance.ts`](file:///Users/macbookair/Documents/projects%20/himel-agro-erp/types/finance.ts) to enable Cow sector financial ledger entries.
+
+That's it! The **Global Sector Selector**, **Sidebar Navigation**, **Kinship Engine**, and **Multi-Sector Finance Comparison** will immediately incorporate the new sector automatically.
 
 ---
 
@@ -398,7 +418,7 @@ MONGODB_URI="mongodb+srv://<username>:<password>@cluster.mongodb.net/himel-agro-
    cd himel-agro-erp
    ```
 
-2. **Install project dependencies**:
+2. **Install dependencies**:
    ```bash
    npm install
    ```
@@ -406,24 +426,23 @@ MONGODB_URI="mongodb+srv://<username>:<password>@cluster.mongodb.net/himel-agro-
 3. **Configure Environment Variables**:
    ```bash
    cp .env.example .env.local
-   # Fill in your .env.local credentials
    ```
 
-4. **Launch the Development Server**:
+4. **Launch Development Server**:
    ```bash
    npm run dev
    ```
 
-5. **Access the application**:
+5. **Access Application**:
    Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ### Key Maintenance Scripts
 
 ```bash
-# Start Turbopack development server
+# Start Next.js development server
 npm run dev
 
-# Run TypeScript type-checker without emitting files (verify 0 errors)
+# Run TypeScript type-checker (verify 0 errors)
 npx tsc --noEmit
 
 # Run Next.js production build verification
@@ -438,18 +457,18 @@ npm run lint
 
 ---
 
-## 📍 Certified Loft Contact
+## 📍 Certified Farm Contact
 
-- **Certified Loft Brand**: **Himel's Pet House**
-- **Loft Master & Owner**: **Mehedi Hasan Himel**
-- **Official Loft Phone**: `+880 1560059954`
-- **WhatsApp**: [Chat with Loft Master (+8801560059954)](https://wa.me/8801560059954)
+- **Certified Farm Brand**: **Himel's Pet House**
+- **Farm Master & Owner**: **Mehedi Hasan Himel**
+- **Official Farm Phone**: `+880 1560059954`
+- **WhatsApp**: [Chat with Farm Master (+8801560059954)](https://wa.me/8801560059954)
 - **Facebook Official Page**: [facebook.com/Himel.Pet.House](https://www.facebook.com/Himel.Pet.House)
-- **Loft Location**: [Himel's Pet House on Google Maps](https://maps.app.goo.gl/rxvdsxq8ydnqfEKQ6)
+- **Farm Location**: [Himel's Pet House on Google Maps](https://maps.app.goo.gl/rxvdsxq8ydnqfEKQ6)
 - **Live Production URL**: [https://himel-agro-erp.vercel.app](https://himel-agro-erp.vercel.app)
 
 ---
 
 <div align="center">
-  <p>© 2026 Himel's Pet House. Crafted with precision for champion breeders and high-performance pigeon aviaries.</p>
+  <p>© 2026 Himel's Pet House. Engineered with excellence for modern multi-animal agricultural enterprise and livestock genetics.</p>
 </div>

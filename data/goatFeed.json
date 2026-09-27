@@ -1,0 +1,30 @@
+[
+  {
+    "feedType": "Napier Green Grass (Chopped)",
+    "currentStockKg": 450,
+    "totalUsedKg": 1820,
+    "reorderLevelKg": 150,
+    "status": "OPTIMAL"
+  },
+  {
+    "feedType": "Dry Rice Straw (Urea-Molasses Treated)",
+    "currentStockKg": 320,
+    "totalUsedKg": 640,
+    "reorderLevelKg": 100,
+    "status": "OPTIMAL"
+  },
+  {
+    "feedType": "Concentrate Pellets & Grain Mash",
+    "currentStockKg": 85,
+    "totalUsedKg": 410,
+    "reorderLevelKg": 100,
+    "status": "LOW"
+  },
+  {
+    "feedType": "Mineral Salt Lick Blocks",
+    "currentStockKg": 12,
+    "totalUsedKg": 28,
+    "reorderLevelKg": 5,
+    "status": "OPTIMAL"
+  }
+]

@@ -18,6 +18,7 @@ export function TransactionTable({ transactions }: TransactionTableProps) {
   const [typeFilter, setTypeFilter] = useState<TransactionType | "ALL">("ALL");
   const [categoryFilter, setCategoryFilter] = useState("ALL");
   const [monthFilter, setMonthFilter] = useState("ALL");
+  const [sectorFilter, setSectorFilter] = useState("ALL");
 
   const categories = Array.from(
     new Set(transactions.map((t) => t.category))
@@ -28,6 +29,14 @@ export function TransactionTable({ transactions }: TransactionTableProps) {
     if (categoryFilter !== "ALL" && t.category !== categoryFilter) return false;
     if (monthFilter !== "ALL" && !String(t.date || "").startsWith(monthFilter))
       return false;
+
+    if (sectorFilter !== "ALL") {
+      if (sectorFilter === "PIGEON") {
+        if (t.sectorId !== "PIGEON" && t.sectorId) return false;
+      } else if (t.sectorId !== sectorFilter) {
+        return false;
+      }
+    }
 
     if (search.trim()) {
       const q = search.toLowerCase();
@@ -56,13 +65,26 @@ export function TransactionTable({ transactions }: TransactionTableProps) {
     <div className="space-y-4">
       {/* Search & Filter Bar */}
       <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-3">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
           <div>
             <SearchInput
               value={search}
               onChange={setSearch}
               placeholder="Search description, customer, notes..."
             />
+          </div>
+
+          <div>
+            <select
+              value={sectorFilter}
+              onChange={(e) => setSectorFilter(e.target.value)}
+              className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 focus:border-emerald-500 focus:outline-none"
+            >
+              <option value="ALL">🌐 All Sectors</option>
+              <option value="PIGEON">🕊️ Pigeon Loft</option>
+              <option value="GOAT">🐐 Goat Farm</option>
+              <option value="SHARED">🏡 Shared Overhead</option>
+            </select>
           </div>
 
           <div>
@@ -119,6 +141,7 @@ export function TransactionTable({ transactions }: TransactionTableProps) {
             <thead>
               <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-semibold uppercase tracking-wider">
                 <th className="py-3 px-4">Date</th>
+                <th className="py-3 px-4">Sector</th>
                 <th className="py-3 px-4">Type</th>
                 <th className="py-3 px-4">Category</th>
                 <th className="py-3 px-4">Description & Reference</th>
@@ -128,7 +151,7 @@ export function TransactionTable({ transactions }: TransactionTableProps) {
             <tbody className="divide-y divide-slate-100">
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="py-10 text-center text-slate-400">
+                  <td colSpan={6} className="py-10 text-center text-slate-400">
                     No financial transactions found.
                   </td>
                 </tr>
@@ -144,6 +167,25 @@ export function TransactionTable({ transactions }: TransactionTableProps) {
                       {/* Date */}
                       <td className="py-3.5 px-4 font-medium text-slate-700 whitespace-nowrap">
                         {formatDate(txn.date)}
+                      </td>
+
+                      {/* Sector */}
+                      <td className="py-3.5 px-4 whitespace-nowrap">
+                        <span
+                          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold ${
+                            txn.sectorId === "GOAT"
+                              ? "bg-amber-50 text-amber-800 border border-amber-200"
+                              : txn.sectorId === "SHARED"
+                              ? "bg-indigo-50 text-indigo-800 border border-indigo-200"
+                              : "bg-sky-50 text-sky-800 border border-sky-200"
+                          }`}
+                        >
+                          {txn.sectorId === "GOAT"
+                            ? "🐐 Goat"
+                            : txn.sectorId === "SHARED"
+                            ? "🏡 Shared"
+                            : "🕊️ Pigeon"}
+                        </span>
                       </td>
 
                       {/* Type Badge */}

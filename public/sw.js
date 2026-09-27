@@ -1,4 +1,4 @@
-const CACHE_NAME = "himel-agro-erp-v1";
+const CACHE_NAME = "himel-agro-erp-v2";
 const OFFLINE_URL = "/offline";
 
 const PRECACHE_ASSETS = [
@@ -10,6 +10,10 @@ const PRECACHE_ASSETS = [
   "/feed",
   "/finance",
   "/settings",
+  "/goats",
+  "/goats/breeding",
+  "/goats/health",
+  "/goats/feed",
   "/offline",
   "/logo.png",
   "/icons/icon-192x192.png",

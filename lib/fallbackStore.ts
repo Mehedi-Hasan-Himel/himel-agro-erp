@@ -9,6 +9,10 @@ import feedUsageSeed from "@/data/feedUsage.json";
 import transactionsSeed from "@/data/transactions.json";
 import settingsSeed from "@/data/settings.json";
 import breedsSeed from "@/data/breeds.json";
+import goatsSeed from "@/data/goats.json";
+import goatBreedingSeed from "@/data/goatBreeding.json";
+import goatHealthSeed from "@/data/goatHealth.json";
+import goatFeedSeed from "@/data/goatFeed.json";
 
 interface StoreState {
   pigeons: Record<string, unknown>[];
@@ -22,6 +26,10 @@ interface StoreState {
   transactions: Record<string, unknown>[];
   settings: Record<string, unknown>;
   breeds: string[];
+  goats: Record<string, unknown>[];
+  goatBreeding: Record<string, unknown>[];
+  goatHealth: Record<string, unknown>[];
+  goatFeed: Record<string, unknown>[];
 }
 
 function createInitialState(): StoreState {
@@ -37,6 +45,10 @@ function createInitialState(): StoreState {
     transactions: JSON.parse(JSON.stringify(transactionsSeed)),
     settings: JSON.parse(JSON.stringify(settingsSeed)),
     breeds: JSON.parse(JSON.stringify(breedsSeed)),
+    goats: JSON.parse(JSON.stringify(goatsSeed)),
+    goatBreeding: JSON.parse(JSON.stringify(goatBreedingSeed)),
+    goatHealth: JSON.parse(JSON.stringify(goatHealthSeed)),
+    goatFeed: JSON.parse(JSON.stringify(goatFeedSeed)),
   };
 }
 
@@ -49,7 +61,31 @@ if (!globalWithStore.__himelAgroFallbackStore) {
 }
 
 export const fallbackStore = {
-  get: () => globalWithStore.__himelAgroFallbackStore!,
+  get: () => {
+    const store = globalWithStore.__himelAgroFallbackStore!;
+    if (!store.goats || store.goats.length === 0) {
+      store.goats = JSON.parse(JSON.stringify(goatsSeed));
+    }
+    if (!store.goatBreeding || store.goatBreeding.length === 0) {
+      store.goatBreeding = JSON.parse(JSON.stringify(goatBreedingSeed));
+    }
+    if (!store.goatHealth || store.goatHealth.length === 0) {
+      store.goatHealth = JSON.parse(JSON.stringify(goatHealthSeed));
+    }
+    if (!store.goatFeed || store.goatFeed.length === 0) {
+      store.goatFeed = JSON.parse(JSON.stringify(goatFeedSeed));
+    }
+    const hasGoatTxn = store.transactions.some((t) => t.sectorId === "GOAT");
+    if (!hasGoatTxn) {
+      const goatTxns = (transactionsSeed as Record<string, unknown>[]).filter(
+        (t) => t.sectorId === "GOAT"
+      );
+      if (goatTxns.length > 0) {
+        store.transactions.push(...JSON.parse(JSON.stringify(goatTxns)));
+      }
+    }
+    return store;
+  },
   reset: () => {
     globalWithStore.__himelAgroFallbackStore = createInitialState();
     return globalWithStore.__himelAgroFallbackStore;

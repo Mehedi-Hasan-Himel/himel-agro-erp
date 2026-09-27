@@ -2,6 +2,7 @@ import {
   Transaction,
   TransactionType,
   MonthlyFinancialSummary,
+  SectorFinancialComparison,
 } from "@/types/finance";
 import { notifyDataChanged, fetchWithCache } from "./storageAdapter";
 
@@ -9,12 +10,15 @@ export async function getTransactions(filter?: {
   type?: TransactionType | "ALL";
   month?: string; // YYYY-MM or ALL
   category?: string;
+  sectorId?: string; // PIGEON, GOAT, SHARED, or ALL
 }): Promise<Transaction[]> {
   const params = new URLSearchParams();
   if (filter?.type && filter.type !== "ALL") params.set("type", filter.type);
   if (filter?.month && filter.month !== "ALL") params.set("month", filter.month);
   if (filter?.category && filter.category !== "ALL")
     params.set("category", filter.category);
+  if (filter?.sectorId && filter.sectorId !== "ALL")
+    params.set("sector", filter.sectorId);
 
   const queryStr = params.toString();
   const cacheKey = `transactions_${queryStr || "all"}`;
@@ -82,8 +86,8 @@ const MONTH_NAMES = [
   "December",
 ];
 
-export async function getMonthlySummaries(): Promise<MonthlyFinancialSummary[]> {
-  const transactions = await getTransactions();
+export async function getMonthlySummaries(sectorId?: string): Promise<MonthlyFinancialSummary[]> {
+  const transactions = await getTransactions({ sectorId: sectorId || "ALL" });
   const map = new Map<
     string,
     {
@@ -162,10 +166,11 @@ export async function getMonthlySummaries(): Promise<MonthlyFinancialSummary[]> 
 }
 
 export async function getFinancialSummaryForMonth(
-  monthKey: string
+  monthKey: string,
+  sectorId?: string
 ): Promise<MonthlyFinancialSummary> {
   if (monthKey === "ALL") {
-    const txns = await getTransactions();
+    const txns = await getTransactions({ sectorId: sectorId || "ALL" });
     const totalIncome = txns
       .filter((t) => t.type === "INCOME")
       .reduce((sum, t) => sum + (t.amount || 0), 0);
@@ -189,7 +194,7 @@ export async function getFinancialSummaryForMonth(
   const year = parseInt(yearStr, 10);
   const month = parseInt(monthStr, 10);
 
-  const txns = await getTransactions({ month: monthKey });
+  const txns = await getTransactions({ month: monthKey, sectorId: sectorId || "ALL" });
   const totalIncome = txns
     .filter((t) => t.type === "INCOME")
     .reduce((sum, t) => sum + (t.amount || 0), 0);
@@ -213,3 +218,58 @@ export async function getFinancialSummaryForMonth(
     transactionCount: txns.length,
   };
 }
+
+export async function getSectorFinancialComparison(
+  period?: "CURRENT_MONTH" | "YEAR_2026" | "LIFETIME" | string
+): Promise<SectorFinancialComparison[]> {
+  const allTxns = await getTransactions();
+  let txns = allTxns;
+  const currentMonth = "2026-09";
+
+  if (period === "CURRENT_MONTH") {
+    txns = allTxns.filter((t) => t.date && t.date.startsWith(currentMonth));
+  } else if (period === "YEAR_2026") {
+    txns = allTxns.filter((t) => t.date && t.date.startsWith("2026"));
+  }
+
+  const sectors = [
+    { id: "PIGEON", name: "Pigeon Farming", icon: "🕊️" },
+    { id: "GOAT", name: "Goat Farming", icon: "🐐" },
+    { id: "SHARED", name: "Shared Overhead / Facility", icon: "🏡" },
+  ];
+
+  return sectors.map((sec) => {
+    const secTxns = txns.filter((t) => {
+      if (sec.id === "PIGEON") {
+        return t.sectorId === "PIGEON" || (!t.sectorId && t.sectorId !== "GOAT" && t.sectorId !== "SHARED");
+      }
+      return t.sectorId === sec.id;
+    });
+
+    const totalIncome = secTxns
+      .filter((t) => t.type === "INCOME")
+      .reduce((sum, t) => sum + (t.amount || 0), 0);
+    const totalExpense = secTxns
+      .filter((t) => t.type === "EXPENSE")
+      .reduce((sum, t) => sum + (t.amount || 0), 0);
+    const profitLoss = totalIncome - totalExpense;
+    const marginPercentage =
+      totalIncome > 0
+        ? Math.round((profitLoss / totalIncome) * 100)
+        : totalExpense > 0
+        ? -100
+        : 0;
+
+    return {
+      sectorId: sec.id,
+      sectorName: sec.name,
+      icon: sec.icon,
+      totalIncome,
+      totalExpense,
+      profitLoss,
+      marginPercentage,
+      transactionCount: secTxns.length,
+    };
+  });
+}
+

@@ -17,6 +17,8 @@ export type IncomeCategory =
 
 export type TransactionCategory = ExpenseCategory | IncomeCategory | string;
 
+export type FinanceSector = "PIGEON" | "GOAT" | "SHARED";
+
 export interface Transaction {
   id: string;
 
@@ -30,7 +32,10 @@ export interface Transaction {
 
   description?: string;
 
+  sectorId?: FinanceSector | string; // PIGEON, GOAT, SHARED
+
   pigeonId?: string;
+  animalId?: string; // Generic animal ID (goat, cow, etc.)
   feedPurchaseId?: string;
 
   notes?: string;
@@ -50,3 +55,15 @@ export interface MonthlyFinancialSummary {
   profitLoss: number;
   transactionCount: number;
 }
+
+export interface SectorFinancialComparison {
+  sectorId: string;
+  sectorName: string;
+  icon: string;
+  totalIncome: number;
+  totalExpense: number;
+  profitLoss: number;
+  marginPercentage: number;
+  transactionCount: number;
+}
+

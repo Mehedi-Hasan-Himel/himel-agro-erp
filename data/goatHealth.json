@@ -1,0 +1,54 @@
+[
+  {
+    "id": "gt_hl_2026_001",
+    "goatId": "HERD",
+    "targetTagNumber": "All Active Goats",
+    "treatmentType": "VACCINE",
+    "name": "PPR Vaccine (Peste des Petits Ruminants)",
+    "dosage": "1 ml Subcutaneous per adult goat",
+    "date": "2026-02-10",
+    "nextDueDate": "2027-02-10",
+    "administeredBy": "Dr. Rafiqul Islam (Upazila Livestock Officer)",
+    "notes": "Annual herd immunization completed with cold-chain verified live attenuated vaccine.",
+    "createdAt": "2026-02-10T11:00:00.000Z"
+  },
+  {
+    "id": "gt_hl_2026_002",
+    "goatId": "HERD",
+    "targetTagNumber": "All Adult & Grower Goats",
+    "treatmentType": "DEWORMING",
+    "name": "Broad Spectrum Dewormer (Ivermectin 1%)",
+    "dosage": "1 ml per 50kg body weight SC",
+    "date": "2026-06-01",
+    "nextDueDate": "2026-09-01",
+    "administeredBy": "Himel Agro Vet Technician",
+    "notes": "Pre-monsoon internal & external parasite protocol. Post-deworming liver tonic administered for 5 days.",
+    "createdAt": "2026-06-01T09:30:00.000Z"
+  },
+  {
+    "id": "gt_hl_2026_003",
+    "goatId": "goat_2026_003",
+    "targetTagNumber": "HA-GT-03 (Maya)",
+    "treatmentType": "MEDICATION",
+    "name": "Calcium & Mineral Supplementation (Cal-D-Plex)",
+    "dosage": "15 ml oral daily",
+    "date": "2026-07-15",
+    "nextDueDate": "2026-10-18",
+    "administeredBy": "Farm Caretaker",
+    "notes": "Gestation nutrition support to prevent pregnancy toxaemia and milk fever.",
+    "createdAt": "2026-07-15T08:00:00.000Z"
+  },
+  {
+    "id": "gt_hl_2026_004",
+    "goatId": "goat_2026_001",
+    "targetTagNumber": "HA-GT-01 (Sultan)",
+    "treatmentType": "HOOF_TRIMMING",
+    "name": "Corrective Hoof Trimming",
+    "dosage": "Mechanical trimming & copper sulphate foot bath",
+    "date": "2026-08-05",
+    "nextDueDate": "2026-11-05",
+    "administeredBy": "Herd Master",
+    "notes": "Buck standing posture balanced. No signs of foot rot.",
+    "createdAt": "2026-08-05T14:00:00.000Z"
+  }
+]

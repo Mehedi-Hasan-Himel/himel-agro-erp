@@ -17,22 +17,55 @@ export interface TransactionModalProps {
   defaultType?: TransactionType;
 }
 
-const EXPENSE_CATEGORIES = [
-  "Feed",
-  "Medicine",
-  "Cage/Loft Equipment",
-  "Transportation",
-  "Pigeon Purchase",
-  "Ring Tag Purchase",
-  "Other",
-];
+const EXPENSE_CATEGORIES: Record<string, string[]> = {
+  PIGEON: [
+    "Feed",
+    "Medicine",
+    "Cage/Loft Equipment",
+    "Transportation",
+    "Pigeon Purchase",
+    "Ring Tag Purchase",
+    "Other",
+  ],
+  GOAT: [
+    "Feed",
+    "Medicine",
+    "Goat Purchase",
+    "Shed & Pen Equipment",
+    "Transportation",
+    "Veterinary Care",
+    "Other",
+  ],
+  SHARED: [
+    "Electricity / Solar Power",
+    "Water & Plumbing",
+    "Facility Maintenance",
+    "Staff / Labor",
+    "Security & CCTV",
+    "Other Shared Overhead",
+  ],
+};
 
-const INCOME_CATEGORIES = [
-  "Pigeon Sale",
-  "Breeding Service",
-  "Prize Money",
-  "Other",
-];
+const INCOME_CATEGORIES: Record<string, string[]> = {
+  PIGEON: [
+    "Pigeon Sale",
+    "Breeding Service",
+    "Prize Money",
+    "Other",
+  ],
+  GOAT: [
+    "Goat Sale",
+    "Breeding Service",
+    "Milk Sale",
+    "Manure / Fertilizer Sale",
+    "Other",
+  ],
+  SHARED: [
+    "Farm Tour / Visitor Entry",
+    "Equipment Rental",
+    "Other Farm Revenue",
+  ],
+};
 
 export function TransactionModal({
   isOpen,
@@ -40,6 +73,7 @@ export function TransactionModal({
   onSuccess,
   defaultType = "EXPENSE",
 }: TransactionModalProps) {
+  const [sectorId, setSectorId] = useState<string>("PIGEON");
   const [type, setType] = useState<TransactionType>(defaultType);
   const [category, setCategory] = useState<string>(
     defaultType === "EXPENSE" ? "Feed" : "Pigeon Sale"
@@ -54,11 +88,24 @@ export function TransactionModal({
   const [error, setError] = useState<string | null>(null);
 
   const availableCategories =
-    type === "EXPENSE" ? EXPENSE_CATEGORIES : INCOME_CATEGORIES;
+    (type === "EXPENSE"
+      ? EXPENSE_CATEGORIES[sectorId] || EXPENSE_CATEGORIES.PIGEON
+      : INCOME_CATEGORIES[sectorId] || INCOME_CATEGORIES.PIGEON);
+
+  const handleSectorChange = (newSector: string) => {
+    setSectorId(newSector);
+    const cats = type === "EXPENSE" ? EXPENSE_CATEGORIES[newSector] : INCOME_CATEGORIES[newSector];
+    if (cats && cats.length > 0) {
+      setCategory(cats[0]);
+    }
+  };
 
   const handleTypeChange = (newType: TransactionType) => {
     setType(newType);
-    setCategory(newType === "EXPENSE" ? "Feed" : "Pigeon Sale");
+    const cats = newType === "EXPENSE" ? EXPENSE_CATEGORIES[sectorId] : INCOME_CATEGORIES[sectorId];
+    if (cats && cats.length > 0) {
+      setCategory(cats[0]);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -79,6 +126,7 @@ export function TransactionModal({
         date,
         description,
         notes,
+        sectorId,
       });
 
       onSuccess();
@@ -109,6 +157,34 @@ export function TransactionModal({
             <span>{error}</span>
           </div>
         )}
+
+        {/* Sector Selection */}
+        <div>
+          <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5">
+            Farming Sector / Cost Center
+          </label>
+          <div className="grid grid-cols-3 gap-2">
+            {[
+              { id: "PIGEON", label: "Pigeon Loft", icon: "🕊️" },
+              { id: "GOAT", label: "Goat Farm", icon: "🐐" },
+              { id: "SHARED", label: "Shared Overhead", icon: "🏡" },
+            ].map((s) => (
+              <button
+                key={s.id}
+                type="button"
+                onClick={() => handleSectorChange(s.id)}
+                className={`py-2 px-2 text-xs font-medium rounded-xl border transition-all text-center cursor-pointer ${
+                  sectorId === s.id
+                    ? "bg-emerald-50 border-emerald-500 text-emerald-800 font-bold shadow-xs"
+                    : "border-slate-200 text-slate-600 hover:bg-slate-50"
+                }`}
+              >
+                <span className="block text-base mb-0.5">{s.icon}</span>
+                <span>{s.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
 
         <div className="grid grid-cols-2 gap-2 p-1 bg-slate-100 rounded-xl">
           <button

@@ -35,6 +35,7 @@ export async function GET(request: NextRequest) {
     const type = searchParams.get("type");
     const month = searchParams.get("month"); // YYYY-MM
     const category = searchParams.get("category");
+    const sector = searchParams.get("sector") || searchParams.get("sectorId");
 
     const db = await connectDB();
     if (db) {
@@ -47,6 +48,18 @@ export async function GET(request: NextRequest) {
       }
       if (category && category !== "ALL") {
         query.category = category;
+      }
+      if (sector && sector !== "ALL") {
+        if (sector === "PIGEON") {
+          query.$or = [
+            { sectorId: "PIGEON" },
+            { sectorId: { $exists: false } },
+            { sectorId: null },
+            { sectorId: "" },
+          ];
+        } else {
+          query.sectorId = sector;
+        }
       }
       const transactions = await TransactionModel.find(query).sort({ date: -1 }).lean();
       const result = transactions.map((t) => ({ ...t, id: t._id }));
@@ -62,6 +75,15 @@ export async function GET(request: NextRequest) {
     }
     if (category && category !== "ALL") {
       txns = txns.filter((t) => t.category === category);
+    }
+    if (sector && sector !== "ALL") {
+      if (sector === "PIGEON") {
+        txns = txns.filter(
+          (t) => t.sectorId === "PIGEON" || !t.sectorId
+        );
+      } else {
+        txns = txns.filter((t) => t.sectorId === sector);
+      }
     }
     return NextResponse.json(txns);
   } catch (error) {

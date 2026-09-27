@@ -995,6 +995,12 @@ export async function syncFinanceSheetToDatabase(
         ? `Sheet: ${row.comments} | Month: ${row.month}`
         : `Month: ${row.month}`;
 
+      const sectorId =
+        category === "Initial Loft Investment / Historical Cost" ||
+        category === "Farm Operations"
+          ? "SHARED"
+          : "PIGEON";
+
       const txnDoc: ITransaction = {
         _id: stableId,
         id: stableId,
@@ -1005,6 +1011,7 @@ export async function syncFinanceSheetToDatabase(
         description: row.name,
         customer,
         notes,
+        sectorId,
         createdAt: timestamp,
       };
 

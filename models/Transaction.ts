@@ -8,7 +8,9 @@ export interface ITransaction {
   category: string;
   amount: number;
   description?: string;
+  sectorId?: string;
   pigeonId?: string;
+  animalId?: string;
   feedPurchaseId?: string;
   notes?: string;
   customer?: string;
@@ -23,7 +25,9 @@ const TransactionSchema = new Schema<ITransaction>(
     category: { type: String, required: true },
     amount: { type: Number, required: true },
     description: { type: String },
+    sectorId: { type: String, default: "PIGEON" },
     pigeonId: { type: String },
+    animalId: { type: String },
     feedPurchaseId: { type: String },
     notes: { type: String },
     customer: { type: String },
@@ -44,7 +48,9 @@ const TransactionSchema = new Schema<ITransaction>(
 TransactionSchema.index({ date: -1 });
 TransactionSchema.index({ type: 1 });
 TransactionSchema.index({ category: 1 });
+TransactionSchema.index({ sectorId: 1 });
 TransactionSchema.index({ pigeonId: 1 });
+TransactionSchema.index({ animalId: 1 });
 
 const TransactionModel: Model<ITransaction> =
   mongoose.models.Transaction ||

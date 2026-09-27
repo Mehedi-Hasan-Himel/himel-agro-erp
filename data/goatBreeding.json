@@ -1,0 +1,44 @@
+[
+  {
+    "id": "gt_br_2026_001",
+    "doeId": "goat_2026_002",
+    "buckId": "goat_2026_001",
+    "doeTagNumber": "HA-GT-02",
+    "buckTagNumber": "HA-GT-01",
+    "matingDate": "2025-12-15",
+    "status": "KIDDING_COMPLETED",
+    "expectedKiddingDate": "2026-05-14",
+    "actualKiddingDate": "2026-05-14",
+    "kidsCount": 2,
+    "kidIds": ["goat_2026_006", "goat_2026_007"],
+    "notes": "Healthy twin delivery without complications. 1 male (Moti) and 1 female (Chobi). Excellent mothering.",
+    "createdAt": "2025-12-15T09:00:00.000Z",
+    "updatedAt": "2026-05-14T10:00:00.000Z"
+  },
+  {
+    "id": "gt_br_2026_002",
+    "doeId": "goat_2026_003",
+    "buckId": "goat_2026_001",
+    "doeTagNumber": "HA-GT-03",
+    "buckTagNumber": "HA-GT-01",
+    "matingDate": "2026-05-21",
+    "status": "CONFIRMED_PREGNANT",
+    "expectedKiddingDate": "2026-10-18",
+    "notes": "Natural service with Sultan. Confirmed pregnant via veterinary ultrasound at day 60. Clean gestation.",
+    "createdAt": "2026-05-21T08:30:00.000Z",
+    "updatedAt": "2026-07-25T11:00:00.000Z"
+  },
+  {
+    "id": "gt_br_2026_003",
+    "doeId": "goat_2026_005",
+    "buckId": "goat_2026_004",
+    "doeTagNumber": "HA-GT-05",
+    "buckTagNumber": "HA-GT-04",
+    "matingDate": "2026-09-05",
+    "status": "MATING",
+    "expectedKiddingDate": "2027-02-02",
+    "notes": "Pure Jamunapari breeding trial. Standing heat observed and serviced twice.",
+    "createdAt": "2026-09-05T07:45:00.000Z",
+    "updatedAt": "2026-09-06T12:00:00.000Z"
+  }
+]
